@@ -132,6 +132,10 @@ async function seed() {
   console.log("Starting database seeding...");
 
   try {
+    // Get current user ID from environment
+    const currentUserId = process.env.OWNER_OPEN_ID || "aQVoJettC3FaGf4oztp6Ap";
+    console.log(`Using owner ID: ${currentUserId}`);
+    
     // 1. Create organizations
     console.log("Creating organizations...");
     const org1Id = await db.insert(schema.organizations).values({
@@ -141,7 +145,7 @@ async function seed() {
         email: "info@melbourneracing.com.au",
         address: "123 Racing Street, Melbourne VIC 3000",
       },
-      ownerId: "owner1",
+      ownerId: currentUserId,
       notificationSettings: {
         injuryRiskThreshold: 70,
         emailNotifications: true,
@@ -155,7 +159,7 @@ async function seed() {
         email: "contact@sydneyequestrian.com.au",
         address: "456 Horse Lane, Sydney NSW 2000",
       },
-      ownerId: "owner2",
+      ownerId: currentUserId,
       notificationSettings: {
         injuryRiskThreshold: 75,
         emailNotifications: true,
@@ -169,7 +173,7 @@ async function seed() {
         email: "info@kentuckyderby.com",
         address: "789 Derby Drive, Louisville, KY 40202",
       },
-      ownerId: "owner3",
+      ownerId: currentUserId,
       notificationSettings: {
         injuryRiskThreshold: 80,
         emailNotifications: true,
@@ -185,7 +189,6 @@ async function seed() {
     console.log(`Created ${orgIds.length} organizations`);
 
     // Link current user to all organizations for testing
-    const currentUserId = "aQVoJettC3FaGf4oztp6Ap"; // Simon Price from the screenshot
     console.log("Creating user-organization relationships...");
     for (const orgId of orgIds) {
       await db.insert(schema.userOrganizations).values({

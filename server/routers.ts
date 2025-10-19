@@ -458,7 +458,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         return await db.createOrganization(input);
       }),
-    update: adminProcedure
+    update: protectedProcedure
       .input(
         z.object({
           id: z.number(),
@@ -468,8 +468,30 @@ export const appRouter = router({
           notificationSettings: z.any().optional(),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const { id, ...updates } = input;
+        const org = await db.getOrganization(id);
+        
+        if (!org) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Organization not found",
+          });
+        }
+        
+        // Check if user is admin or owner of the organization
+        if (ctx.user.role !== "admin" && org.ownerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You don't have permission to update this organization",
+          });
+        }
+        
+        // Only admins can change the owner
+        if (updates.ownerId && ctx.user.role !== "admin") {
+          delete updates.ownerId;
+        }
+        
         await db.updateOrganization(id, updates);
         return { success: true };
       }),

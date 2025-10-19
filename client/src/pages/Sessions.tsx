@@ -13,6 +13,7 @@ import { useLocation, useSearch } from "wouter";
 export default function Sessions() {
   const { selectedOrgId } = useOrganization();
   const searchParams = useSearch();
+  const [, setLocation] = useLocation();
   const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
@@ -170,7 +171,11 @@ export default function Sessions() {
           </>
         ) : displaySessions && displaySessions.length > 0 ? (
           displaySessions.map((session) => (
-            <Card key={session.id} className="hover:shadow-md transition-shadow">
+            <Card 
+              key={session.id} 
+              className="hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => setLocation(`/sessions/${session.id}${horseFilter ? `?horseId=${horseFilter}` : ''}`)}
+            >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
