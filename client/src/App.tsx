@@ -7,6 +7,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import DashboardLayout from "./components/DashboardLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { OrganizationProvider } from "./contexts/OrganizationContext";
+import { LocaleProvider } from "./contexts/LocaleContext";
+import "@/lib/i18n"; // Initialize i18n
 import Dashboard from "./pages/Dashboard";
 import Horses from "./pages/Horses";
 import Sessions from "./pages/Sessions";
@@ -16,6 +18,7 @@ import SessionDetail from "./pages/SessionDetail";
 import Organizations from "./pages/Organizations";
 import { Users } from "./pages/Users";
 import InjuryRecords from "./pages/InjuryRecords";
+import Profile from "./pages/Profile";
 
 function Router() {
   return (
@@ -54,6 +57,7 @@ function Router() {
             <p className="text-muted-foreground">API configuration page coming soon</p>
           </div>
         </Route>
+        <Route path="/profile" component={Profile} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
@@ -66,12 +70,14 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
-        <OrganizationProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </OrganizationProvider>
+        <LocaleProvider>
+          <OrganizationProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </OrganizationProvider>
+        </LocaleProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
