@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { useTheme } from "@/hooks/useTheme";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
@@ -69,6 +70,7 @@ function Router() {
 }
 
 function App() {
+  useTheme();
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
