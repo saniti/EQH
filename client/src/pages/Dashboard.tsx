@@ -112,7 +112,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 {favoriteHorses.map((horse) => (
                   <Link key={horse.id} href={`/horses/${horse.id}`}>
-                    <a className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors">
+                    <div className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors cursor-pointer">
                       <div>
                         <p className="font-medium">{horse.name}</p>
                         <p className="text-sm text-muted-foreground">
@@ -130,7 +130,7 @@ export default function Dashboard() {
                       >
                         {horse.status}
                       </Badge>
-                    </a>
+                    </div>
                   </Link>
                 ))}
               </div>

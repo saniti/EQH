@@ -123,9 +123,9 @@ export default function Horses() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <Link href={`/horses/${horse.id}`}>
-                      <a className="text-lg font-semibold hover:underline">
+                      <span className="text-lg font-semibold hover:underline cursor-pointer">
                         {horse.name}
-                      </a>
+                      </span>
                     </Link>
                     <p className="text-sm text-muted-foreground">
                       {horse.breed || "Unknown breed"}
