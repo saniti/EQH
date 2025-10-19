@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 
 export default function Dashboard() {
-  const { selectedOrgId } = useOrganization();
+  const { selectedOrgId, selectedOrg } = useOrganization();
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery(
     undefined,
     { enabled: !!selectedOrgId }
@@ -24,9 +24,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard - {selectedOrg?.name || 'Organization'}</h1>
         <p className="text-muted-foreground mt-1">
-          Overview of your horse health monitoring system
+          Overview of your horse health monitoring system for {selectedOrg?.name || 'this organization'}
         </p>
       </div>
 

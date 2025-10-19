@@ -5,6 +5,7 @@ interface OrganizationContextType {
   selectedOrgId: number | null;
   setSelectedOrgId: (id: number | null) => void;
   organizations: Array<{ id: number; name: string }>;
+  selectedOrg: { id: number; name: string } | null;
   isLoading: boolean;
 }
 
@@ -21,12 +22,15 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     }
   }, [organizations, selectedOrgId]);
 
+  const selectedOrg = organizations?.find(org => org.id === selectedOrgId) || null;
+
   return (
     <OrganizationContext.Provider
       value={{
         selectedOrgId,
         setSelectedOrgId,
         organizations: organizations || [],
+        selectedOrg,
         isLoading,
       }}
     >

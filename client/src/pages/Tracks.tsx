@@ -7,8 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { useOrganization } from "@/contexts/OrganizationContext";
 
 export default function Tracks() {
+  const { selectedOrg } = useOrganization();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   
@@ -20,9 +22,9 @@ export default function Tracks() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Tracks</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Tracks for {selectedOrg?.name || 'Organization'}</h1>
         <p className="text-muted-foreground mt-1">
-          Browse racetracks and training facilities
+          Browse racetracks and training facilities available to {selectedOrg?.name || 'this organization'}
         </p>
       </div>
 

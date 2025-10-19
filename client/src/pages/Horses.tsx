@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Horses() {
-  const { selectedOrgId } = useOrganization();
+  const { selectedOrgId, selectedOrg } = useOrganization();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("latestSession");
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
@@ -172,9 +172,9 @@ export default function Horses() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-green-900">Horse Registry</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-green-900">Horse Registry for {selectedOrg?.name || 'Organization'}</h1>
           <p className="text-muted-foreground mt-1">
-            Manage profiles for horses in your organization ({totalHorses} total)
+            Manage profiles for horses in {selectedOrg?.name || 'this organization'} ({totalHorses} total)
           </p>
         </div>
         <Button className="bg-orange-300 hover:bg-orange-400 text-gray-900">

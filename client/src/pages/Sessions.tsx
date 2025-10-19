@@ -14,7 +14,7 @@ import { useLocation, useSearch } from "wouter";
 import { toast } from "sonner";
 
 export default function Sessions() {
-  const { selectedOrgId } = useOrganization();
+  const { selectedOrgId, selectedOrg } = useOrganization();
   const searchParams = useSearch();
   const [, setLocation] = useLocation();
   const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
@@ -192,9 +192,9 @@ export default function Sessions() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Training Sessions</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Training Sessions for {selectedOrg?.name || 'Organization'}</h1>
         <p className="text-muted-foreground">
-          View and analyze training session data and performance metrics
+          View and analyze training session data and performance metrics for {selectedOrg?.name || 'this organization'}
         </p>
       </div>
 
