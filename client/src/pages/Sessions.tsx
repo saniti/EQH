@@ -37,6 +37,11 @@ export default function Sessions() {
     }
   }, [horseIdFromUrl]);
 
+  useEffect(() => {
+    console.log('[Sessions] selectedOrgId changed to:', selectedOrgId);
+    console.log('[Sessions] selectedOrg:', selectedOrg?.name);
+  }, [selectedOrgId, selectedOrg]);
+
   // Calculate date range based on filter
   const getDateRange = () => {
     const now = new Date();

@@ -519,6 +519,9 @@ export async function getOrganizationSessions(
   const db = await getDb();
   if (!db) return [];
 
+  console.log('[getOrganizationSessions] organizationIds:', organizationIds);
+  console.log('[getOrganizationSessions] filters:', filters);
+
   // Get horses for these organizations
   const orgHorses = await db
     .select({ id: horses.id })
@@ -526,9 +529,11 @@ export async function getOrganizationSessions(
     .where(inArray(horses.organizationId, organizationIds));
 
   const horseIds = orgHorses.map((h) => h.id);
+  console.log('[getOrganizationSessions] Found horse IDs:', horseIds);
   
   // If no horses in this organization, return empty array
   if (horseIds.length === 0) {
+    console.log('[getOrganizationSessions] No horses found, returning empty array');
     return [];
   }
 

@@ -184,16 +184,28 @@ export const appRouter = router({
         const orgs = await db.getUserOrganizations(ctx.user.id);
         const orgIds = orgs.map((o) => o.id);
 
+        console.log('[Sessions.list] Query params:', {
+          organizationId: input.organizationId,
+          horseId: input.horseId,
+          userOrgs: orgIds,
+        });
+
         // If organizationId is provided, validate user has access and use only that org
         if (input.organizationId) {
           if (!orgIds.includes(input.organizationId)) {
             throw new TRPCError({ code: "FORBIDDEN" });
           }
-          return await db.getOrganizationSessions([input.organizationId], input);
+          console.log('[Sessions.list] Filtering by organization:', input.organizationId);
+          const sessions = await db.getOrganizationSessions([input.organizationId], input);
+          console.log('[Sessions.list] Found sessions:', sessions.length);
+          return sessions;
         }
 
         // Otherwise, use all organizations the user has access to
-        return await db.getOrganizationSessions(orgIds, input);
+        console.log('[Sessions.list] Using all user organizations:', orgIds);
+        const sessions = await db.getOrganizationSessions(orgIds, input);
+        console.log('[Sessions.list] Found sessions:', sessions.length);
+        return sessions;
       }),
     get: protectedProcedure
       .input(z.object({ id: z.number() }))
