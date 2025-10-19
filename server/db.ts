@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, like, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, like, lte, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   apiSettings,
@@ -471,10 +471,18 @@ export async function getOrganizationSessions(
     .where(inArray(horses.organizationId, organizationIds));
 
   const horseIds = orgHorses.map((h) => h.id);
-  if (horseIds.length === 0) return [];
+  // Don't return early - we still want to show unassigned sessions
 
   // Build where conditions
-  const conditions: any[] = [inArray(sessions.horseId, horseIds)];
+  // Include sessions assigned to horses in this organization OR unassigned sessions
+  const conditions: any[] = [
+    horseIds.length > 0 
+      ? or(
+          inArray(sessions.horseId, horseIds),
+          isNull(sessions.horseId)
+        )
+      : isNull(sessions.horseId)
+  ];
   
   if (filters?.horseId) {
     conditions.push(eq(sessions.horseId, filters.horseId));

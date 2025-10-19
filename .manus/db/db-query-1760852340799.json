@@ -1,0 +1,25 @@
+{
+  "query": "SELECT organizationId, COUNT(*) as horseCount, GROUP_CONCAT(name SEPARATOR ', ') as horses FROM horses GROUP BY organizationId",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 29dBgEd9G6t5VH4.root --database bxoqvfJMBEhE7Cr2hfpnwS --execute SELECT organizationId, COUNT(*) as horseCount, GROUP_CONCAT(name SEPARATOR ', ') as horses FROM horses GROUP BY organizationId",
+  "rows": [
+    {
+      "organizationId": "6",
+      "horseCount": "10",
+      "horses": "Midnight Runner, Storm Chaser, Mountain King, Diamond Dust, Sapphire Sky, Phoenix Rising, Spirit Dancer, Victory Lane, Moonbeam Magic, Twilight Shadow"
+    },
+    {
+      "organizationId": "4",
+      "horseCount": "10",
+      "horses": "Thunder Strike, Golden Star, Desert Wind, Prairie Fire, Crimson Glory, Blazing Sun, Dragon Fury, Wild Heart, Champion's Pride, Sunset Rider"
+    },
+    {
+      "organizationId": "5",
+      "horseCount": "10",
+      "horses": "Lightning Bolt, Silver Shadow, Ocean Wave, Royal Crown, Emerald Dream, Mystic Moon, Eagle Eye, Noble Quest, Starlight Express, Dawn Breaker"
+    }
+  ],
+  "messages": [],
+  "stdout": "organizationId\thorseCount\thorses\n6\t10\tMidnight Runner, Storm Chaser, Mountain King, Diamond Dust, Sapphire Sky, Phoenix Rising, Spirit Dancer, Victory Lane, Moonbeam Magic, Twilight Shadow\n4\t10\tThunder Strike, Golden Star, Desert Wind, Prairie Fire, Crimson Glory, Blazing Sun, Dragon Fury, Wild Heart, Champion's Pride, Sunset Rider\n5\t10\tLightning Bolt, Silver Shadow, Ocean Wave, Royal Crown, Emerald Dream, Mystic Moon, Eagle Eye, Noble Quest, Starlight Express, Dawn Breaker\n",
+  "stderr": "",
+  "execution_time_ms": 124
+}
