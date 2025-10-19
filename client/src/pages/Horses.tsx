@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { Heart, Plus, Search } from "lucide-react";
 import { useState } from "react";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,17 +17,22 @@ import {
 import { Link } from "wouter";
 
 export default function Horses() {
+  const { selectedOrgId } = useOrganization();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [breedFilter, setBreedFilter] = useState<string>("");
 
-  const { data: horses, isLoading } = trpc.horses.list.useQuery({
-    search: search || undefined,
-    status: statusFilter && statusFilter !== "all" ? statusFilter : undefined,
-    breed: breedFilter || undefined,
-    limit: 50,
-    offset: 0,
-  });
+  const { data: horses, isLoading } = trpc.horses.list.useQuery(
+    {
+      organizationId: selectedOrgId!,
+      search: search || undefined,
+      status: statusFilter && statusFilter !== "all" ? statusFilter : undefined,
+      breed: breedFilter || undefined,
+      limit: 50,
+      offset: 0,
+    },
+    { enabled: !!selectedOrgId }
+  );
 
   const utils = trpc.useUtils();
 

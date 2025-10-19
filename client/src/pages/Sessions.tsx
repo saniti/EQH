@@ -1,5 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { Activity, Calendar, Heart, MapPin, Thermometer } from "lucide-react";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -9,13 +10,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 
 export default function Sessions() {
+  const { selectedOrgId } = useOrganization();
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
   
-  const { data: sessions, isLoading } = trpc.sessions.list.useQuery({
-    injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
-    limit: 50,
-  });
+  const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
+    {
+      injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
+      limit: 50,
+    },
+    { enabled: !!selectedOrgId }
+  );
 
   const getRiskColor = (risk: string) => {
     switch (risk) {

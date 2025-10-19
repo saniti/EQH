@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, Users, Wifi } from "lucide-react";
+import { Activity, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, Users, Wifi, ChevronDown } from "lucide-react";
+import { useOrganization } from "@/contexts/OrganizationContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -49,6 +51,49 @@ const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
+
+function OrganizationSelector() {
+  const { selectedOrgId, setSelectedOrgId, organizations, isLoading } = useOrganization();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  if (isLoading || organizations.length === 0) {
+    return null;
+  }
+
+  if (isCollapsed) {
+    return (
+      <div className="px-2 py-2 border-b">
+        <div className="flex items-center justify-center h-10">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-3 py-3 border-b">
+      <Select
+        value={selectedOrgId?.toString() || ""}
+        onValueChange={(value) => setSelectedOrgId(parseInt(value))}
+      >
+        <SelectTrigger className="h-10">
+          <div className="flex items-center gap-2 w-full">
+            <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+            <SelectValue placeholder="Select organization" />
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          {organizations.map((org) => (
+            <SelectItem key={org.id} value={org.id.toString()}>
+              {org.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -221,6 +266,7 @@ function DashboardLayoutContent({
           </SidebarHeader>
 
           <SidebarContent className="gap-0">
+            <OrganizationSelector />
             <SidebarMenu className="px-2 py-1">
               {menuItems.map(item => {
                 const isActive = location === item.path;

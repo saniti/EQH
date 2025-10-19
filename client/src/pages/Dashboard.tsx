@@ -1,14 +1,25 @@
 import { trpc } from "@/lib/trpc";
 import { Activity, AlertTriangle, Heart, Thermometer } from "lucide-react";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery();
-  const { data: favoriteHorses, isLoading: favoritesLoading } = trpc.dashboard.getFavoriteHorses.useQuery();
-  const { data: upcomingCare, isLoading: careLoading } = trpc.dashboard.getUpcomingCare.useQuery();
+  const { selectedOrgId } = useOrganization();
+  const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery(
+    undefined,
+    { enabled: !!selectedOrgId }
+  );
+  const { data: favoriteHorses, isLoading: favoritesLoading } = trpc.dashboard.getFavoriteHorses.useQuery(
+    undefined,
+    { enabled: !!selectedOrgId }
+  );
+  const { data: upcomingCare, isLoading: careLoading } = trpc.dashboard.getUpcomingCare.useQuery(
+    undefined,
+    { enabled: !!selectedOrgId }
+  );
 
   return (
     <div className="space-y-6">
