@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 
@@ -18,8 +17,13 @@ export default function Horses() {
   const [editForm, setEditForm] = useState({
     name: "",
     breed: "",
-    age: "",
     weight: "",
+    owner: "",
+    rider: "",
+    birthPlace: "",
+    location: "",
+    color: "",
+    gender: "",
   });
 
   const { data: horses, isLoading } = trpc.horses.list.useQuery(
@@ -54,7 +58,7 @@ export default function Horses() {
     },
   });
 
-  // Get favorite IDs from horses data (assuming isFavorite field exists)
+  // Get favorite IDs from horses data
   const favoriteHorses = horses?.filter(h => (h as any).isFavorite) || [];
   const nonFavoriteHorses = horses?.filter(h => !(h as any).isFavorite) || [];
   const sortedHorses = [...favoriteHorses, ...nonFavoriteHorses];
@@ -70,11 +74,17 @@ export default function Horses() {
 
   const handleEditClick = (horse: any) => {
     setEditingHorseId(horse.id);
+    const healthRecords = horse.healthRecords || {};
     setEditForm({
       name: horse.name,
       breed: horse.breed || "",
-      age: horse.age?.toString() || "",
-      weight: horse.weight?.toString() || "",
+      weight: healthRecords.weight?.toString() || "",
+      owner: healthRecords.owner || "",
+      rider: healthRecords.rider || "",
+      birthPlace: healthRecords.birthPlace || "",
+      location: healthRecords.location || "",
+      color: healthRecords.color || "",
+      gender: healthRecords.gender || "",
     });
   };
 
@@ -84,6 +94,15 @@ export default function Horses() {
         id: editingHorseId,
         name: editForm.name,
         breed: editForm.breed || undefined,
+        healthRecords: {
+          weight: editForm.weight ? parseInt(editForm.weight) : undefined,
+          owner: editForm.owner || undefined,
+          rider: editForm.rider || undefined,
+          birthPlace: editForm.birthPlace || undefined,
+          location: editForm.location || undefined,
+          color: editForm.color || undefined,
+          gender: editForm.gender || undefined,
+        },
       });
     }
   };
@@ -139,6 +158,20 @@ export default function Horses() {
         </div>
       </div>
 
+      {/* Table Header */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-[auto,1fr,180px,120px,140px,auto] gap-6 items-center font-semibold text-sm text-muted-foreground">
+            <div className="w-5"></div>
+            <div>Horse</div>
+            <div>Latest Session</div>
+            <div>Duration</div>
+            <div>Injury Risk</div>
+            <div className="w-20">Actions</div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Horses List */}
       <div className="space-y-3">
         {isLoading ? (
@@ -161,10 +194,10 @@ export default function Horses() {
               <Card key={horse.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   {isEditing ? (
-                    <div className="grid grid-cols-[1fr,auto] gap-4 items-center">
-                      <div className="grid grid-cols-4 gap-4">
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-4">
                         <div>
-                          <Label className="text-xs text-muted-foreground">Name</Label>
+                          <Label className="text-xs text-muted-foreground">Name *</Label>
                           <Input
                             value={editForm.name}
                             onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
@@ -180,20 +213,59 @@ export default function Horses() {
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground">Age</Label>
-                          <Input
-                            type="number"
-                            value={editForm.age}
-                            onChange={(e) => setEditForm({ ...editForm, age: e.target.value })}
-                            className="h-9 mt-1"
-                          />
-                        </div>
-                        <div>
                           <Label className="text-xs text-muted-foreground">Weight (kg)</Label>
                           <Input
                             type="number"
                             value={editForm.weight}
                             onChange={(e) => setEditForm({ ...editForm, weight: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Owner</Label>
+                          <Input
+                            value={editForm.owner}
+                            onChange={(e) => setEditForm({ ...editForm, owner: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Rider</Label>
+                          <Input
+                            value={editForm.rider}
+                            onChange={(e) => setEditForm({ ...editForm, rider: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Birth Place</Label>
+                          <Input
+                            value={editForm.birthPlace}
+                            onChange={(e) => setEditForm({ ...editForm, birthPlace: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Location</Label>
+                          <Input
+                            value={editForm.location}
+                            onChange={(e) => setEditForm({ ...editForm, location: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Color</Label>
+                          <Input
+                            value={editForm.color}
+                            onChange={(e) => setEditForm({ ...editForm, color: e.target.value })}
+                            className="h-9 mt-1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Gender</Label>
+                          <Input
+                            value={editForm.gender}
+                            onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
                             className="h-9 mt-1"
                           />
                         </div>
@@ -205,19 +277,21 @@ export default function Horses() {
                           onClick={handleSaveEdit}
                           disabled={updateHorse.isPending}
                         >
-                          <Check className="h-4 w-4" />
+                          <Check className="h-4 w-4 mr-2" />
+                          Save Changes
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={handleCancelEdit}
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-[auto,1fr,auto,auto,auto,auto] gap-6 items-center">
+                    <div className="grid grid-cols-[auto,1fr,180px,120px,140px,auto] gap-6 items-center">
                       {/* Favorite Icon */}
                       <button
                         onClick={() => handleToggleFavorite(horse.id, isFavorite)}
@@ -248,11 +322,11 @@ export default function Horses() {
                       </div>
 
                       {/* Latest Session */}
-                      <div className="min-w-[180px]">
+                      <div>
                         {latestSession ? (
                           <button
-                            onClick={() => setLocation(`/sessions/${latestSession.id}`)}
-                            className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:bg-accent/50 p-2 -m-2 transition-colors"
+                            onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                            className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:bg-accent/50 p-2 -m-2 transition-colors w-full"
                           >
                             <p className="text-sm font-medium">
                               {new Date(latestSession.sessionDate).toLocaleDateString()}
@@ -272,7 +346,7 @@ export default function Horses() {
                       </div>
 
                       {/* Duration */}
-                      <div className="min-w-[100px]">
+                      <div>
                         {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -286,7 +360,7 @@ export default function Horses() {
                       </div>
 
                       {/* Injury Risk */}
-                      <div className="min-w-[120px]">
+                      <div>
                         {latestSession?.injuryRisk ? (
                           <Badge variant={getRiskColor(latestSession.injuryRisk)}>
                             <AlertTriangle className="h-3 w-3 mr-1" />

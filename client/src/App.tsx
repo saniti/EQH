@@ -9,6 +9,7 @@ import { OrganizationProvider } from "./contexts/OrganizationContext";
 import Dashboard from "./pages/Dashboard";
 import Horses from "./pages/Horses";
 import Sessions from "./pages/Sessions";
+import SessionDetail from "./pages/SessionDetail";
 import Tracks from "./pages/Tracks";
 import Reports from "./pages/Reports";
 
@@ -18,8 +19,8 @@ function Router() {
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/horses" component={Horses} />
-        <Route path="/sessions" component={Sessions} />
-        <Route path="/tracks" component={Tracks} />
+       <Route path={"/sessions"} component={Sessions} />
+      <Route path={"/sessions/:id"} component={SessionDetail} />        <Route path="/tracks" component={Tracks} />
         <Route path="/reports" component={Reports} />
         <Route path="/organizations">
           <div className="p-8 text-center">

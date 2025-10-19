@@ -411,7 +411,7 @@ export async function createSession(session: InsertSession): Promise<number> {
   return Number(result[0].insertId);
 }
 
-export async function getSession(id: number): Promise<Session | undefined> {
+export async function getSession(id: number): Promise<any> {
   const db = await getDb();
   if (!db) return undefined;
   const result = await db
@@ -419,7 +419,30 @@ export async function getSession(id: number): Promise<Session | undefined> {
     .from(sessions)
     .where(eq(sessions.id, id))
     .limit(1);
-  return result[0];
+  
+  if (result.length === 0) return undefined;
+  
+  const session = result[0];
+  
+  // Get horse name
+  const horseResult = await db
+    .select()
+    .from(horses)
+    .where(eq(horses.id, session.horseId))
+    .limit(1);
+  
+  // Get track name
+  const trackResult = await db
+    .select()
+    .from(tracks)
+    .where(eq(tracks.id, session.trackId))
+    .limit(1);
+  
+  return {
+    ...session,
+    horseName: horseResult[0]?.name,
+    trackName: trackResult[0]?.name,
+  };
 }
 
 export async function getOrganizationSessions(
