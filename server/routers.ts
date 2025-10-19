@@ -205,6 +205,19 @@ export const appRouter = router({
         await db.updateSession(id, updates);
         return { success: true };
       }),
+    assignToHorse: protectedProcedure
+      .input(
+        z.object({
+          sessionId: z.number(),
+          horseId: z.number().nullable(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { assignSessionToHorse } = await import("./db-session-assign");
+        await assignSessionToHorse(input.sessionId, input.horseId);
+        return { success: true };
+      }),
+
     updateTrack: protectedProcedure
       .input(
         z.object({

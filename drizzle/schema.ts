@@ -173,7 +173,7 @@ export type InsertTrackRequest = typeof trackRequests.$inferInsert;
 // ============= SESSIONS =============
 export const sessions = mysqlTable("sessions", {
   id: int("id").primaryKey().autoincrement(),
-  horseId: int("horseId").notNull(),
+  horseId: int("horseId"),
   trackId: int("trackId").notNull(),
   sessionDate: datetime("sessionDate").notNull(),
   performanceData: json("performanceData").$type<{

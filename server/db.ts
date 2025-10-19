@@ -425,11 +425,15 @@ export async function getSession(id: number): Promise<any> {
   const session = result[0];
   
   // Get horse name
-  const horseResult = await db
-    .select()
-    .from(horses)
-    .where(eq(horses.id, session.horseId))
-    .limit(1);
+  let horseName = null;
+  if (session.horseId) {
+    const horseResult = await db
+      .select()
+      .from(horses)
+      .where(eq(horses.id, session.horseId))
+      .limit(1);
+    horseName = horseResult[0]?.name || null;
+  }
   
   // Get track name
   const trackResult = await db
@@ -440,7 +444,7 @@ export async function getSession(id: number): Promise<any> {
   
   return {
     ...session,
-    horseName: horseResult[0]?.name,
+    horseName,
     trackName: trackResult[0]?.name,
   };
 }
@@ -508,11 +512,15 @@ export async function getOrganizationSessions(
   const enriched = await Promise.all(
     sessionsList.map(async (session) => {
       // Get horse name
-      const horseResult = await db
-        .select({ name: horses.name })
-        .from(horses)
-        .where(eq(horses.id, session.horseId))
-        .limit(1);
+      let horseName = null;
+      if (session.horseId) {
+        const horseResult = await db
+          .select({ name: horses.name })
+          .from(horses)
+          .where(eq(horses.id, session.horseId))
+          .limit(1);
+        horseName = horseResult[0]?.name || null;
+      }
       
       // Get track name and type
       const trackResult = await db
@@ -523,14 +531,19 @@ export async function getOrganizationSessions(
 
       return {
         ...session,
-        horseName: horseResult[0]?.name || 'Unknown Horse',
+        horseName: horseName || 'Unassigned',
         trackName: trackResult[0]?.name || 'Unknown Track',
         trackType: trackResult[0]?.type || '',
       };
     })
   );
 
-  return enriched;
+  // Sort: unassigned sessions first, then by date descending
+  return enriched.sort((a, b) => {
+    if (!a.horseId && b.horseId) return -1;
+    if (a.horseId && !b.horseId) return 1;
+    return new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime();
+  });
 }
 
 export async function updateSession(

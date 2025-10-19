@@ -27,6 +27,8 @@ export default function Sessions() {
   );
   const [selectedSessions, setSelectedSessions] = useState<number[]>([]);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showAssignHorseDialog, setShowAssignHorseDialog] = useState(false);
+  const [selectedHorseId, setSelectedHorseId] = useState<number | undefined>();
   const [selectedTrackId, setSelectedTrackId] = useState<number | undefined>();
 
   useEffect(() => {
@@ -95,7 +97,26 @@ export default function Sessions() {
     { enabled: !!selectedOrgId }
   );
 
+  // Fetch organization horses
+  const { data: horses } = trpc.horses.list.useQuery(
+    { organizationId: selectedOrgId || 0 },
+    { enabled: !!selectedOrgId }
+  );
+
   const utils = trpc.useUtils();
+
+  const assignToHorse = trpc.sessions.assignToHorse.useMutation({
+    onSuccess: () => {
+      utils.sessions.list.invalidate();
+      setSelectedSessions([]);
+      setShowAssignHorseDialog(false);
+      setSelectedHorseId(undefined);
+      toast.success("Sessions assigned to horse successfully");
+    },
+    onError: (error) => {
+      toast.error(`Failed to assign sessions: ${error.message}`);
+    },
+  });
 
   const updateSessionTrack = trpc.sessions.updateTrack.useMutation({
     onSuccess: () => {
@@ -155,6 +176,16 @@ export default function Sessions() {
     });
   };
 
+  const handleAssignToHorse = () => {
+    // Allow assigning to null (unassign)
+    selectedSessions.forEach(sessionId => {
+      assignToHorse.mutate({
+        sessionId,
+        horseId: selectedHorseId || null,
+      });
+    });
+  };
+
   const globalTracks = tracks?.filter(t => t.scope === "global") || [];
   const localTracks = tracks?.filter(t => t.scope === "local") || [];
 
@@ -205,9 +236,14 @@ export default function Sessions() {
         </Select>
 
         {selectedSessions.length > 0 && (
-          <Button onClick={() => setShowAssignDialog(true)} variant="default">
-            Assign {selectedSessions.length} to Track
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setShowAssignDialog(true)} variant="default">
+              Assign {selectedSessions.length} to Track
+            </Button>
+            <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary">
+              Assign {selectedSessions.length} to Horse
+            </Button>
+          </div>
         )}
       </div>
 
@@ -285,7 +321,14 @@ export default function Sessions() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{session.horseName || `Horse #${session.horseId}`}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-lg">{session.horseName || 'Unassigned'}</h3>
+                            {!session.horseId && (
+                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+                                Unassigned
+                              </Badge>
+                            )}
+                          </div>
                           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
@@ -410,6 +453,46 @@ export default function Sessions() {
             </Button>
             <Button onClick={handleAssignToTrack} disabled={!selectedTrackId}>
               Assign to Track
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign to Horse Dialog */}
+      <Dialog open={showAssignHorseDialog} onOpenChange={setShowAssignHorseDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Sessions to Horse</DialogTitle>
+            <DialogDescription>
+              Assign {selectedSessions.length} selected session(s) to a horse in your organization
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <h4 className="font-medium mb-2">Select Horse</h4>
+              <Select value={selectedHorseId?.toString() || "unassigned"} onValueChange={(v) => setSelectedHorseId(v === "unassigned" ? undefined : parseInt(v))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a horse or leave unassigned" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  {horses?.map(horse => (
+                    <SelectItem key={horse.id} value={horse.id.toString()}>
+                      {horse.name} - {horse.breed}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssignHorseDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAssignToHorse}>
+              Assign to Horse
             </Button>
           </DialogFooter>
         </DialogContent>
