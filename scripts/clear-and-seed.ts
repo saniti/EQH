@@ -1,8 +1,12 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import { sql } from "drizzle-orm";
+import mysql from "mysql2/promise";
 import * as schema from "../drizzle/schema";
+import "dotenv/config";
 
-const db = drizzle(process.env.DATABASE_URL!);
+// Create MySQL connection
+const connection = await mysql.createConnection(process.env.DATABASE_URL!);
+const db = drizzle(connection);
 
 async function clearDatabase() {
   console.log("Clearing existing data...");
@@ -46,11 +50,13 @@ async function main() {
   await clearDatabase();
   
   console.log("\nNow run: npx tsx scripts/seed-data.ts");
+  await connection.end();
   process.exit(0);
 }
 
-main().catch((error) => {
+main().catch(async (error) => {
   console.error("Failed:", error);
+  await connection.end();
   process.exit(1);
 });
 
