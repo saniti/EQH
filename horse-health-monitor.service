@@ -1,0 +1,36 @@
+[Unit]
+Description=Horse Health Monitoring System
+Documentation=https://github.com/your-org/horse-health-monitor
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/horse-health-monitor
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/horse-health-monitor/.env
+ExecStartPre=/usr/bin/docker-compose -f /opt/horse-health-monitor/docker-compose.prod.yml --env-file /opt/horse-health-monitor/.env.docker up -d
+ExecStart=/usr/bin/pnpm start
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/usr/bin/docker-compose -f /opt/horse-health-monitor/docker-compose.prod.yml stop
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=horse-health-monitor
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/horse-health-monitor
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+

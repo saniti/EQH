@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: horse-health-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: horse_health_monitor
+      MYSQL_USER: horseuser
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      # Bind to localhost only for security
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - horse_health_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+      - ./backups:/backups
+    networks:
+      - horse-health-network
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max_connections=200
+      - --innodb_buffer_pool_size=256M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  horse_health_data:
+    driver: local
+
+networks:
+  horse-health-network:
+    driver: bridge
+
