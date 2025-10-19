@@ -7,6 +7,9 @@ import DashboardLayout from "./components/DashboardLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/Dashboard";
 import Horses from "./pages/Horses";
+import Sessions from "./pages/Sessions";
+import Tracks from "./pages/Tracks";
+import Reports from "./pages/Reports";
 
 function Router() {
   return (
@@ -14,24 +17,9 @@ function Router() {
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/horses" component={Horses} />
-        <Route path="/sessions">
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-2">Sessions</h2>
-            <p className="text-muted-foreground">Training sessions page coming soon</p>
-          </div>
-        </Route>
-        <Route path="/tracks">
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-2">Tracks</h2>
-            <p className="text-muted-foreground">Tracks management page coming soon</p>
-          </div>
-        </Route>
-        <Route path="/reports">
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-2">Reports</h2>
-            <p className="text-muted-foreground">Health trends reports page coming soon</p>
-          </div>
-        </Route>
+        <Route path="/sessions" component={Sessions} />
+        <Route path="/tracks" component={Tracks} />
+        <Route path="/reports" component={Reports} />
         <Route path="/organizations">
           <div className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-2">Organizations</h2>
