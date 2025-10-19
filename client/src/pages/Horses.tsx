@@ -17,12 +17,12 @@ import { Link } from "wouter";
 
 export default function Horses() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [breedFilter, setBreedFilter] = useState<string>("");
 
   const { data: horses, isLoading } = trpc.horses.list.useQuery({
     search: search || undefined,
-    status: statusFilter || undefined,
+    status: statusFilter && statusFilter !== "all" ? statusFilter : undefined,
     breed: breedFilter || undefined,
     limit: 50,
     offset: 0,
@@ -88,7 +88,7 @@ export default function Horses() {
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All statuses</SelectItem>
+                <SelectItem value="all">All statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="injured">Injured</SelectItem>
                 <SelectItem value="retired">Retired</SelectItem>
