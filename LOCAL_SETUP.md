@@ -93,7 +93,7 @@ The application will be available at:
 - **Frontend:** http://localhost:5173
 - **Backend API:** http://localhost:3000
 
-**Note:** You'll see a message `[OAuth] Running in local mode without OAuth (OAUTH_SERVER_URL not configured)` - this is normal and expected for local development.
+**Note:** You'll see a message `[OAuth] Running in local mode without OAuth (OAUTH_SERVER_URL not configured)` - this is normal and expected for local development. The system will automatically create a local user ("Local Developer") and all features will work without authentication.
 
 ## Verification
 
@@ -235,15 +235,31 @@ docker-compose logs mysql
 sudo chown -R $(whoami):$(whoami) ./mysql-data
 ```
 
-### OAuth Error Messages
+### OAuth Messages
 
-If you see `[OAuth] Running in local mode without OAuth` - this is **normal and expected** for local development. The system works perfectly without OAuth configuration.
+If you see `[OAuth] Running in local mode without OAuth` - this is **normal and expected** for local development. The system automatically:
+
+1. Creates a local development user ("Local Developer")
+2. Bypasses all authentication requirements
+3. Enables all features without login
+
+This is intentional and allows you to develop and test without any OAuth setup.
 
 ## Authentication (Optional)
 
 By default, the app runs **without authentication** for local development. This is intentional and allows you to test all features immediately.
 
-To enable full authentication (optional):
+### How Local Mode Works
+
+When OAuth is not configured:
+- A default local user is automatically created: `"Local Developer" (dev@localhost)`
+- All API requests are authenticated as this user
+- No login screen or redirects
+- All features work exactly as they would with real authentication
+
+### Enabling OAuth (Optional)
+
+To enable full OAuth authentication for production:
 
 1. Sign up at https://portal.manus.im
 2. Create a new application
@@ -253,6 +269,9 @@ To enable full authentication (optional):
    VITE_APP_ID=your-actual-app-id
    VITE_OAUTH_PORTAL_URL=https://portal.manus.im
    ```
+4. Restart the server
+
+The same codebase works in both modes - no code changes required!
 
 ## Production Deployment
 

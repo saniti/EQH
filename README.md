@@ -145,10 +145,10 @@ Create a `.env` file (copy from `.env.example`):
 DATABASE_URL=mysql://horse_admin:horse_password@localhost:3306/horse_health
 JWT_SECRET=your-secret-key-minimum-32-characters
 
-# Optional (for Manus platform integration)
-VITE_APP_ID=your-app-id
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+# Optional - Leave empty for local development without authentication
+VITE_APP_ID=
+OAUTH_SERVER_URL=
+VITE_OAUTH_PORTAL_URL=
 
 # Branding
 VITE_APP_TITLE=Horse Health Monitor
@@ -193,6 +193,27 @@ The application includes 6 built-in themes:
 Users can switch themes via the palette icon in the sidebar.
 
 ## 🔐 Authentication & Authorization
+
+### Local Development Mode
+
+By default, the system runs **without authentication** for local development:
+
+- OAuth configuration is **optional**
+- A default local user ("Local Developer") is automatically created
+- All features work immediately without login
+- Perfect for development and testing
+
+### Production Mode
+
+Enable OAuth by setting environment variables:
+
+```env
+OAUTH_SERVER_URL=https://api.manus.im
+VITE_APP_ID=your-app-id
+VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+```
+
+The same codebase works in both modes - no code changes required!
 
 ### Roles
 
