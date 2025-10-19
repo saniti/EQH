@@ -456,7 +456,7 @@ export async function getOrganizationSessions(
     limit?: number;
     offset?: number;
   }
-): Promise<Session[]> {
+): Promise<any[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -500,7 +500,35 @@ export async function getOrganizationSessions(
     query = query.offset(filters.offset);
   }
 
-  return await query;
+  const sessionsList = await query;
+
+  // Enrich with horse and track names
+  const enriched = await Promise.all(
+    sessionsList.map(async (session) => {
+      // Get horse name
+      const horseResult = await db
+        .select({ name: horses.name })
+        .from(horses)
+        .where(eq(horses.id, session.horseId))
+        .limit(1);
+      
+      // Get track name and type
+      const trackResult = await db
+        .select({ name: tracks.name, type: tracks.type })
+        .from(tracks)
+        .where(eq(tracks.id, session.trackId))
+        .limit(1);
+
+      return {
+        ...session,
+        horseName: horseResult[0]?.name || 'Unknown Horse',
+        trackName: trackResult[0]?.name || 'Unknown Track',
+        trackType: trackResult[0]?.type || '',
+      };
+    })
+  );
+
+  return enriched;
 }
 
 export async function updateSession(

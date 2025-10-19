@@ -107,7 +107,7 @@ export default function Sessions() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-1">
-                      Horse ID: {session.horseId}
+                      {(session as any).horseName || `Horse ID: ${session.horseId}`}
                     </h3>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
@@ -116,7 +116,8 @@ export default function Sessions() {
                       </div>
                       <div className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        Track ID: {session.trackId}
+                        {(session as any).trackName || `Track ID: ${session.trackId}`}
+                        {(session as any).trackType && ` (${(session as any).trackType})`}
                       </div>
                     </div>
                   </div>
