@@ -403,6 +403,61 @@ export async function removeFavoriteHorse(
     );
 }
 
+export async function getHorseStats(organizationId: number): Promise<{
+  newHorses30Days: number;
+  recentChanges30Days: number;
+  sessions30Days: number;
+}> {
+  const db = await getDb();
+  if (!db) return { newHorses30Days: 0, recentChanges30Days: 0, sessions30Days: 0 };
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  // Count horses created in last 30 days
+  const newHorsesResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(horses)
+    .where(
+      and(
+        eq(horses.organizationId, organizationId),
+        gte(horses.createdAt, thirtyDaysAgo)
+      )
+    );
+  const newHorses30Days = Number(newHorsesResult[0]?.count || 0);
+
+  // Count horses updated in last 30 days
+  const recentChangesResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(horses)
+    .where(
+      and(
+        eq(horses.organizationId, organizationId),
+        gte(horses.updatedAt, thirtyDaysAgo)
+      )
+    );
+  const recentChanges30Days = Number(recentChangesResult[0]?.count || 0);
+
+  // Count sessions in last 30 days
+  const sessionsResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(sessions)
+    .innerJoin(horses, eq(sessions.horseId, horses.id))
+    .where(
+      and(
+        eq(horses.organizationId, organizationId),
+        gte(sessions.sessionDate, thirtyDaysAgo)
+      )
+    );
+  const sessions30Days = Number(sessionsResult[0]?.count || 0);
+
+  return {
+    newHorses30Days,
+    recentChanges30Days,
+    sessions30Days,
+  };
+}
+
 // ============= SESSION OPERATIONS =============
 export async function createSession(session: InsertSession): Promise<number> {
   const db = await getDb();
