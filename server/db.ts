@@ -526,17 +526,16 @@ export async function getOrganizationSessions(
     .where(inArray(horses.organizationId, organizationIds));
 
   const horseIds = orgHorses.map((h) => h.id);
-  // Don't return early - we still want to show unassigned sessions
+  
+  // If no horses in this organization, return empty array
+  if (horseIds.length === 0) {
+    return [];
+  }
 
   // Build where conditions
-  // Include sessions assigned to horses in this organization OR unassigned sessions
+  // Only include sessions assigned to horses in this organization
   const conditions: any[] = [
-    horseIds.length > 0 
-      ? or(
-          inArray(sessions.horseId, horseIds),
-          isNull(sessions.horseId)
-        )
-      : isNull(sessions.horseId)
+    inArray(sessions.horseId, horseIds)
   ];
   
   if (filters?.horseId) {
