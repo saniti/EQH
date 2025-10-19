@@ -265,8 +265,9 @@ export async function getOrganizationHorses(
     search?: string;
     limit?: number;
     offset?: number;
+    userId?: string;
   }
-): Promise<Horse[]> {
+): Promise<any[]> {
   const db = await getDb();
   if (!db) return [];
 
@@ -295,7 +296,46 @@ export async function getOrganizationHorses(
     query = query.offset(filters.offset);
   }
 
-  return await query;
+  const horsesList = await query;
+
+  // Enrich with latest session and favorite status
+  const enriched = await Promise.all(
+    horsesList.map(async (horse) => {
+      // Get latest session
+      const latestSessionResult = await db
+        .select()
+        .from(sessions)
+        .where(eq(sessions.horseId, horse.id))
+        .orderBy(desc(sessions.sessionDate))
+        .limit(1);
+      
+      const latestSession = latestSessionResult[0] || null;
+
+      // Check if favorite
+      let isFavorite = false;
+      if (filters?.userId) {
+        const favoriteResult = await db
+          .select()
+          .from(userFavoriteHorses)
+          .where(
+            and(
+              eq(userFavoriteHorses.userId, filters.userId),
+              eq(userFavoriteHorses.horseId, horse.id)
+            )
+          )
+          .limit(1);
+        isFavorite = favoriteResult.length > 0;
+      }
+
+      return {
+        ...horse,
+        latestSession,
+        isFavorite,
+      };
+    })
+  );
+
+  return enriched;
 }
 
 export async function updateHorse(

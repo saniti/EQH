@@ -86,7 +86,10 @@ export const appRouter = router({
         const targetOrgId = input.organizationId || orgIds[0];
         if (!targetOrgId) return [];
 
-        return await db.getOrganizationHorses(targetOrgId, input);
+        return await db.getOrganizationHorses(targetOrgId, {
+          ...input,
+          userId: ctx.user.id,
+        });
       }),
     get: protectedProcedure
       .input(z.object({ id: z.number() }))

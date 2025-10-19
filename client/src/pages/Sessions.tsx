@@ -7,15 +7,28 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useSearch } from "wouter";
 
 export default function Sessions() {
   const { selectedOrgId } = useOrganization();
+  const searchParams = useSearch();
+  const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [horseFilter, setHorseFilter] = useState<number | undefined>(
+    horseIdFromUrl ? parseInt(horseIdFromUrl) : undefined
+  );
+
+  useEffect(() => {
+    if (horseIdFromUrl) {
+      setHorseFilter(parseInt(horseIdFromUrl));
+    }
+  }, [horseIdFromUrl]);
   
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
+      horseId: horseFilter,
       injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
       limit: 50,
     },
