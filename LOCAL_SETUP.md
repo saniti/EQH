@@ -1,6 +1,6 @@
 # Local Setup Guide - Horse Health Monitoring System
 
-This guide will help you run the complete Horse Health Monitoring System 100% locally on your machine.
+This guide will help you run the complete Horse Health Monitoring System 100% locally on your machine **without any cloud dependencies**.
 
 ## Prerequisites
 
@@ -38,35 +38,28 @@ pnpm install
 
 ### 4. Set Up Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root with **minimal required configuration**:
 
 ```bash
-cp .env.example .env
-```
-
-The `.env.example` already contains the correct local database URL:
-
-```env
+cat > .env << 'EOF'
+# Database (Required)
 DATABASE_URL=mysql://horse_admin:horse_password@localhost:3306/horse_health
 
-# JWT Secret (change in production)
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+# JWT Secret (Required)
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-minimum-32-characters
 
-# OAuth Configuration (for Manus platform - optional for local dev)
-VITE_APP_ID=your-app-id
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+# OAuth (OPTIONAL - Leave empty for local development)
+OAUTH_SERVER_URL=
+VITE_APP_ID=
+VITE_OAUTH_PORTAL_URL=
 
-# App Branding
+# App Branding (Optional)
 VITE_APP_TITLE=Horse Health Monitor
 VITE_APP_LOGO=/logo.svg
-
-# Owner Configuration (optional)
-OWNER_OPEN_ID=
-OWNER_NAME=
+EOF
 ```
 
-**Note:** For 100% local development, you only need `DATABASE_URL` and `JWT_SECRET`. The OAuth variables are optional and only needed if you want to integrate with the Manus authentication platform.
+**Important:** For 100% local development, you only need `DATABASE_URL` and `JWT_SECRET`. The OAuth variables can be left empty or omitted entirely. The system will run in local mode without authentication.
 
 ### 5. Push Database Schema
 
@@ -99,6 +92,8 @@ pnpm dev
 The application will be available at:
 - **Frontend:** http://localhost:5173
 - **Backend API:** http://localhost:3000
+
+**Note:** You'll see a message `[OAuth] Running in local mode without OAuth (OAUTH_SERVER_URL not configured)` - this is normal and expected for local development.
 
 ## Verification
 
@@ -240,15 +235,23 @@ docker-compose logs mysql
 sudo chown -R $(whoami):$(whoami) ./mysql-data
 ```
 
+### OAuth Error Messages
+
+If you see `[OAuth] Running in local mode without OAuth` - this is **normal and expected** for local development. The system works perfectly without OAuth configuration.
+
 ## Authentication (Optional)
 
-By default, the app runs without authentication for local development. To enable full authentication:
+By default, the app runs **without authentication** for local development. This is intentional and allows you to test all features immediately.
+
+To enable full authentication (optional):
 
 1. Sign up at https://portal.manus.im
 2. Create a new application
 3. Copy the App ID and update `.env`:
    ```
+   OAUTH_SERVER_URL=https://api.manus.im
    VITE_APP_ID=your-actual-app-id
+   VITE_OAUTH_PORTAL_URL=https://portal.manus.im
    ```
 
 ## Production Deployment
@@ -274,5 +277,5 @@ For issues or questions:
 
 ---
 
-**You can now run the entire Horse Health Monitoring System 100% locally with just Docker and Node.js!**
+**You can now run the entire Horse Health Monitoring System 100% locally with just Docker and Node.js - no cloud services required!**
 
