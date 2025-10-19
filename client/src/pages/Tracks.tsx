@@ -40,7 +40,7 @@ export default function Tracks() {
   const localTracks = tracks?.filter(t => t.scope === 'local') || [];
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6 bg-background">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Tracks for {selectedOrg?.name || 'Organization'}</h1>
         <p className="text-muted-foreground mt-1">
