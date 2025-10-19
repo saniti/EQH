@@ -137,8 +137,10 @@ async function seed() {
 
   try {
     // Get current user ID from environment
-    const currentUserId = process.env.OWNER_OPEN_ID || "aQVoJettC3FaGf4oztp6Ap";
+    // Use OWNER_OPEN_ID if set, otherwise use local development user ID
+    const currentUserId = process.env.OWNER_OPEN_ID || "local-dev-user";
     console.log(`Using owner ID: ${currentUserId}`);
+    console.log(`Note: If using local development (no OAuth), make sure this matches the user ID in server/_core/sdk.ts`);
     
     // 1. Create organizations
     console.log("Creating organizations...");
