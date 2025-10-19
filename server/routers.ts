@@ -374,14 +374,67 @@ export const appRouter = router({
           description: z.string().optional(),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
         const { id, ...updates } = input;
+        
+        // Get the track to check permissions
+        const track = await db.getTrack(id);
+        if (!track) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Track not found" });
+        }
+        
+        // Only admins can edit global tracks
+        if (track.scope === "global" && ctx.user.role !== "admin") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only admins can edit global tracks",
+          });
+        }
+        
+        // For local tracks, check if user is in the organization
+        if (track.scope === "local" && track.organizationId) {
+          const userOrgs = await db.getUserOrganizations(ctx.user.id);
+          const hasAccess = userOrgs.some(org => org.id === track.organizationId);
+          if (!hasAccess) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You don't have permission to edit this track",
+            });
+          }
+        }
+        
         await db.updateTrack(id, updates);
         return { success: true };
       }),
-    delete: adminProcedure
+    delete: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // Get the track to check permissions
+        const track = await db.getTrack(input.id);
+        if (!track) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Track not found" });
+        }
+        
+        // Only admins can delete global tracks
+        if (track.scope === "global" && ctx.user.role !== "admin") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only admins can delete global tracks",
+          });
+        }
+        
+        // For local tracks, check if user is in the organization
+        if (track.scope === "local" && track.organizationId) {
+          const userOrgs = await db.getUserOrganizations(ctx.user.id);
+          const hasAccess = userOrgs.some(org => org.id === track.organizationId);
+          if (!hasAccess) {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "You don't have permission to delete this track",
+            });
+          }
+        }
+        
         await db.deleteTrack(input.id);
         return { success: true };
       }),
