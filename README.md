@@ -1,326 +1,349 @@
 # Horse Health Monitoring System
 
-A comprehensive horse health monitoring platform with training session tracking, injury management, and multi-role access control for standard users, veterinarians, and administrators.
+A comprehensive full-stack web application for managing horse health, training sessions, and performance tracking with multi-organization support.
 
-## Features
+## ✨ Features
 
-### All Users
-- **Dashboard**: Real-time metrics, favorite horses, upcoming care
-- **Horses**: Registry with filtering, sorting, favorites, and management
-- **Sessions**: Training session tracking with performance data and injury risk
-- **Tracks**: Global and local track management
-- **Reporting**: Health trends reports with PDF/CSV export
-- **Organizations**: View memberships and request creation/transfers
-- **Devices**: Monitor and manage devices
-- **Settings**: User profile and preferences
+- **🏢 Multi-Organization Management** - Support for multiple racing stables/equestrian centers
+- **🐴 Horse Registry** - Complete horse profiles with health tracking and favorites
+- **📊 Training Sessions** - Performance metrics, injury risk assessment, and session history
+- **🏇 Track Management** - 55+ racetracks from Australia and United States
+- **📱 Device Monitoring** - IoT device integration for real-time health data
+- **🎨 Theme Customization** - 6 beautiful color schemes
+- **👥 Role-Based Access Control** - Standard Users, Veterinarians, and Administrators
+- **📈 Real-time Dashboard** - Live statistics and health alerts
+- **🔍 Advanced Filtering** - Search, sort, and filter across all data
 
-### Veterinarians (Additional)
-- Medical diagnosis for flagged injuries
-- Email notifications for injuries
-- Status management (dismiss/flag)
+## 🚀 Quick Start (100% Local)
 
-### Administrators (Additional)
-- **User Management**: Full CRUD, invitations, suspensions
-- **Organization Management**: Global view, CRUD, request approvals
-- **Device Management**: Global control
-- **Track Management**: Direct global management, request approvals
-- **Settings**: API configuration
-
-## Tech Stack
-
-- **Frontend**: React 19 + Tailwind 4 + shadcn/ui
-- **Backend**: Node.js + Express 4 + tRPC 11
-- **Database**: MySQL 8.0 (Docker-based)
-- **Authentication**: Manus OAuth + JWT
-- **ORM**: Drizzle ORM
-
-## Prerequisites
-
-- Node.js 22.x
-- pnpm
-- Docker and Docker Compose
-
-## Quick Start
-
-### 1. Start the Database
+**Prerequisites:** Node.js 18+, pnpm, Docker
 
 ```bash
-# Start MySQL in Docker
+# 1. Clone the repository
+git clone https://github.com/saniti/EQH.git
+cd EQH
+
+# 2. Start MySQL database
 docker-compose up -d
 
-# Wait for database to be ready (check health status)
-docker-compose ps
-
-# The database will be available at localhost:3306
-```
-
-### 2. Configure Environment
-
-The project uses Manus platform for authentication and environment management. The following environment variables are automatically injected:
-
-- `DATABASE_URL` - MySQL connection string
-- `JWT_SECRET` - Session cookie signing secret
-- `VITE_APP_ID` - Manus OAuth application ID
-- `OAUTH_SERVER_URL` - Manus OAuth backend base URL
-- `VITE_OAUTH_PORTAL_URL` - Manus login portal URL
-- `OWNER_OPEN_ID`, `OWNER_NAME` - Preview identity seed
-- `VITE_APP_TITLE` - Application title
-- `VITE_APP_LOGO` - Logo image URL
-
-For local development, create a `.env` file:
-
-```env
-DATABASE_URL=mysql://horseuser:horsepass123@localhost:3306/horse_health_monitor
-JWT_SECRET=your-jwt-secret-here
-VITE_APP_TITLE=Horse Health Monitor
-```
-
-### 3. Install Dependencies
-
-```bash
+# 3. Install dependencies
 pnpm install
-```
 
-### 4. Push Database Schema
+# 4. Set up environment
+cp .env.example .env
 
-```bash
+# 5. Create database tables
 pnpm db:push
-```
 
-This command will:
-1. Generate migrations from the schema
-2. Apply migrations to the database
+# 6. Seed sample data (optional but recommended)
+npx tsx scripts/seed-data.ts
 
-### 5. Start Development Server
-
-```bash
+# 7. Start the application
 pnpm dev
 ```
 
-The application will be available at `http://localhost:3000`
+**Access the app:** http://localhost:5173
 
-## Database Management
+See [LOCAL_SETUP.md](./LOCAL_SETUP.md) for detailed instructions.
 
-### View Database Schema
+## 📋 System Requirements
 
-```bash
-# Connect to MySQL
-docker exec -it horse-health-db mysql -u horseuser -phorsepass123 horse_health_monitor
+### For Local Development
+- **Node.js** 18 or higher
+- **pnpm** (npm install -g pnpm)
+- **Docker** and Docker Compose
+- **4GB RAM** minimum
+- **2GB disk space** for database
 
-# Show tables
-SHOW TABLES;
+### For Production
+- **Ubuntu 20.04+** or similar Linux distribution
+- **Node.js** 18+
+- **MySQL 8.0+** or compatible database
+- **Nginx** (recommended for reverse proxy)
+- **2GB RAM** minimum
+- **10GB disk space**
 
-# Describe a table
-DESCRIBE users;
+## 🏗️ Tech Stack
+
+### Frontend
+- **React 19** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS 4** - Styling
+- **shadcn/ui** - Component library
+- **Wouter** - Routing
+- **tRPC** - End-to-end type-safe API
+- **Vite** - Build tool
+
+### Backend
+- **Node.js** - Runtime
+- **Express 4** - Web server
+- **tRPC 11** - API layer
+- **Drizzle ORM** - Database toolkit
+- **MySQL 8** - Database
+
+### DevOps
+- **Docker** - Containerization
+- **Docker Compose** - Local orchestration
+- **PM2** - Process management (production)
+
+## 📁 Project Structure
+
+```
+horse-health-monitor/
+├── client/                    # React frontend application
+│   ├── src/
+│   │   ├── pages/            # Page components (Dashboard, Horses, Sessions, etc.)
+│   │   ├── components/       # Reusable UI components (shadcn/ui)
+│   │   ├── contexts/         # React contexts (Organization, Auth)
+│   │   ├── hooks/            # Custom React hooks
+│   │   └── lib/              # Utilities (tRPC client, themes, date formatting)
+│   └── public/               # Static assets
+├── server/                    # Node.js backend
+│   ├── routers.ts            # tRPC API routes
+│   ├── db.ts                 # Database query functions
+│   ├── storage.ts            # S3 file storage helpers
+│   └── _core/                # Framework code (OAuth, context, etc.)
+├── drizzle/                   # Database schema and migrations
+│   └── schema.ts             # Table definitions (15 tables)
+├── scripts/                   # Utility scripts
+│   ├── seed-data.ts          # Sample data generator
+│   └── clear-and-seed.ts     # Database reset script
+├── docker-compose.yml         # Docker configuration for MySQL
+├── .env.example              # Environment variables template
+├── LOCAL_SETUP.md            # Detailed local setup guide
+└── DEPLOYMENT.md             # Production deployment guide
 ```
 
-### Backup Database
+## 🗄️ Database Schema
 
-```bash
-docker exec horse-health-db mysqldump -u horseuser -phorsepass123 horse_health_monitor > backup.sql
-```
+The system uses 15 tables:
 
-### Restore Database
-
-```bash
-docker exec -i horse-health-db mysql -u horseuser -phorsepass123 horse_health_monitor < backup.sql
-```
-
-### Stop Database
-
-```bash
-docker-compose down
-```
-
-### Remove Database Volume (WARNING: Deletes all data)
-
-```bash
-docker-compose down -v
-```
-
-## Database Schema
-
-### Core Tables
-
-- **users** - User accounts with roles (user/admin) and types (standard/veterinarian)
-- **organizations** - Organizations with contact info and notification settings
-- **userOrganizations** - Many-to-many mapping between users and organizations
-- **horses** - Horse registry with health records
-- **userFavoriteHorses** - User's favorite horses
-- **devices** - Monitoring devices assigned to horses
-- **tracks** - Training tracks (global/local scope)
-- **sessions** - Training sessions with performance data
-- **sessionComments** - Comments on training sessions
-- **injuryRecords** - Injury tracking with medical diagnoses
-- **upcomingCare** - Scheduled care and appointments
+- **users** - User accounts and authentication
+- **organizations** - Racing stables/equestrian centers
+- **userOrganizations** - User-organization memberships
+- **horses** - Horse profiles and health data
+- **sessions** - Training session records
+- **injuries** - Injury tracking and medical records
+- **tracks** - Racetracks and training facilities
+- **devices** - Monitoring device registry
+- **deviceReadings** - Real-time sensor data
+- **upcomingCare** - Scheduled health appointments
+- **userFavoriteHorses** - User favorites
+- **organizationRequests** - Membership requests
 - **invitations** - User invitations
-- **organizationRequests** - Organization creation/transfer requests
-- **trackRequests** - Track modification requests
-- **apiSettings** - Admin API configuration
+- **userPreferences** - User settings
+- **apiKeys** - API access management
 
-## Development Workflow
+## 🔧 Configuration
 
-### 1. Update Schema
+### Environment Variables
 
-Edit `drizzle/schema.ts` to modify database tables:
+Create a `.env` file (copy from `.env.example`):
 
-```typescript
-export const myNewTable = mysqlTable("myNewTable", {
-  id: int("id").primaryKey().autoincrement(),
-  name: varchar("name", { length: 255 }).notNull(),
-  // ... more fields
-});
+```env
+# Required for local development
+DATABASE_URL=mysql://horse_admin:horse_password@localhost:3306/horse_health
+JWT_SECRET=your-secret-key-minimum-32-characters
+
+# Optional (for Manus platform integration)
+VITE_APP_ID=your-app-id
+OAUTH_SERVER_URL=https://api.manus.im
+VITE_OAUTH_PORTAL_URL=https://portal.manus.im
+
+# Branding
+VITE_APP_TITLE=Horse Health Monitor
+VITE_APP_LOGO=/logo.svg
 ```
 
-### 2. Push Schema Changes
+### Docker Configuration
+
+The `docker-compose.yml` provides a MySQL 8.0 database with:
+- Port: 3306
+- Database: horse_health
+- User: horse_admin
+- Password: horse_password
+- Persistent storage in `./mysql-data`
+
+## 📊 Sample Data
+
+Run the seed script to populate your database with:
+
+- **3 organizations** (Melbourne Racing Stables, Sydney Equestrian Center, Brisbane Horse Training)
+- **30 horses** across 10 breeds (Thoroughbred, Arabian, Quarter Horse, etc.)
+- **55 racetracks** (17 Australian + 23 US + 15 training facilities)
+- **100 training sessions** with realistic performance metrics
+- **50 monitoring devices** (heart rate monitors, temperature sensors, GPS trackers)
+- **Injury records** and upcoming care appointments
 
 ```bash
-pnpm db:push
+npx tsx scripts/seed-data.ts
 ```
 
-### 3. Add Database Helpers
+## 🎨 Theme Customization
 
-Add query functions in `server/db.ts`:
+The application includes 6 built-in themes:
 
-```typescript
-export async function getMyData(id: number) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db.select().from(myNewTable).where(eq(myNewTable.id, id));
-  return result[0];
-}
+1. **Professional Blue** (Default)
+2. **Forest Green**
+3. **Sunset Orange**
+4. **Royal Purple**
+5. **Ocean Teal**
+6. **Dark Mode**
+
+Users can switch themes via the palette icon in the sidebar.
+
+## 🔐 Authentication & Authorization
+
+### Roles
+
+- **Standard User** - View horses and sessions for their organizations
+- **Veterinarian** - Additional access to medical records and injury tracking
+- **Administrator** - Full system access, user management, organization management
+
+### RBAC Chain
+
+```
+Organization → Horses → Sessions
 ```
 
-### 4. Create tRPC Procedures
+- Users belong to one or more organizations
+- Horses belong to one organization
+- Sessions belong to horses (and inherit organization access)
 
-Add API endpoints in `server/routers.ts`:
+## 🚢 Deployment
 
-```typescript
-myFeature: router({
-  getData: protectedProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ input }) => {
-      return await db.getMyData(input.id);
-    }),
-}),
-```
+### Local Development
 
-### 5. Build Frontend
+See [LOCAL_SETUP.md](./LOCAL_SETUP.md)
 
-Create components in `client/src/pages/` and use tRPC hooks:
+### Production Deployment
 
-```typescript
-const { data, isLoading } = trpc.myFeature.getData.useQuery({ id: 1 });
-```
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for:
+- Traditional server deployment
+- Docker deployment
+- Cloud platform deployment (AWS, DigitalOcean, Heroku)
+- Nginx configuration
+- SSL setup
+- Backup strategies
 
-## User Roles & Permissions
-
-### Standard User
-- View and manage horses in their organizations
-- Track training sessions and add comments
-- Flag injuries with affected body parts
-- Request track modifications
-- Manage devices (non-veterinarians only)
-
-### Veterinarian
-- All standard user features
-- Add medical diagnoses to injuries
-- Send injury notifications
-- Dismiss or formally flag injuries
-
-### Administrator
-- All user features
-- Manage all users (CRUD, suspend, activate)
-- Send user invitations
-- Manage all organizations
-- Approve/reject organization requests
-- Global device management
-- Direct global track management
-- Approve/reject track requests
-- Configure API settings
-
-## API Documentation
-
-The application uses tRPC for type-safe API communication. All endpoints are available under `/api/trpc`.
-
-### Key Router Groups
-
-- `auth` - Authentication (login, logout, current user)
-- `dashboard` - Dashboard statistics and data
-- `horses` - Horse management
-- `sessions` - Training session tracking
-- `injuries` - Injury record management
-- `tracks` - Track management
-- `devices` - Device management
-- `organizations` - Organization management
-- `users` - User management (admin)
-- `invitations` - User invitations (admin)
-- `upcomingCare` - Scheduled care management
-- `apiSettings` - API configuration (admin)
-
-## Production Deployment
-
-### 1. Build for Production
+## 📝 Available Scripts
 
 ```bash
-pnpm build
+# Development
+pnpm dev              # Start development server (frontend + backend)
+pnpm build            # Build for production
+pnpm preview          # Preview production build
+
+# Database
+pnpm db:push          # Push schema changes to database
+pnpm db:studio        # Open Drizzle Studio (database GUI)
+
+# Utilities
+pnpm lint             # Run ESLint
+pnpm type-check       # Run TypeScript compiler
 ```
 
-### 2. Start Production Server
+## 🧪 Testing
 
 ```bash
-pnpm start
+# Run seed data to test with sample data
+npx tsx scripts/seed-data.ts
+
+# Clear and reseed database
+npx tsx scripts/clear-and-seed.ts
+npx tsx scripts/seed-data.ts
 ```
 
-### 3. Docker Production Setup
-
-For production, consider using a managed MySQL service or configure Docker with:
-- Persistent volumes
-- Backup strategy
-- Monitoring
-- SSL/TLS encryption
-- Network security
-
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Database Connection Issues
 
 ```bash
-# Check if container is running
-docker-compose ps
+# Check if MySQL is running
+docker ps
 
-# View database logs
-docker-compose logs db
+# View MySQL logs
+docker-compose logs mysql
 
-# Restart database
-docker-compose restart db
-```
-
-### Schema Migration Issues
-
-```bash
-# Reset database (WARNING: Deletes all data)
-docker-compose down -v
-docker-compose up -d
-pnpm db:push
+# Restart MySQL
+docker-compose restart mysql
 ```
 
 ### Port Conflicts
 
-If port 3306 is already in use, modify `docker-compose.yml`:
+If port 3306 is already in use, edit `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "3307:3306"  # Use different host port
+  - "3307:3306"  # Use 3307 instead
 ```
 
-Then update `DATABASE_URL` to use the new port.
+Then update `DATABASE_URL` in `.env` to use port 3307.
 
-## License
+### Permission Issues
 
-MIT
+```bash
+# Fix mysql-data directory permissions
+sudo chown -R $(whoami):$(whoami) ./mysql-data
+```
 
-## Support
+## 📚 Documentation
 
-For issues and questions, please open an issue on the project repository.
+- [LOCAL_SETUP.md](./LOCAL_SETUP.md) - Detailed local development setup
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Production deployment guide
+- [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - Quick deployment reference
+- [scripts/README.md](./scripts/README.md) - Seed data documentation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 🆘 Support
+
+For issues or questions:
+- GitHub Issues: https://github.com/saniti/EQH/issues
+
+## 🎯 Roadmap
+
+- [ ] Mobile app (React Native)
+- [ ] Advanced analytics and reporting
+- [ ] Integration with wearable devices
+- [ ] Veterinary appointment scheduling
+- [ ] Nutrition tracking
+- [ ] Breeding management
+- [ ] Competition results tracking
+- [ ] Multi-language support
+
+---
+
+**Built with ❤️ for the equestrian community**
+
+## 🔑 Key Highlights
+
+✅ **100% Local Development** - Run entirely on your machine with Docker  
+✅ **Type-Safe** - End-to-end TypeScript with tRPC  
+✅ **Modern Stack** - React 19, Tailwind 4, Node.js  
+✅ **Production-Ready** - Includes deployment guides and Docker configs  
+✅ **Well-Documented** - Comprehensive guides for setup and deployment  
+✅ **Sample Data** - Pre-populated with realistic data for testing  
+✅ **Responsive Design** - Works on desktop, tablet, and mobile  
+✅ **Theme Support** - 6 beautiful color schemes  
+✅ **Multi-Tenant** - Support for multiple organizations  
+✅ **Role-Based Access** - Granular permissions system  
+
+## Quick Links
+
+- 📖 [Local Setup Guide](./LOCAL_SETUP.md)
+- 🚀 [Deployment Guide](./DEPLOYMENT.md)
+- 🗄️ [Database Schema](./drizzle/schema.ts)
+- 🎨 [Theme Configuration](./client/src/lib/themes.ts)
+- 📊 [Sample Data](./scripts/seed-data.ts)
 
