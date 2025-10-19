@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { formatDateShort } from "@/lib/dateFormat";
 import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -154,8 +155,8 @@ export default function Sessions() {
     });
   };
 
-  const globalTracks = tracks?.filter(t => t.type === "global") || [];
-  const localTracks = tracks?.filter(t => t.type === "local") || [];
+  const globalTracks = tracks?.filter(t => t.scope === "global") || [];
+  const localTracks = tracks?.filter(t => t.scope === "local") || [];
 
   return (
     <div className="p-6 space-y-6">
@@ -288,7 +289,7 @@ export default function Sessions() {
                           <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
-                              <span>{new Date(session.sessionDate).toLocaleDateString()}</span>
+                              <span>{formatDateShort(session.sessionDate)}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4" />

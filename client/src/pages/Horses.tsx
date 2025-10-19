@@ -1,5 +1,6 @@
 import { trpc } from "@/lib/trpc";
-import { Heart, Plus, Search, Edit2, ArrowUpDown } from "lucide-react";
+import { formatDateTimeShort } from "@/lib/dateFormat";
+import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar } from "lucide-react";
 import { useState } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
@@ -423,14 +424,7 @@ export default function Horses() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
                             </svg>
                             <span className="text-sm font-medium">
-                              {new Date(latestSession.sessionDate).toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                day: 'numeric' 
-                              })}, {new Date(latestSession.sessionDate).toLocaleTimeString('en-US', { 
-                                hour: 'numeric', 
-                                minute: '2-digit',
-                                hour12: true 
-                              })}
+                              {formatDateTimeShort(latestSession.sessionDate)}
                             </span>
                           </button>
                         ) : (

@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, name, type, description FROM tracks LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 29dBgEd9G6t5VH4.root --database bxoqvfJMBEhE7Cr2hfpnwS --execute SELECT id, name, type, description FROM tracks LIMIT 5",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Flemington Racecourse",
+      "type": "Thoroughbred Racing",
+      "description": "Home of the Melbourne Cup, Australia's most famous race - Located in Melbourne, VIC"
+    },
+    {
+      "id": "2",
+      "name": "Caulfield Racecourse",
+      "type": "Thoroughbred Racing",
+      "description": "Major metropolitan racing venue - Located in Melbourne, VIC"
+    },
+    {
+      "id": "3",
+      "name": "Moonee Valley Racecourse",
+      "type": "Thoroughbred Racing",
+      "description": "Night racing venue, home of the Cox Plate - Located in Melbourne, VIC"
+    },
+    {
+      "id": "4",
+      "name": "Sandown Racecourse",
+      "type": "Thoroughbred Racing",
+      "description": "Lakeside racing venue - Located in Melbourne, VIC"
+    },
+    {
+      "id": "5",
+      "name": "Royal Randwick Racecourse",
+      "type": "Thoroughbred Racing",
+      "description": "Premier racing venue in Sydney - Located in Sydney, NSW"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttype\tdescription\n1\tFlemington Racecourse\tThoroughbred Racing\tHome of the Melbourne Cup, Australia's most famous race - Located in Melbourne, VIC\n2\tCaulfield Racecourse\tThoroughbred Racing\tMajor metropolitan racing venue - Located in Melbourne, VIC\n3\tMoonee Valley Racecourse\tThoroughbred Racing\tNight racing venue, home of the Cox Plate - Located in Melbourne, VIC\n4\tSandown Racecourse\tThoroughbred Racing\tLakeside racing venue - Located in Melbourne, VIC\n5\tRoyal Randwick Racecourse\tThoroughbred Racing\tPremier racing venue in Sydney - Located in Sydney, NSW\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

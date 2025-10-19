@@ -469,29 +469,31 @@ export async function getOrganizationSessions(
   const horseIds = orgHorses.map((h) => h.id);
   if (horseIds.length === 0) return [];
 
+  // Build where conditions
+  const conditions: any[] = [inArray(sessions.horseId, horseIds)];
+  
+  if (filters?.horseId) {
+    conditions.push(eq(sessions.horseId, filters.horseId));
+  }
+  if (filters?.trackId) {
+    conditions.push(eq(sessions.trackId, filters.trackId));
+  }
+  if (filters?.injuryRisk) {
+    conditions.push(eq(sessions.injuryRisk, filters.injuryRisk as any));
+  }
+  if (filters?.startDate) {
+    conditions.push(gte(sessions.sessionDate, filters.startDate));
+  }
+  if (filters?.endDate) {
+    conditions.push(lte(sessions.sessionDate, filters.endDate));
+  }
+
   let query = db
     .select()
     .from(sessions)
-    .where(inArray(sessions.horseId, horseIds))
+    .where(and(...conditions))
+    .orderBy(desc(sessions.sessionDate))
     .$dynamic();
-
-  if (filters?.horseId) {
-    query = query.where(eq(sessions.horseId, filters.horseId));
-  }
-  if (filters?.trackId) {
-    query = query.where(eq(sessions.trackId, filters.trackId));
-  }
-  if (filters?.injuryRisk) {
-    query = query.where(eq(sessions.injuryRisk, filters.injuryRisk as any));
-  }
-  if (filters?.startDate) {
-    query = query.where(gte(sessions.sessionDate, filters.startDate));
-  }
-  if (filters?.endDate) {
-    query = query.where(lte(sessions.sessionDate, filters.endDate));
-  }
-
-  query = query.orderBy(desc(sessions.sessionDate));
 
   if (filters?.limit) {
     query = query.limit(filters.limit);
