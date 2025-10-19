@@ -29,12 +29,19 @@ const GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
 
 class OAuthService {
-  constructor(private client: ReturnType<typeof axios.create>) {
+  constructor(private client: ReturnType<typeof axios.create> | null) {
     if (ENV.oAuthServerUrl) {
       console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     } else {
       console.log("[OAuth] Running in local mode without OAuth (OAUTH_SERVER_URL not configured)");
     }
+  }
+
+  private ensureClient(): AxiosInstance {
+    if (!this.client) {
+      throw new Error("OAuth is not configured. Set OAUTH_SERVER_URL to enable authentication.");
+    }
+    return this.client;
   }
 
   private decodeState(state: string): string {
@@ -46,6 +53,7 @@ class OAuthService {
     code: string,
     state: string
   ): Promise<ExchangeTokenResponse> {
+    const client = this.ensureClient();
     const payload: ExchangeTokenRequest = {
       clientId: ENV.appId,
       grantType: "authorization_code",
@@ -53,7 +61,7 @@ class OAuthService {
       redirectUri: this.decodeState(state),
     };
 
-    const { data } = await this.client.post<ExchangeTokenResponse>(
+    const { data } = await client.post<ExchangeTokenResponse>(
       EXCHANGE_TOKEN_PATH,
       payload
     );
@@ -64,7 +72,8 @@ class OAuthService {
   async getUserInfoByToken(
     token: ExchangeTokenResponse
   ): Promise<GetUserInfoResponse> {
-    const { data } = await this.client.post<GetUserInfoResponse>(
+    const client = this.ensureClient();
+    const { data } = await client.post<GetUserInfoResponse>(
       GET_USER_INFO_PATH,
       {
         accessToken: token.accessToken,
@@ -75,19 +84,25 @@ class OAuthService {
   }
 }
 
-const createOAuthHttpClient = (): AxiosInstance =>
-  axios.create({
+const createOAuthHttpClient = (): AxiosInstance | null => {
+  if (!ENV.oAuthServerUrl) {
+    return null;
+  }
+  return axios.create({
     baseURL: ENV.oAuthServerUrl,
     timeout: AXIOS_TIMEOUT_MS,
   });
+};
 
 class SDKServer {
-  private readonly client: AxiosInstance;
+  private readonly client: AxiosInstance | null;
   private readonly oauthService: OAuthService;
+  private readonly isOAuthEnabled: boolean;
 
-  constructor(client: AxiosInstance = createOAuthHttpClient()) {
+  constructor(client: AxiosInstance | null = createOAuthHttpClient()) {
     this.client = client;
     this.oauthService = new OAuthService(this.client);
+    this.isOAuthEnabled = !!ENV.oAuthServerUrl;
   }
 
   private deriveLoginMethod(
@@ -234,6 +249,9 @@ class SDKServer {
   async getUserInfoWithJwt(
     jwtToken: string
   ): Promise<GetUserInfoWithJwtResponse> {
+    if (!this.client) {
+      throw new Error("OAuth is not configured. Set OAUTH_SERVER_URL to enable authentication.");
+    }
     const payload: GetUserInfoWithJwtRequest = {
       jwtToken,
       projectId: ENV.appId,
@@ -256,6 +274,30 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
+    // Local development mode: create/use a default local user
+    if (!this.isOAuthEnabled) {
+      const localUserId = "local-dev-user";
+      let user = await db.getUser(localUserId);
+      
+      if (!user) {
+        console.log("[Auth] Creating local development user");
+        await db.upsertUser({
+          id: localUserId,
+          name: "Local Developer",
+          email: "dev@localhost",
+          loginMethod: "local",
+          lastSignedIn: new Date(),
+        });
+        user = await db.getUser(localUserId);
+      }
+      
+      if (!user) {
+        throw ForbiddenError("Failed to create local user");
+      }
+      
+      return user;
+    }
+
     // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
