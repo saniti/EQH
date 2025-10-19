@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { Activity, Calendar, Heart, MapPin, Thermometer } from "lucide-react";
+import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,8 @@ export default function Sessions() {
   const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("7days");
+  const [currentPage, setCurrentPage] = useState(1);
   const [horseFilter, setHorseFilter] = useState<number | undefined>(
     horseIdFromUrl ? parseInt(horseIdFromUrl) : undefined
   );
@@ -25,15 +27,52 @@ export default function Sessions() {
       setHorseFilter(parseInt(horseIdFromUrl));
     }
   }, [horseIdFromUrl]);
+
+  // Calculate date range based on filter
+  const getDateRange = () => {
+    const now = new Date();
+    const startDate = new Date();
+    
+    switch (dateFilter) {
+      case "7days":
+        startDate.setDate(now.getDate() - 7);
+        return { startDate, endDate: now };
+      case "30days":
+        startDate.setDate(now.getDate() - 30);
+        return { startDate, endDate: now };
+      case "60days":
+        startDate.setDate(now.getDate() - 60);
+        return { startDate, endDate: now };
+      case "90days":
+        startDate.setDate(now.getDate() - 90);
+        return { startDate, endDate: now };
+      case "all":
+        return { startDate: undefined, endDate: undefined };
+      default:
+        return { startDate: undefined, endDate: undefined };
+    }
+  };
+
+  const dateRange = getDateRange();
+  const limit = 20;
+  const offset = (currentPage - 1) * limit;
   
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
       horseId: horseFilter,
       injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
-      limit: 50,
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+      limit: limit + 1, // Fetch one extra to check if there are more pages
+      offset,
     },
     { enabled: !!selectedOrgId }
   );
+
+  // Check if there are more pages
+  const hasNextPage = sessions && sessions.length > limit;
+  const displaySessions = sessions?.slice(0, limit) || [];
+  const totalPages = Math.ceil((sessions?.length || 0) / limit);
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -54,6 +93,23 @@ export default function Sessions() {
     return `${mins}m`;
   };
 
+  const handleNextPage = () => {
+    if (hasNextPage) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [dateFilter, riskFilter, horseFilter]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -66,12 +122,24 @@ export default function Sessions() {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <Input
               placeholder="Search by horse name or location..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by date range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7days">Last 7 days</SelectItem>
+                <SelectItem value="30days">Last 30 days</SelectItem>
+                <SelectItem value="60days">Last 60 days</SelectItem>
+                <SelectItem value="90days">Last 90 days</SelectItem>
+                <SelectItem value="all">All time</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={riskFilter} onValueChange={setRiskFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Filter by risk level" />
@@ -100,8 +168,8 @@ export default function Sessions() {
               </Card>
             ))}
           </>
-        ) : sessions && sessions.length > 0 ? (
-          sessions.map((session) => (
+        ) : displaySessions && displaySessions.length > 0 ? (
+          displaySessions.map((session) => (
             <Card key={session.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
@@ -181,7 +249,7 @@ export default function Sessions() {
                 <Activity className="h-12 w-12 mx-auto mb-3 opacity-20" />
                 <p className="text-lg font-medium">No training sessions found</p>
                 <p className="text-sm mt-1">
-                  {search || riskFilter !== "all"
+                  {search || riskFilter !== "all" || dateFilter !== "all"
                     ? "Try adjusting your filters"
                     : "Training sessions will appear here"}
                 </p>
@@ -190,6 +258,38 @@ export default function Sessions() {
           </Card>
         )}
       </div>
+
+      {/* Pagination */}
+      {displaySessions && displaySessions.length > 0 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {offset + 1} to {Math.min(offset + limit, offset + displaySessions.length)} sessions
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Previous
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={!hasNextPage}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

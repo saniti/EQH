@@ -20,7 +20,7 @@ import {
 export default function Horses() {
   const { selectedOrgId } = useOrganization();
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("dateAdded");
+  const [sortBy, setSortBy] = useState("latestSession");
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -69,7 +69,29 @@ export default function Horses() {
   // Get favorite IDs from horses data
   const favoriteHorses = horses?.filter(h => (h as any).isFavorite) || [];
   const nonFavoriteHorses = horses?.filter(h => !(h as any).isFavorite) || [];
-  const sortedHorses = [...favoriteHorses, ...nonFavoriteHorses];
+  
+  // Sort horses based on selected option
+  const sortHorses = (horseList: any[]) => {
+    const sorted = [...horseList];
+    switch (sortBy) {
+      case "latestSession":
+        return sorted.sort((a, b) => {
+          const aDate = a.latestSession?.sessionDate ? new Date(a.latestSession.sessionDate).getTime() : 0;
+          const bDate = b.latestSession?.sessionDate ? new Date(b.latestSession.sessionDate).getTime() : 0;
+          return bDate - aDate;
+        });
+      case "name":
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case "status":
+        return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || ''));
+      case "breed":
+        return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || ''));
+      default:
+        return sorted;
+    }
+  };
+  
+  const sortedHorses = [...sortHorses(favoriteHorses), ...sortHorses(nonFavoriteHorses)];
   const favoriteIds = new Set(favoriteHorses.map(h => h.id));
 
   // Calculate statistics
@@ -224,9 +246,10 @@ export default function Horses() {
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="dateAdded">Date Added ↓</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
+            <SelectItem value="latestSession">Latest Session ↓</SelectItem>
+            <SelectItem value="name">Name A-Z</SelectItem>
             <SelectItem value="status">Status</SelectItem>
+            <SelectItem value="breed">Breed</SelectItem>
           </SelectContent>
         </Select>
         <Button variant="outline" size="icon">
