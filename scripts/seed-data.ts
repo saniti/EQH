@@ -1,9 +1,13 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import { eq } from "drizzle-orm";
+import mysql from "mysql2/promise";
 import * as schema from "../drizzle/schema";
 import { userOrganizations } from "../drizzle/schema";
+import "dotenv/config";
 
-const db = drizzle(process.env.DATABASE_URL!);
+// Create MySQL connection
+const connection = await mysql.createConnection(process.env.DATABASE_URL!);
+const db = drizzle(connection);
 
 // Australian Racetracks
 const australianTracks = [
@@ -518,12 +522,14 @@ async function seed() {
 
 // Run the seed function
 seed()
-  .then(() => {
+  .then(async () => {
     console.log("\nSeeding process finished");
+    await connection.end();
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(async (error) => {
     console.error("Seeding failed:", error);
+    await connection.end();
     process.exit(1);
   });
 
