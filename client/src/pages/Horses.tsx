@@ -45,6 +45,11 @@ export default function Horses() {
     { enabled: !!selectedOrgId }
   );
 
+  const { data: stats, isLoading: statsLoading } = trpc.horses.getStats.useQuery(
+    { organizationId: selectedOrgId! },
+    { enabled: !!selectedOrgId }
+  );
+
   const utils = trpc.useUtils();
   const [, setLocation] = useLocation();
 
@@ -101,6 +106,11 @@ export default function Horses() {
   const retiredHorses = horses?.filter(h => h.status === "retired").length || 0;
   const injuredHorses = horses?.filter(h => h.status === "injured").length || 0;
   const totalHorses = horses?.length || 0;
+
+  // 30-day statistics
+  const newHorses30Days = stats?.newHorses30Days || 0;
+  const recentChanges30Days = stats?.recentChanges30Days || 0;
+  const sessions30Days = stats?.sessions30Days || 0;
 
   const handleToggleFavorite = (horseId: number, isFavorite: boolean) => {
     if (isFavorite) {
@@ -190,7 +200,11 @@ export default function Horses() {
             <div className="text-center">
               <div className="text-4xl font-bold">{activeHorses}</div>
               <div className="text-sm text-muted-foreground mt-1">Active Horses</div>
-              <div className="text-xs text-green-600 mt-1">+{activeHorses} new</div>
+              {statsLoading ? (
+                <Skeleton className="h-4 w-16 mt-1" />
+              ) : (
+                <div className="text-xs text-green-600 mt-1">+{newHorses30Days} new (30d)</div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -221,10 +235,20 @@ export default function Horses() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-4xl font-bold">{totalHorses * 10}</div>
+              {statsLoading ? (
+                <Skeleton className="h-10 w-16" />
+              ) : (
+                <div className="text-4xl font-bold">{recentChanges30Days}</div>
+              )}
               <div className="text-sm text-muted-foreground mt-1">Recent Changes</div>
-              <div className="text-xs text-green-600 mt-1">+{totalHorses} new</div>
-              <div className="text-xs text-purple-600">7770 sessions</div>
+              {statsLoading ? (
+                <Skeleton className="h-4 w-20 mt-1" />
+              ) : (
+                <>
+                  <div className="text-xs text-green-600 mt-1">Last 30 days</div>
+                  <div className="text-xs text-purple-600">{sessions30Days} sessions</div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

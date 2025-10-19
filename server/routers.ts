@@ -151,6 +151,18 @@ export const appRouter = router({
         await db.removeFavoriteHorse(ctx.user.id, input.horseId);
         return { success: true };
       }),
+    getStats: protectedProcedure
+      .input(z.object({ organizationId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const orgs = await db.getUserOrganizations(ctx.user.id);
+        const orgIds = orgs.map((o) => o.id);
+
+        if (!orgIds.includes(input.organizationId)) {
+          throw new TRPCError({ code: "FORBIDDEN" });
+        }
+
+        return await db.getHorseStats(input.organizationId);
+      }),
   }),
 
   // ============= SESSIONS =============
