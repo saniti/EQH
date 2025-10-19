@@ -37,6 +37,11 @@ export default function Sessions() {
     }
   }, [horseIdFromUrl]);
 
+  useEffect(() => {
+    console.log('[Sessions] selectedOrgId changed to:', selectedOrgId);
+    console.log('[Sessions] selectedOrg:', selectedOrg?.name);
+  }, [selectedOrgId, selectedOrg]);
+
   // Calculate date range based on filter
   const getDateRange = () => {
     const now = new Date();
@@ -81,6 +86,7 @@ export default function Sessions() {
   
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
+      organizationId: selectedOrgId!,
       horseId: horseFilter,
       injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
       startDate: dateRange.startDate,
@@ -298,69 +304,73 @@ export default function Sessions() {
             return (
               <Card 
                 key={session.id} 
-                className={`hover:shadow-md transition-all ${isSelected ? 'ring-2 ring-primary' : ''}`}
+                className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
               >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    {/* Checkbox */}
-                    <button
-                      onClick={() => toggleSessionSelection(session.id)}
-                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                    >
-                      {isSelected ? (
-                        <CheckSquare className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Square className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </button>
-
-                    {/* Session Info */}
-                    <div 
-                      className="flex-1 cursor-pointer"
-                      onClick={() => setLocation(`/sessions/${session.id}`)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-lg">{session.horseName || 'Unassigned'}</h3>
-                            {!session.horseId && (
-                              <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
-                                Unassigned
-                              </Badge>
-                            )}
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between gap-2 sm:gap-4">
+                    {/* Left side: Checkbox + Session Info */}
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <button
+                        onClick={() => toggleSessionSelection(session.id)}
+                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="h-5 w-5 text-primary" />
+                        ) : (
+                          <Square className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </button>
+                      
+                      <div className="flex-1 min-w-0">
+                        <button
+                          onClick={() => setLocation(`/sessions/${session.id}`)}
+                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
+                        >
+                          <h3 className="font-semibold text-base hover:text-primary transition-colors truncate">
+                            {session.horseName || 'Unassigned'}
+                          </h3>
+                        </button>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDateShort(session.sessionDate)}</span>
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4" />
-                              <span>{formatDateShort(session.sessionDate)}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4" />
-                              <span>{session.trackName || `Track #${session.trackId}`}</span>
-                            </div>
+                          <span className="hidden sm:inline">•</span>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            <span className="truncate">{session.trackName || `Track #${session.trackId}`}</span>
                           </div>
                         </div>
-                        <Badge variant={getRiskColor(session.injuryRisk || "low")}>
-                          {session.injuryRisk || "low"} risk
-                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Right side: Session Data + Risk */}
+                    <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                      {/* Duration */}
+                      <div className="text-right min-w-[60px] sm:min-w-[80px] hidden sm:block">
+                        <p className="text-xs text-muted-foreground mb-0.5">Duration</p>
+                        <span className="text-sm font-medium">
+                          {session.performanceData?.duration 
+                            ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
+                            : "—"}
+                        </span>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 mt-3">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Duration</p>
-                          <p className="text-sm font-medium">
-                            {session.performanceData?.duration 
-                              ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
-                              : "N/A"}
-                          </p>
+                      {/* Temperature */}
+                      <div className="text-right min-w-[60px] sm:min-w-[80px] hidden md:block">
+                        <p className="text-xs text-muted-foreground mb-0.5">Temp</p>
+                        <div className="text-sm font-medium flex items-center justify-end gap-1">
+                          <Thermometer className="h-3 w-3" />
+                          <span>{session.performanceData?.temperature || "—"}°C</span>
                         </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Temperature</p>
-                          <p className="text-sm font-medium flex items-center gap-1">
-                            <Thermometer className="h-3 w-3" />
-                            {session.performanceData?.temperature || "N/A"}°C
-                          </p>
-                        </div>
+                      </div>
+
+                      {/* Injury Risk */}
+                      <div className="text-right min-w-[90px] sm:min-w-[120px]">
+                        <p className="text-xs text-muted-foreground mb-0.5 hidden sm:block">Injury Risk</p>
+                        <Badge className={getRiskColor(session.injuryRisk || "low")}>
+                          {session.injuryRisk || "low"}
+                        </Badge>
                       </div>
                     </div>
                   </div>

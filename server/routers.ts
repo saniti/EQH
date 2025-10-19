@@ -170,6 +170,7 @@ export const appRouter = router({
     list: protectedProcedure
       .input(
         z.object({
+          organizationId: z.number().optional(),
           horseId: z.number().optional(),
           trackId: z.number().optional(),
           injuryRisk: z.string().optional(),
@@ -182,7 +183,29 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         const orgs = await db.getUserOrganizations(ctx.user.id);
         const orgIds = orgs.map((o) => o.id);
-        return await db.getOrganizationSessions(orgIds, input);
+
+        console.log('[Sessions.list] Query params:', {
+          organizationId: input.organizationId,
+          horseId: input.horseId,
+          userOrgs: orgIds,
+        });
+
+        // If organizationId is provided, validate user has access and use only that org
+        if (input.organizationId) {
+          if (!orgIds.includes(input.organizationId)) {
+            throw new TRPCError({ code: "FORBIDDEN" });
+          }
+          console.log('[Sessions.list] Filtering by organization:', input.organizationId);
+          const sessions = await db.getOrganizationSessions([input.organizationId], input);
+          console.log('[Sessions.list] Found sessions:', sessions.length);
+          return sessions;
+        }
+
+        // Otherwise, use all organizations the user has access to
+        console.log('[Sessions.list] Using all user organizations:', orgIds);
+        const sessions = await db.getOrganizationSessions(orgIds, input);
+        console.log('[Sessions.list] Found sessions:', sessions.length);
+        return sessions;
       }),
     get: protectedProcedure
       .input(z.object({ id: z.number() }))
