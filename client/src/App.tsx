@@ -3,33 +3,88 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
+import DashboardLayout from "./components/DashboardLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import Horses from "./pages/Horses";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <DashboardLayout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/horses" component={Horses} />
+        <Route path="/sessions">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Sessions</h2>
+            <p className="text-muted-foreground">Training sessions page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/tracks">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Tracks</h2>
+            <p className="text-muted-foreground">Tracks management page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/reports">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Reports</h2>
+            <p className="text-muted-foreground">Health trends reports page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/organizations">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Organizations</h2>
+            <p className="text-muted-foreground">Organizations page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/devices">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Devices</h2>
+            <p className="text-muted-foreground">Device management page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/care">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Upcoming Care</h2>
+            <p className="text-muted-foreground">Care scheduling page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/admin/users">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">User Management</h2>
+            <p className="text-muted-foreground">Admin user management page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/admin/invitations">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Invitations</h2>
+            <p className="text-muted-foreground">User invitations page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/admin/requests">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">Requests</h2>
+            <p className="text-muted-foreground">Request management page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/admin/settings">
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-2">API Settings</h2>
+            <p className="text-muted-foreground">API configuration page coming soon</p>
+          </div>
+        </Route>
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </DashboardLayout>
   );
 }
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Router />
@@ -40,3 +95,4 @@ function App() {
 }
 
 export default App;
+

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: horse-health-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: horse_health_monitor
+      MYSQL_USER: horseuser
+      MYSQL_PASSWORD: horsepass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - horse_health_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    networks:
+      - horse-health-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  horse_health_data:
+    driver: local
+
+networks:
+  horse-health-network:
+    driver: bridge
+
