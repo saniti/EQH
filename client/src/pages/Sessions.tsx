@@ -81,6 +81,7 @@ export default function Sessions() {
   
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
+      organizationId: selectedOrgId!,
       horseId: horseFilter,
       injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
       startDate: dateRange.startDate,
