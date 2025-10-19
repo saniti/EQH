@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { MapPin, Globe } from "lucide-react";
+import { MapPin, Globe, Edit2, Trash2, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -8,11 +8,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Tracks() {
-  const { selectedOrg } = useOrganization();
+  const { selectedOrgId, selectedOrg } = useOrganization();
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  
+  const deleteTrack = trpc.tracks.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Track deleted successfully");
+      trpc.useContext().tracks.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete track");
+    },
+  });
+  
+  const handleDeleteTrack = (trackId: number, trackName: string) => {
+    if (confirm(`Are you sure you want to delete "${trackName}"?`)) {
+      deleteTrack.mutate({ id: trackId });
+    }
+  };
   
   const { data: tracks, isLoading } = trpc.tracks.list.useQuery({});
 
@@ -88,9 +108,15 @@ export default function Tracks() {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        {track.type && <Badge variant="outline">{track.type}</Badge>}
-                        <Badge variant="secondary">Global</Badge>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {track.type && <Badge variant="outline">{track.type}</Badge>}
+                          <Badge variant="secondary">Global</Badge>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Lock className="h-3 w-3" />
+                          <span>Read-only</span>
+                        </div>
                       </div>
 
                       {track.description && (
@@ -142,9 +168,29 @@ export default function Tracks() {
                         )}
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        {track.type && <Badge variant="outline">{track.type}</Badge>}
-                        <Badge variant="default">Organization</Badge>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {track.type && <Badge variant="outline">{track.type}</Badge>}
+                          <Badge variant="default">Organization</Badge>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0"
+                            onClick={() => toast.info("Edit track feature coming soon")}
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteTrack(track.id, track.name)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </div>
 
                       {track.description && (
