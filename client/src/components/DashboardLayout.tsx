@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, Users, Wifi, ChevronDown } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, Users, Wifi, ChevronDown } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -35,6 +35,7 @@ const menuItems = [
   { icon: Heart, label: "Horses", path: "/horses" },
   { icon: Activity, label: "Sessions", path: "/sessions" },
   { icon: Map, label: "Tracks", path: "/tracks" },
+  { icon: AlertTriangle, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
   { icon: Building2, label: "Organizations", path: "/organizations" },
   { icon: Wifi, label: "Devices", path: "/devices" },

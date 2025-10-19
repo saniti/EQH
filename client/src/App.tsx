@@ -15,6 +15,7 @@ import Reports from "./pages/Reports";
 import SessionDetail from "./pages/SessionDetail";
 import Organizations from "./pages/Organizations";
 import { Users } from "./pages/Users";
+import InjuryRecords from "./pages/InjuryRecords";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/sessions" component={Sessions} />
         <Route path="/sessions/:id" component={SessionDetail} />
         <Route path="/tracks" component={Tracks} />
+        <Route path="/injuries" component={InjuryRecords} />
         <Route path="/reports" component={Reports} />
         <Route path="/organizations" component={Organizations} />
         <Route path="/devices">
