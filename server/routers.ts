@@ -205,6 +205,17 @@ export const appRouter = router({
         await db.updateSession(id, updates);
         return { success: true };
       }),
+    updateTrack: protectedProcedure
+      .input(
+        z.object({
+          sessionId: z.number(),
+          trackId: z.number(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateSession(input.sessionId, { trackId: input.trackId });
+        return { success: true };
+      }),
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
