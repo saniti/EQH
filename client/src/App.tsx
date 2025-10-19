@@ -33,12 +33,6 @@ function Router() {
             <p className="text-muted-foreground">Device management page coming soon</p>
           </div>
         </Route>
-        <Route path="/care">
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-2">Upcoming Care</h2>
-            <p className="text-muted-foreground">Care scheduling page coming soon</p>
-          </div>
-        </Route>
         <Route path="/admin/users" component={Users} />
         <Route path="/admin/invitations">
           <div className="p-8 text-center">
