@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/mysql2";
 import { eq } from "drizzle-orm";
 import * as schema from "../drizzle/schema";
+import { userOrganizations } from "../drizzle/schema";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -182,6 +183,17 @@ async function seed() {
     ];
 
     console.log(`Created ${orgIds.length} organizations`);
+
+    // Link current user to all organizations for testing
+    const currentUserId = "aQVoJettC3FaGf4oztp6Ap"; // Simon Price from the screenshot
+    console.log("Creating user-organization relationships...");
+    for (const orgId of orgIds) {
+      await db.insert(schema.userOrganizations).values({
+        userId: currentUserId,
+        organizationId: orgId,
+      });
+    }
+    console.log(`Linked user to ${orgIds.length} organizations`);
 
     // 2. Create global tracks (Australian)
     console.log("Creating Australian racetracks...");
