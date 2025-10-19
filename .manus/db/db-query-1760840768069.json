@@ -1,0 +1,70 @@
+{
+  "query": "SELECT h.id, h.name, h.organizationId, o.name as orgName FROM horses h LEFT JOIN organizations o ON h.organizationId = o.id LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 29dBgEd9G6t5VH4.root --database bxoqvfJMBEhE7Cr2hfpnwS --execute SELECT h.id, h.name, h.organizationId, o.name as orgName FROM horses h LEFT JOIN organizations o ON h.organizationId = o.id LIMIT 10",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Thunder Strike",
+      "organizationId": "4",
+      "orgName": "Melbourne Racing Stables"
+    },
+    {
+      "id": "2",
+      "name": "Lightning Bolt",
+      "organizationId": "5",
+      "orgName": "Sydney Equestrian Center"
+    },
+    {
+      "id": "3",
+      "name": "Midnight Runner",
+      "organizationId": "6",
+      "orgName": "Kentucky Derby Training Facility"
+    },
+    {
+      "id": "4",
+      "name": "Golden Star",
+      "organizationId": "4",
+      "orgName": "Melbourne Racing Stables"
+    },
+    {
+      "id": "5",
+      "name": "Silver Shadow",
+      "organizationId": "5",
+      "orgName": "Sydney Equestrian Center"
+    },
+    {
+      "id": "6",
+      "name": "Storm Chaser",
+      "organizationId": "6",
+      "orgName": "Kentucky Derby Training Facility"
+    },
+    {
+      "id": "7",
+      "name": "Desert Wind",
+      "organizationId": "4",
+      "orgName": "Melbourne Racing Stables"
+    },
+    {
+      "id": "8",
+      "name": "Ocean Wave",
+      "organizationId": "5",
+      "orgName": "Sydney Equestrian Center"
+    },
+    {
+      "id": "9",
+      "name": "Mountain King",
+      "organizationId": "6",
+      "orgName": "Kentucky Derby Training Facility"
+    },
+    {
+      "id": "10",
+      "name": "Prairie Fire",
+      "organizationId": "4",
+      "orgName": "Melbourne Racing Stables"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\torganizationId\torgName\n1\tThunder Strike\t4\tMelbourne Racing Stables\n2\tLightning Bolt\t5\tSydney Equestrian Center\n3\tMidnight Runner\t6\tKentucky Derby Training Facility\n4\tGolden Star\t4\tMelbourne Racing Stables\n5\tSilver Shadow\t5\tSydney Equestrian Center\n6\tStorm Chaser\t6\tKentucky Derby Training Facility\n7\tDesert Wind\t4\tMelbourne Racing Stables\n8\tOcean Wave\t5\tSydney Equestrian Center\n9\tMountain King\t6\tKentucky Derby Training Facility\n10\tPrairie Fire\t4\tMelbourne Racing Stables\n",
+  "stderr": "",
+  "execution_time_ms": 44
+}

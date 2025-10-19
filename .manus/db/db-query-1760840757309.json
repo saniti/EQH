@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, horseId, sessionDate FROM sessions ORDER BY sessionDate DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 29dBgEd9G6t5VH4.root --database bxoqvfJMBEhE7Cr2hfpnwS --execute SELECT id, horseId, sessionDate FROM sessions ORDER BY sessionDate DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "68",
+      "horseId": "8",
+      "sessionDate": "2025-10-19 02:17:10"
+    },
+    {
+      "id": "6",
+      "horseId": "6",
+      "sessionDate": "2025-10-19 02:17:09"
+    },
+    {
+      "id": "67",
+      "horseId": "7",
+      "sessionDate": "2025-10-18 02:17:10"
+    },
+    {
+      "id": "98",
+      "horseId": "8",
+      "sessionDate": "2025-10-18 02:17:10"
+    },
+    {
+      "id": "87",
+      "horseId": "27",
+      "sessionDate": "2025-10-17 02:17:10"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\thorseId\tsessionDate\n68\t8\t2025-10-19 02:17:10\n6\t6\t2025-10-19 02:17:09\n67\t7\t2025-10-18 02:17:10\n98\t8\t2025-10-18 02:17:10\n87\t27\t2025-10-17 02:17:10\n",
+  "stderr": "",
+  "execution_time_ms": 41
+}

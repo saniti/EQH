@@ -17,7 +17,7 @@ export default function Sessions() {
   const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
   const [search, setSearch] = useState("");
   const [riskFilter, setRiskFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("7days");
+  const [dateFilter, setDateFilter] = useState("30days");
   const [currentPage, setCurrentPage] = useState(1);
   const [horseFilter, setHorseFilter] = useState<number | undefined>(
     horseIdFromUrl ? parseInt(horseIdFromUrl) : undefined
@@ -32,21 +32,34 @@ export default function Sessions() {
   // Calculate date range based on filter
   const getDateRange = () => {
     const now = new Date();
-    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999); // End of today
     
     switch (dateFilter) {
-      case "7days":
+      case "7days": {
+        const startDate = new Date();
         startDate.setDate(now.getDate() - 7);
-        return { startDate, endDate: now };
-      case "30days":
+        startDate.setHours(0, 0, 0, 0); // Start of day
+        return { startDate, endDate };
+      }
+      case "30days": {
+        const startDate = new Date();
         startDate.setDate(now.getDate() - 30);
-        return { startDate, endDate: now };
-      case "60days":
+        startDate.setHours(0, 0, 0, 0);
+        return { startDate, endDate };
+      }
+      case "60days": {
+        const startDate = new Date();
         startDate.setDate(now.getDate() - 60);
-        return { startDate, endDate: now };
-      case "90days":
+        startDate.setHours(0, 0, 0, 0);
+        return { startDate, endDate };
+      }
+      case "90days": {
+        const startDate = new Date();
         startDate.setDate(now.getDate() - 90);
-        return { startDate, endDate: now };
+        startDate.setHours(0, 0, 0, 0);
+        return { startDate, endDate };
+      }
       case "all":
         return { startDate: undefined, endDate: undefined };
       default:
@@ -169,6 +182,13 @@ export default function Sessions() {
               </Card>
             ))}
           </>
+        ) : !isLoading && (!displaySessions || displaySessions.length === 0) ? (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">No sessions found for the selected filters.</p>
+              <p className="text-sm text-muted-foreground mt-2">Try adjusting your date range or filters.</p>
+            </CardContent>
+          </Card>
         ) : displaySessions && displaySessions.length > 0 ? (
           displaySessions.map((session) => (
             <Card 

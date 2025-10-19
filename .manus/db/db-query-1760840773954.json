@@ -1,0 +1,28 @@
+{
+  "query": "SELECT * FROM userOrganizations WHERE userId = 'aQVoJettC3FaGf4oztp6Ap'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 29dBgEd9G6t5VH4.root --database bxoqvfJMBEhE7Cr2hfpnwS --execute SELECT * FROM userOrganizations WHERE userId = 'aQVoJettC3FaGf4oztp6Ap'",
+  "rows": [
+    {
+      "id": "6",
+      "userId": "aQVoJettC3FaGf4oztp6Ap",
+      "organizationId": "4",
+      "createdAt": "2025-10-19 02:17:07"
+    },
+    {
+      "id": "7",
+      "userId": "aQVoJettC3FaGf4oztp6Ap",
+      "organizationId": "5",
+      "createdAt": "2025-10-19 02:17:07"
+    },
+    {
+      "id": "8",
+      "userId": "aQVoJettC3FaGf4oztp6Ap",
+      "organizationId": "6",
+      "createdAt": "2025-10-19 02:17:07"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\torganizationId\tcreatedAt\n6\taQVoJettC3FaGf4oztp6Ap\t4\t2025-10-19 02:17:07\n7\taQVoJettC3FaGf4oztp6Ap\t5\t2025-10-19 02:17:07\n8\taQVoJettC3FaGf4oztp6Ap\t6\t2025-10-19 02:17:07\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
