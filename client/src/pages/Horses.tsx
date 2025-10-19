@@ -355,13 +355,13 @@ export default function Horses() {
 
             return (
               <Card key={horse.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between gap-4">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between gap-4">
                     {/* Left side: Favorite + Horse Info */}
-                    <div className="flex items-start gap-3 flex-1">
+                    <div className="flex items-center gap-2 flex-1">
                       <button
                         onClick={() => handleToggleFavorite(horse.id, isFavorite)}
-                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded mt-1"
+                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                       >
                         <Heart
                           className={`h-5 w-5 transition-colors ${
@@ -377,19 +377,19 @@ export default function Horses() {
                           onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
                           className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                         >
-                          <h3 className="font-semibold text-lg hover:text-primary transition-colors mb-1">
+                          <h3 className="font-semibold text-base hover:text-primary transition-colors">
                             {horse.name}
                           </h3>
                         </button>
-                        <p className="text-sm text-muted-foreground">{horse.breed || 'Unknown breed'}</p>
+                        <p className="text-xs text-muted-foreground ml-3">{horse.breed || 'Unknown breed'}</p>
                       </div>
                     </div>
 
                     {/* Right side: Session Info + Actions */}
-                    <div className="flex items-start gap-6">
+                    <div className="flex items-center gap-4">
                       {/* Latest Session */}
                       <div className="text-right min-w-[140px]">
-                        <p className="text-xs text-muted-foreground mb-1">Latest Session</p>
+                        <p className="text-xs text-muted-foreground mb-0.5">Latest Session</p>
                         {latestSession ? (
                           <button
                             onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
@@ -417,7 +417,7 @@ export default function Horses() {
 
                       {/* Duration */}
                       <div className="text-right min-w-[80px]">
-                        <p className="text-xs text-muted-foreground mb-1">Duration</p>
+                        <p className="text-xs text-muted-foreground mb-0.5">Duration</p>
                         {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
                           <span className="text-sm font-medium">
                             {formatDuration((latestSession.performanceData as any).duration)}
@@ -429,7 +429,7 @@ export default function Horses() {
 
                       {/* Injury Risk */}
                       <div className="text-right min-w-[120px]">
-                        <p className="text-xs text-muted-foreground mb-1">Injury Risk</p>
+                        <p className="text-xs text-muted-foreground mb-0.5">Injury Risk</p>
                         {latestSession?.injuryRisk ? (
                           <Badge className={getRiskColor(latestSession.injuryRisk)}>
                             {getRiskLabel(latestSession.injuryRisk)}

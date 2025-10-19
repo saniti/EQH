@@ -103,10 +103,10 @@ export default function Sessions() {
         ) : sessions && sessions.length > 0 ? (
           sessions.map((session) => (
             <Card key={session.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-1">
+                    <h3 className="text-base font-semibold mb-1">
                       {(session as any).horseName || `Horse ID: ${session.horseId}`}
                     </h3>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -127,7 +127,7 @@ export default function Sessions() {
                 </div>
 
                 {session.performanceData && typeof session.performanceData === 'object' && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {(session.performanceData as any).duration && (
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground">Duration</p>
