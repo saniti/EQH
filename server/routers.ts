@@ -628,6 +628,33 @@ export const appRouter = router({
         await db.updateUser(ctx.user.id, input);
         return { success: true };
       }),
+    getOrganizations: adminProcedure
+      .input(z.object({ userId: z.string() }))
+      .query(async ({ input }) => {
+        return await db.getUserOrganizations(input.userId);
+      }),
+    addToOrganization: adminProcedure
+      .input(
+        z.object({
+          userId: z.string(),
+          organizationId: z.number(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.addUserToOrganization(input.userId, input.organizationId);
+        return { success: true };
+      }),
+    removeFromOrganization: adminProcedure
+      .input(
+        z.object({
+          userId: z.string(),
+          organizationId: z.number(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.removeUserFromOrganization(input.userId, input.organizationId);
+        return { success: true };
+      }),
   }),
 
   // ============= INVITATIONS (Admin) =============
