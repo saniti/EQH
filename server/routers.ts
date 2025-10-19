@@ -293,6 +293,23 @@ export const appRouter = router({
 
   // ============= INJURY RECORDS =============
   injuries: router({
+    list: protectedProcedure
+      .input(z.object({ organizationId: z.number().optional() }))
+      .query(async ({ ctx, input }) => {
+        const orgs = await db.getUserOrganizations(ctx.user.id);
+        const orgIds = orgs.map((o) => o.id);
+        
+        // If organizationId is provided, validate access
+        if (input.organizationId) {
+          if (!orgIds.includes(input.organizationId)) {
+            throw new TRPCError({ code: "FORBIDDEN" });
+          }
+          return await db.getOrganizationInjuryRecords([input.organizationId]);
+        }
+        
+        // Otherwise return all injuries for user's organizations
+        return await db.getOrganizationInjuryRecords(orgIds);
+      }),
     getBySession: protectedProcedure
       .input(z.object({ sessionId: z.number() }))
       .query(async ({ input }) => {
@@ -328,6 +345,12 @@ export const appRouter = router({
           ...updates,
           veterinarianId: ctx.user.id,
         });
+        return { success: true };
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteInjuryRecord(input.id);
         return { success: true };
       }),
   }),

@@ -694,6 +694,47 @@ export async function updateInjuryRecord(
   await db.update(injuryRecords).set(updates).where(eq(injuryRecords.id, id));
 }
 
+export async function getOrganizationInjuryRecords(
+  organizationIds: number[]
+): Promise<(InjuryRecord & { session?: Session; horse?: Horse })[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all sessions for the organization's horses
+  const orgSessions = await db
+    .select()
+    .from(sessions)
+    .leftJoin(horses, eq(sessions.horseId, horses.id))
+    .where(inArray(horses.organizationId, organizationIds));
+  
+  const sessionIds = orgSessions.map(s => s.sessions.id);
+  
+  if (sessionIds.length === 0) return [];
+  
+  // Get all injury records for those sessions
+  const injuries = await db
+    .select()
+    .from(injuryRecords)
+    .where(inArray(injuryRecords.sessionId, sessionIds))
+    .orderBy(desc(injuryRecords.createdAt));
+  
+  // Enrich with session and horse data
+  return injuries.map(injury => {
+    const sessionData = orgSessions.find(s => s.sessions.id === injury.sessionId);
+    return {
+      ...injury,
+      session: sessionData?.sessions,
+      horse: sessionData?.horses || undefined,
+    };
+  });
+}
+
+export async function deleteInjuryRecord(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(injuryRecords).where(eq(injuryRecords.id, id));
+}
+
 // ============= TRACK OPERATIONS =============
 export async function createTrack(track: InsertTrack): Promise<number> {
   const db = await getDb();
