@@ -16,10 +16,6 @@ export default function Dashboard() {
     undefined,
     { enabled: !!selectedOrgId }
   );
-  const { data: upcomingCare, isLoading: careLoading } = trpc.dashboard.getUpcomingCare.useQuery(
-    undefined,
-    { enabled: !!selectedOrgId }
-  );
 
   return (
     <div className="space-y-6">
@@ -157,61 +153,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Upcoming Care */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Upcoming Care</CardTitle>
-            <CardDescription>
-              Scheduled health care tasks and appointments
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {careLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
-                ))}
-              </div>
-            ) : upcomingCare && upcomingCare.length > 0 ? (
-              <div className="space-y-3">
-                {upcomingCare.slice(0, 5).map((care) => (
-                  <div
-                    key={care.id}
-                    className="flex items-start justify-between p-3 rounded-lg border"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium">{care.careType}</p>
-                      {care.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {care.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-right ml-4">
-                      <p className="text-sm font-medium">
-                        {new Date(care.scheduledDate).toLocaleDateString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(care.scheduledDate).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Activity className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                <p>No upcoming care scheduled</p>
-                <p className="text-sm mt-1">
-                  Schedule care tasks to see them here
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );

@@ -38,7 +38,6 @@ const menuItems = [
   { icon: FileText, label: "Reports", path: "/reports" },
   { icon: Building2, label: "Organizations", path: "/organizations" },
   { icon: Wifi, label: "Devices", path: "/devices" },
-  { icon: Calendar, label: "Upcoming Care", path: "/care" },
 ];
 
 const adminMenuItems = [
