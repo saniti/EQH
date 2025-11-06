@@ -446,9 +446,8 @@ export default function Sessions() {
                     {/* Injury Risk */}
                     <div className="w-24 text-right">
                       <Badge className={getRiskColor(session.injuryRisk || "low")}>
-                          {session.injuryRisk || "low"}
-                        </Badge>
-                      </div>
+                        {session.injuryRisk || "low"}
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
