@@ -342,9 +342,9 @@ export default function Horses() {
       </div>
 
       {/* Table Header */}
-      <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground">
-        <div className="flex items-center">
-          <div className="w-8"></div>
+      <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
+        <div className="flex items-center min-w-max md:min-w-0">
+          <div className="w-6 md:w-8 flex-shrink-0"></div>
           <button
             onClick={() => {
               if (sortBy === 'name') {
@@ -354,10 +354,26 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="flex-1 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            className="flex-1 min-w-[120px] md:min-w-0 text-left hover:text-foreground transition-colors flex items-center gap-1"
           >
-            Horse Name
+            Horse
             {sortBy === 'name' && (
+              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              if (sortBy === 'risk') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('risk');
+                setSortOrder('asc');
+              }
+            }}
+            className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+          >
+            Risk
+            {sortBy === 'risk' && (
               <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
             )}
           </button>
@@ -370,9 +386,9 @@ export default function Horses() {
                 setSortOrder('desc');
               }
             }}
-            className="w-48 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            className="w-20 md:w-32 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
           >
-            Latest Session
+            Date
             {sortBy === 'latestSession' && (
               <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
             )}
@@ -386,7 +402,7 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
           >
             Duration
             {sortBy === 'duration' && (
@@ -395,21 +411,21 @@ export default function Horses() {
           </button>
           <button
             onClick={() => {
-              if (sortBy === 'risk') {
+              if (sortBy === 'track') {
                 setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
               } else {
-                setSortBy('risk');
+                setSortBy('track');
                 setSortOrder('asc');
               }
             }}
-            className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            className="w-20 md:w-32 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
           >
-            Injury Risk
-            {sortBy === 'risk' && (
+            Track
+            {sortBy === 'track' && (
               <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
             )}
           </button>
-          <div className="w-8"></div>
+          <div className="w-6 md:w-8 flex-shrink-0"></div>
         </div>
       </div>
 
