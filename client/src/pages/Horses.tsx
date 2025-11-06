@@ -17,6 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Horses() {
   const { selectedOrgId, selectedOrg } = useOrganization();
@@ -24,6 +32,12 @@ export default function Horses() {
   const [sortBy, setSortBy] = useState("latestSession");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
+  const [showAddHorseDialog, setShowAddHorseDialog] = useState(false);
+  const [newHorseForm, setNewHorseForm] = useState({
+    name: '',
+    alias: '',
+    breed: '',
+  });
   const [editForm, setEditForm] = useState({
     name: "",
     alias: "",
@@ -81,6 +95,15 @@ export default function Horses() {
       utils.horses.list.invalidate();
       utils.horses.getStats.invalidate();
       setEditingHorseId(null);
+    },
+  });
+
+  const createHorse = trpc.horses.create.useMutation({
+    onSuccess: () => {
+      utils.horses.list.invalidate();
+      utils.horses.getStats.invalidate();
+      setShowAddHorseDialog(false);
+      setNewHorseForm({ name: '', alias: '', breed: '' });
     },
   });
 
@@ -191,6 +214,17 @@ export default function Horses() {
     setEditingHorseId(null);
   };
 
+  const handleAddHorse = () => {
+    if (newHorseForm.name.trim()) {
+      createHorse.mutate({
+        organizationId: selectedOrgId!,
+        name: newHorseForm.name,
+        alias: newHorseForm.alias || undefined,
+        breed: newHorseForm.breed || undefined,
+      });
+    }
+  };
+
   const getRiskColor = (risk: string | null) => {
     switch (risk) {
       case "critical": return "destructive";
@@ -214,7 +248,10 @@ export default function Horses() {
             Manage profiles for horses in {selectedOrg?.name || 'this organization'} ({totalHorses} total)
           </p>
         </div>
-        <Button className="bg-orange-300 hover:bg-orange-400 text-gray-900">
+        <Button 
+          onClick={() => setShowAddHorseDialog(true)}
+          className="bg-orange-300 hover:bg-orange-400 text-gray-900"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add New Horse
         </Button>
@@ -593,6 +630,62 @@ export default function Horses() {
           </div>
         )}
       </div>
+
+      {/* Add Horse Dialog */}
+      <Dialog open={showAddHorseDialog} onOpenChange={setShowAddHorseDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Horse</DialogTitle>
+            <DialogDescription>
+              Create a new horse profile for {selectedOrg?.name || 'your organization'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="horse-name">Horse Name *</Label>
+              <Input
+                id="horse-name"
+                value={newHorseForm.name}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, name: e.target.value })}
+                placeholder="e.g., Golden Star"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-alias">Alias (Friendly Name)</Label>
+              <Input
+                id="horse-alias"
+                value={newHorseForm.alias}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, alias: e.target.value })}
+                placeholder="e.g., Goldie"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-breed">Breed</Label>
+              <Input
+                id="horse-breed"
+                value={newHorseForm.breed}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, breed: e.target.value })}
+                placeholder="e.g., Thoroughbred"
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddHorseDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddHorse}
+              disabled={!newHorseForm.name.trim() || createHorse.isPending}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {createHorse.isPending ? 'Creating...' : 'Create Horse'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

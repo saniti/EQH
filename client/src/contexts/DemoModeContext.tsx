@@ -6,19 +6,25 @@ interface DemoModeContextType {
   isDemoMode: boolean;
   currentRole: UserRole;
   setCurrentRole: (role: UserRole) => void;
+  setIsDemoMode: (enabled: boolean) => void;
   availableRoles: UserRole[];
 }
 
 const DemoModeContext = createContext<DemoModeContextType | undefined>(undefined);
 
 export function DemoModeProvider({ children }: { children: ReactNode }) {
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [isDemoMode, setIsDemModeState] = useState(false);
   const [currentRole, setCurrentRole] = useState<UserRole>('user');
+  
+  const setIsDemoMode = (enabled: boolean) => {
+    setIsDemModeState(enabled);
+    localStorage.setItem('demo-mode', enabled ? 'true' : 'false');
+  };
 
   // Check if we're in demo mode on mount
   useEffect(() => {
     const isDemo = localStorage.getItem('demo-mode') === 'true';
-    setIsDemoMode(isDemo);
+    setIsDemModeState(isDemo);
     
     if (isDemo) {
       const savedRole = localStorage.getItem('demo-role') as UserRole | null;
@@ -43,6 +49,7 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
         isDemoMode,
         currentRole,
         setCurrentRole,
+        setIsDemoMode,
         availableRoles,
       }}
     >

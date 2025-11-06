@@ -25,29 +25,36 @@ const roleDescriptions: Record<UserRole, string> = {
 };
 
 export function DemoModeRoleSwitcher() {
-  const { isDemoMode, currentRole, setCurrentRole, availableRoles } = useDemoMode();
-
-  if (!isDemoMode) {
-    return null;
-  }
+  const { isDemoMode, currentRole, setCurrentRole, setIsDemoMode, availableRoles } = useDemoMode();
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 border-t">
-      <Badge variant="outline" className="bg-blue-50">Demo Mode</Badge>
-      <Select value={currentRole} onValueChange={(value) => setCurrentRole(value as UserRole)}>
-        <SelectTrigger className="w-[160px] h-8 text-xs">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {availableRoles.map((role) => (
-            <SelectItem key={role} value={role} className="text-xs">
-              {roleLabels[role]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <span className="text-xs text-muted-foreground">{roleDescriptions[currentRole]}</span>
+    <div className="px-3 py-2 border-t space-y-2">
+      <div className="flex items-center gap-2">
+        <Badge 
+          variant="outline" 
+          className={`cursor-pointer ${isDemoMode ? 'bg-blue-50' : 'bg-gray-50'}`}
+          onClick={() => setIsDemoMode(!isDemoMode)}
+        >
+          {isDemoMode ? 'Demo Mode: ON' : 'Demo Mode: OFF'}
+        </Badge>
+      </div>
+      {isDemoMode && (
+        <div className="space-y-2">
+          <Select value={currentRole} onValueChange={(value) => setCurrentRole(value as UserRole)}>
+            <SelectTrigger className="w-full h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableRoles.map((role) => (
+                <SelectItem key={role} value={role} className="text-xs">
+                  {roleLabels[role]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{roleDescriptions[currentRole]}</p>
+        </div>
+      )}
     </div>
   );
 }
-

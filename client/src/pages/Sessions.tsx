@@ -255,7 +255,7 @@ export default function Sessions() {
         )}
         
         {/* Sort Options */}
-        <div className="flex gap-2 ml-auto">
+        <div className="flex gap-2">
           <Button 
             variant={sortBy === 'date' ? 'default' : 'outline'} 
             size="sm"
