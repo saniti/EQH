@@ -423,12 +423,12 @@ export default function Horses() {
             return (
               <Card key={horse.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-6">
+                  <div className="flex items-start gap-4">
                     {/* Left side: Favorite + Horse Name + Alias */}
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex items-start gap-3 flex-1 min-w-0">
                       <button
                         onClick={() => handleToggleFavorite(horse.id, isFavorite)}
-                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
+                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0 mt-0.5"
                       >
                         <Heart
                           className={`h-5 w-5 transition-colors ${
@@ -452,45 +452,48 @@ export default function Horses() {
                       </div>
                     </div>
 
-                    {/* Risk */}
-                    <div className="text-right min-w-[100px] flex-shrink-0">
-                      <p className="text-xs text-muted-foreground mb-1">Risk</p>
-                      {latestSession?.injuryRisk ? (
-                        <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
-                          {latestSession.injuryRisk}
-                        </Badge>
-                      ) : (
-                        <Badge variant={getRiskColor(null) as any}>no-data</Badge>
-                      )}
-                    </div>
+                    {/* Right side: Risk, Last Session, Duration in a row */}
+                    <div className="flex items-start gap-8 flex-shrink-0">
+                      {/* Risk */}
+                      <div className="text-left">
+                        <p className="text-xs text-muted-foreground mb-1">Risk</p>
+                        {latestSession?.injuryRisk ? (
+                          <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
+                            {latestSession.injuryRisk}
+                          </Badge>
+                        ) : (
+                          <Badge variant={getRiskColor(null) as any}>no-data</Badge>
+                        )}
+                      </div>
 
-                    {/* Latest Session */}
-                    <div className="text-right min-w-[130px] flex-shrink-0">
-                      <p className="text-xs text-muted-foreground mb-1">Last Session</p>
-                      {latestSession ? (
-                        <button
-                          onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors inline-block"
-                        >
+                      {/* Latest Session */}
+                      <div className="text-left">
+                        <p className="text-xs text-muted-foreground mb-1">Last Session</p>
+                        {latestSession ? (
+                          <button
+                            onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                            className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors"
+                          >
+                            <span className="text-sm font-medium">
+                              {formatDateTimeShort(latestSession.sessionDate)}
+                            </span>
+                          </button>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">No sessions</span>
+                        )}
+                      </div>
+
+                      {/* Duration */}
+                      <div className="text-left">
+                        <p className="text-xs text-muted-foreground mb-1">Duration</p>
+                        {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
                           <span className="text-sm font-medium">
-                            {formatDateTimeShort(latestSession.sessionDate)}
+                            {formatDuration((latestSession.performanceData as any).duration)}
                           </span>
-                        </button>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">No sessions</span>
-                      )}
-                    </div>
-
-                    {/* Duration */}
-                    <div className="text-right min-w-[80px] flex-shrink-0">
-                      <p className="text-xs text-muted-foreground mb-1">Duration</p>
-                      {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
-                        <span className="text-sm font-medium">
-                          {formatDuration((latestSession.performanceData as any).duration)}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">—</span>
-                      )}
+                        ) : (
+                          <span className="text-sm text-muted-foreground">—</span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Edit Button */}
