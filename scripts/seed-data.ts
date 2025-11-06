@@ -258,10 +258,23 @@ async function seed() {
     // 6. Create horses
     console.log("Creating horses...");
     const horseIds: number[] = [];
+    const horseAliases = [
+      "Standardbred",
+      "Swift Runner",
+      "Golden Champion",
+      "Night Rider",
+      "Storm Chaser",
+      "Gentle Giant",
+      "Speed Demon",
+      "Star Performer",
+      "Brave Heart",
+      "Swift Wing",
+    ];
     for (let i = 0; i < 30; i++) {
       const orgId = orgIds[i % orgIds.length];
       const breed = horseBreeds[i % horseBreeds.length];
       const name = horseNames[i % horseNames.length];
+      const alias = horseAliases[i % horseAliases.length];
       const deviceId = deviceIds[i] || null;
       
       const statuses = ["active", "active", "active", "injured", "retired"];
@@ -269,6 +282,7 @@ async function seed() {
 
       const horseId = await db.insert(schema.horses).values({
         name,
+        alias,
         breed,
         status,
         organizationId: orgId,

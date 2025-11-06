@@ -25,6 +25,7 @@ export default function Horses() {
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({
     name: "",
+    alias: "",
     breed: "",
     weight: "",
     owner: "",
@@ -138,6 +139,7 @@ export default function Horses() {
     const healthRecords = horse.healthRecords || {};
     setEditForm({
       name: horse.name,
+      alias: horse.alias || "",
       breed: horse.breed || "",
       weight: healthRecords.weight?.toString() || "",
       owner: healthRecords.owner || "",
@@ -154,6 +156,7 @@ export default function Horses() {
       updateHorse.mutate({
         id: editingHorseId,
         name: editForm.name,
+        alias: editForm.alias || undefined,
         breed: editForm.breed || undefined,
         healthRecords: {
           weight: editForm.weight ? parseInt(editForm.weight) : undefined,
@@ -322,6 +325,14 @@ export default function Horses() {
                         />
                       </div>
                       <div>
+                        <Label className="text-xs text-muted-foreground">Alias</Label>
+                        <Input
+                          value={editForm.alias}
+                          onChange={(e) => setEditForm({ ...editForm, alias: e.target.value })}
+                          className="h-9 mt-1"
+                        />
+                      </div>
+                      <div>
                         <Label className="text-xs text-muted-foreground">Breed</Label>
                         <Input
                           value={editForm.breed}
@@ -413,7 +424,7 @@ export default function Horses() {
               <Card key={horse.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between gap-6">
-                    {/* Left side: Favorite + Horse Name/Alias */}
+                    {/* Left side: Favorite + Horse Name + Alias */}
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <button
                         onClick={() => handleToggleFavorite(horse.id, isFavorite)}
@@ -437,12 +448,12 @@ export default function Horses() {
                             {horse.name}
                           </h3>
                         </button>
-                        <p className="text-xs text-muted-foreground truncate">{horse.breed || 'Unknown breed'}</p>
+                        <p className="text-xs text-muted-foreground truncate">{(horse as any).alias || 'No alias'}</p>
                       </div>
                     </div>
 
                     {/* Risk */}
-                    <div className="text-center min-w-[100px] flex-shrink-0">
+                    <div className="text-right min-w-[100px] flex-shrink-0">
                       <p className="text-xs text-muted-foreground mb-1">Risk</p>
                       {latestSession?.injuryRisk ? (
                         <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
@@ -454,7 +465,7 @@ export default function Horses() {
                     </div>
 
                     {/* Latest Session */}
-                    <div className="text-center min-w-[130px] flex-shrink-0">
+                    <div className="text-right min-w-[130px] flex-shrink-0">
                       <p className="text-xs text-muted-foreground mb-1">Last Session</p>
                       {latestSession ? (
                         <button
@@ -471,7 +482,7 @@ export default function Horses() {
                     </div>
 
                     {/* Duration */}
-                    <div className="text-center min-w-[80px] flex-shrink-0">
+                    <div className="text-right min-w-[80px] flex-shrink-0">
                       <p className="text-xs text-muted-foreground mb-1">Duration</p>
                       {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
                         <span className="text-sm font-medium">

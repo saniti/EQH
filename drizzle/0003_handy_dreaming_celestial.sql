@@ -1,0 +1,1 @@
+ALTER TABLE `horses` ADD `alias` varchar(255);
