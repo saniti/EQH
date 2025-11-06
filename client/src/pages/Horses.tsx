@@ -423,9 +423,9 @@ export default function Horses() {
             return (
               <Card key={horse.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    {/* Left side: Favorite + Horse Name + Alias */}
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    {/* Left side: Favorite + Horse Name + Alias - minimal width */}
+                    <div className="flex items-start gap-3 min-w-0">
                       <button
                         onClick={() => handleToggleFavorite(horse.id, isFavorite)}
                         className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0 mt-0.5"
@@ -439,10 +439,10 @@ export default function Horses() {
                         />
                       </button>
                       
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0">
                         <button
                           onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
-                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
+                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                         >
                           <h3 className="font-semibold text-base hover:text-primary transition-colors truncate">
                             {horse.name}
@@ -452,8 +452,8 @@ export default function Horses() {
                       </div>
                     </div>
 
-                    {/* Right side: Risk, Last Session, Duration in a row */}
-                    <div className="flex items-start gap-8 flex-shrink-0">
+                    {/* Right side: Risk, Last Session, Duration, Edit - grouped together */}
+                    <div className="flex items-start gap-6 ml-4">
                       {/* Risk */}
                       <div className="text-left">
                         <p className="text-xs text-muted-foreground mb-1">Risk</p>
@@ -494,17 +494,17 @@ export default function Horses() {
                           <span className="text-sm text-muted-foreground">—</span>
                         )}
                       </div>
-                    </div>
 
-                    {/* Edit Button */}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEditClick(horse)}
-                      className="h-8 w-8 p-0 flex-shrink-0"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
+                      {/* Edit Button */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleEditClick(horse)}
+                        className="h-8 w-8 p-0 flex-shrink-0"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
