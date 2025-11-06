@@ -228,10 +228,13 @@ async function seed() {
 
     // 4. Create training tracks (local to each organization)
     console.log("Creating training facilities...");
-    for (const orgId of orgIds) {
+    const orgNames = ["Melbourne Racing Stables", "Sydney Equestrian Center", "Kentucky Derby Training Facility"];
+    for (let i = 0; i < orgIds.length; i++) {
+      const orgId = orgIds[i];
+      const orgName = orgNames[i];
       for (const track of trainingTracks) {
         await db.insert(schema.tracks).values({
-          name: `${track.name} - Org ${orgId}`,
+          name: `${track.name} - ${orgName}`,
           type: track.type,
           scope: "local",
           organizationId: orgId,
