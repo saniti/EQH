@@ -1,13 +1,16 @@
-import { trpc } from "@/lib/trpc";
+import { useEffect } from "react";
 import { Activity, AlertTriangle, Heart, Thermometer } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { trpc } from "@/lib/trpc";
 
 export default function Dashboard() {
   const { selectedOrgId, selectedOrg } = useOrganization();
+  const utils = trpc.useUtils();
+  
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery(
     undefined,
     { enabled: !!selectedOrgId }
@@ -16,6 +19,12 @@ export default function Dashboard() {
     undefined,
     { enabled: !!selectedOrgId }
   );
+
+  // Invalidate and refetch data when organization changes
+  useEffect(() => {
+    utils.dashboard.getStats.invalidate();
+    utils.dashboard.getFavoriteHorses.invalidate();
+  }, [selectedOrgId, utils]);
 
   return (
     <div className="space-y-6">
