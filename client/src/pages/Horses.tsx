@@ -548,13 +548,13 @@ export default function Horses() {
             }
 
             return (
-              <div key={horse.id} className="border-b p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center">
-                  {/* Favorite Icon */}
-                  <div className="w-8 flex justify-center">
+              <div key={horse.id} className="border-b p-3 md:p-4 hover:bg-gray-50 transition-colors overflow-x-auto">
+                <div className="flex items-center gap-2 md:gap-4 min-w-max md:min-w-0">
+                  {/* Favorite Icon + Horse Name and Alias */}
+                  <div className="flex items-center gap-2 flex-1 min-w-[120px]">
                     <button
                       onClick={() => handleToggleFavorite(horse.id, isFavorite)}
-                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
                     >
                       <Heart
                         className={`h-5 w-5 transition-colors ${
@@ -564,51 +564,21 @@ export default function Horses() {
                         }`}
                       />
                     </button>
-                  </div>
-
-                  {/* Horse Name and Alias */}
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
-                      className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                    >
-                      <h3 className="font-semibold text-base hover:text-primary transition-colors">
-                        {horse.name}
-                      </h3>
-                    </button>
-                    <p className="text-xs text-muted-foreground">{(horse as any).alias || 'No alias'}</p>
-                  </div>
-
-                  {/* Latest Session */}
-                  <div className="w-48 text-left">
-                    {latestSession ? (
+                    <div className="flex-1 min-w-0">
                       <button
-                        onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-2"
+                        onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
+                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                       >
-                        <Clock className="h-4 w-4 flex-shrink-0" />
-                        <span className="text-sm font-medium">
-                          {formatDateTimeShort(latestSession.sessionDate)}
-                        </span>
+                        <h3 className="font-semibold text-sm md:text-base hover:text-primary transition-colors truncate">
+                          {horse.name}
+                        </h3>
                       </button>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">No sessions</span>
-                    )}
-                  </div>
-
-                  {/* Duration */}
-                  <div className="w-24 text-left">
-                    {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
-                      <span className="text-sm font-medium">
-                        {formatDuration((latestSession.performanceData as any).duration)}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">—</span>
-                    )}
+                      <p className="text-xs text-muted-foreground truncate">{(horse as any).alias || 'No alias'}</p>
+                    </div>
                   </div>
 
                   {/* Injury Risk */}
-                  <div className="w-24 text-left">
+                  <div className="w-16 md:w-24 flex-shrink-0">
                     {latestSession?.injuryRisk ? (
                       <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
                         {latestSession.injuryRisk}
@@ -618,8 +588,41 @@ export default function Horses() {
                     )}
                   </div>
 
+                  {/* Latest Session Date */}
+                  <div className="w-20 md:w-32 text-xs md:text-sm text-left flex-shrink-0">
+                    {latestSession ? (
+                      <button
+                        onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
+                      >
+                        <Clock className="h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">
+                          {formatDateTimeShort(latestSession.sessionDate)}
+                        </span>
+                      </button>
+                    ) : (
+                      <span className="text-muted-foreground">No sessions</span>
+                    )}
+                  </div>
+
+                  {/* Duration */}
+                  <div className="w-16 md:w-24 text-xs md:text-sm text-left flex-shrink-0">
+                    {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
+                      <span>
+                        {formatDuration((latestSession.performanceData as any).duration)}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </div>
+
+                  {/* Track - hidden on mobile */}
+                  <div className="hidden md:block w-32 text-sm text-left text-muted-foreground flex-shrink-0">
+                    {(horse as any).trackName || '—'}
+                  </div>
+
                   {/* Edit Button */}
-                  <div className="w-8 flex justify-center">
+                  <div className="w-6 md:w-8 flex justify-center flex-shrink-0">
                     <Button
                       size="sm"
                       variant="ghost"
