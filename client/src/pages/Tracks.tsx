@@ -46,11 +46,18 @@ export default function Tracks() {
   // Create a map of organization IDs to names
   const orgMap = useMemo(() => {
     const map: Record<number, string> = {};
-    organizations?.forEach(org => {
-      map[org.id] = org.name;
-    });
+    if (organizations && Array.isArray(organizations)) {
+      organizations.forEach(org => {
+        if (org && org.id && org.name) {
+          map[org.id] = org.name;
+        }
+      });
+    }
     return map;
   }, [organizations]);
+  
+  // Debug: log the orgMap when it changes
+  console.log('Organization map:', orgMap, 'Organizations:', organizations);
 
   const globalTracks = tracks?.filter(t => t.scope === 'global') || [];
   const localTracks = tracks?.filter(t => t.scope === 'local') || [];
@@ -191,9 +198,11 @@ export default function Tracks() {
                       </div>
                       
                       {/* Organization ownership */}
-                      <div className="text-xs text-muted-foreground">
-                        Owned by: <span className="font-medium">{track.organizationId ? orgMap[track.organizationId] || `Organization ${track.organizationId}` : 'Unknown'}</span>
-                      </div>
+                      {track.organizationId && (
+                        <div className="text-xs text-muted-foreground">
+                          Owned by: <span className="font-medium">{orgMap[track.organizationId] || `Organization ${track.organizationId}`}</span>
+                        </div>
+                      )}
                       
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
