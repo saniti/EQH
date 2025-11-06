@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { DemoModeRoleSwitcher } from "@/components/DemoModeRoleSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -321,11 +322,13 @@ function DashboardLayoutContent({
             )}
           </SidebarContent>
 
-          <SidebarFooter className="p-3">
-            <div className="flex items-center justify-center mb-2">
+          <SidebarFooter className="p-0">
+            <div className="flex items-center justify-center mb-2 p-3">
               <ThemeSelector />
             </div>
-            <DropdownMenu>
+            <DemoModeRoleSwitcher />
+            <div className="px-3 py-3 border-t">
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Avatar className="h-9 w-9 border shrink-0">
@@ -360,6 +363,7 @@ function DashboardLayoutContent({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </SidebarFooter>
         </Sidebar>
         <div
