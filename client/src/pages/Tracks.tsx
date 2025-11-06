@@ -1,4 +1,3 @@
-import { trpc } from "@/lib/trpc";
 import { MapPin, Globe, Edit2, Trash2, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,17 +5,24 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useDemoMode } from "@/contexts/DemoModeContext";
+import { trpc } from "@/lib/trpc";
 
 export default function Tracks() {
   const { selectedOrgId, selectedOrg } = useOrganization();
   const { user } = useAuth();
+  const { isDemoMode, currentRole } = useDemoMode();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  
+  // Determine effective user role (demo mode overrides actual role)
+  const effectiveRole = isDemoMode ? currentRole : (user?.role || 'user');
+  const isAdmin = effectiveRole === 'administrator';
   
   const deleteTrack = trpc.tracks.delete.useMutation({
     onSuccess: () => {
@@ -114,8 +120,14 @@ export default function Tracks() {
                           <Badge variant="secondary">Global</Badge>
                         </div>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Lock className="h-3 w-3" />
-                          <span>Read-only</span>
+                          {!isAdmin ? (
+                            <>
+                              <Lock className="h-3 w-3" />
+                              <span>Read-only</span>
+                            </>
+                          ) : (
+                            <span className="text-green-600">Editable</span>
+                          )}
                         </div>
                       </div>
 
@@ -168,6 +180,11 @@ export default function Tracks() {
                         )}
                       </div>
                       
+                      {/* Organization ownership */}
+                      <div className="text-xs text-muted-foreground">
+                        Owned by: <span className="font-medium">{track.organizationId ? `Organization ${track.organizationId}` : 'Unknown'}</span>
+                      </div>
+                      
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {track.type && <Badge variant="outline">{track.type}</Badge>}
@@ -187,6 +204,7 @@ export default function Tracks() {
                             variant="ghost"
                             className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                             onClick={() => handleDeleteTrack(track.id, track.name)}
+                            disabled={!isAdmin && effectiveRole !== 'owner'}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
