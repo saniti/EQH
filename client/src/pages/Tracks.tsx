@@ -41,6 +41,16 @@ export default function Tracks() {
   };
   
   const { data: tracks, isLoading } = trpc.tracks.list.useQuery({});
+  const { data: organizations } = trpc.organizations.list.useQuery();
+  
+  // Create a map of organization IDs to names
+  const orgMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    organizations?.forEach(org => {
+      map[org.id] = org.name;
+    });
+    return map;
+  }, [organizations]);
 
   const globalTracks = tracks?.filter(t => t.scope === 'global') || [];
   const localTracks = tracks?.filter(t => t.scope === 'local') || [];
@@ -182,7 +192,7 @@ export default function Tracks() {
                       
                       {/* Organization ownership */}
                       <div className="text-xs text-muted-foreground">
-                        Owned by: <span className="font-medium">{track.organizationId ? `Organization ${track.organizationId}` : 'Unknown'}</span>
+                        Owned by: <span className="font-medium">{track.organizationId ? orgMap[track.organizationId] || `Organization ${track.organizationId}` : 'Unknown'}</span>
                       </div>
                       
                       <div className="flex items-center justify-between">
@@ -191,14 +201,16 @@ export default function Tracks() {
                           <Badge variant="default">Organization</Badge>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 w-7 p-0"
-                            onClick={() => toast.info("Edit track feature coming soon")}
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {isAdmin && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 w-7 p-0"
+                              onClick={() => toast.info("Edit track feature coming soon")}
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="ghost"
