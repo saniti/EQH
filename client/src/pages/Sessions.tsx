@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateShort } from "@/lib/dateFormat";
-import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square } from "lucide-react";
+import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2 } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -136,6 +136,16 @@ export default function Sessions() {
     },
     onError: (error: any) => {
       toast.error("Failed to assign sessions: " + error.message);
+    },
+  });
+
+  const deleteSession = trpc.sessions.delete.useMutation({
+    onSuccess: () => {
+      utils.sessions.list.invalidate();
+      toast.success("Session deleted successfully");
+    },
+    onError: (error: any) => {
+      toast.error("Failed to delete session: " + error.message);
     },
   });
 
@@ -285,13 +295,91 @@ export default function Sessions() {
 
       {/* Sessions Table Header */}
       {displaySessions && displaySessions.length > 0 && (
-        <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground border-b">
-          <div className="w-8"></div>
-          <div className="flex-1 min-w-0">Horse</div>
-          <div className="w-48">Track</div>
-          <div className="w-32">Date</div>
-          <div className="w-24">Duration</div>
-          <div className="w-24 text-right">Risk</div>
+        <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground">
+          <div className="flex items-center">
+            <div className="w-8"></div>
+            <button
+              onClick={() => {
+                if (sortBy === 'horse') {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortBy('horse');
+                  setSortOrder('asc');
+                }
+              }}
+              className="flex-1 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              Horse
+              {sortBy === 'horse' && (
+                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                if (sortBy === 'risk') {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortBy('risk');
+                  setSortOrder('asc');
+                }
+              }}
+              className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              Risk
+              {sortBy === 'risk' && (
+                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                if (sortBy === 'date') {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortBy('date');
+                  setSortOrder('desc');
+                }
+              }}
+              className="w-32 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              Date
+              {sortBy === 'date' && (
+                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                if (sortBy === 'duration') {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortBy('duration');
+                  setSortOrder('asc');
+                }
+              }}
+              className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              Duration
+              {sortBy === 'duration' && (
+                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+              )}
+            </button>
+            <button
+              onClick={() => {
+                if (sortBy === 'track') {
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                } else {
+                  setSortBy('track');
+                  setSortOrder('asc');
+                }
+              }}
+              className="w-48 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              Track
+              {sortBy === 'track' && (
+                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+              )}
+            </button>
+            <div className="w-8"></div>
+          </div>
         </div>
       )}
 
@@ -368,9 +456,11 @@ export default function Sessions() {
                       </button>
                     </div>
 
-                    {/* Track */}
-                    <div className="w-48 text-sm truncate text-muted-foreground">
-                      {session.trackName || `Track #${session.trackId}`}
+                    {/* Risk */}
+                    <div className="w-24">
+                      <Badge className={getRiskColor(session.injuryRisk || "low")}>
+                        {session.injuryRisk || "low"}
+                      </Badge>
                     </div>
 
                     {/* Date */}
@@ -379,18 +469,25 @@ export default function Sessions() {
                     </div>
 
                     {/* Duration */}
-                    <div className="w-24 text-sm text-right">
+                    <div className="w-24 text-sm">
                       {session.performanceData?.duration 
                         ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
                         : "—"}
                     </div>
 
-                    {/* Injury Risk */}
-                    <div className="w-24 text-right">
-                      <Badge className={getRiskColor(session.injuryRisk || "low")}>
-                        {session.injuryRisk || "low"}
-                      </Badge>
+                    {/* Track */}
+                    <div className="w-48 text-sm truncate text-muted-foreground">
+                      {session.trackName || `Track #${session.trackId}`}
                     </div>
+
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => deleteSession.mutate(session.id)}
+                      className="w-8 flex items-center justify-center hover:text-destructive transition-colors"
+                      title="Delete session"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </CardContent>
               </Card>
