@@ -341,14 +341,26 @@ export default function Sessions() {
         </div>
       )}
 
+      {/* Sessions Table Header */}
+      {displaySessions && displaySessions.length > 0 && (
+        <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-muted-foreground border-b">
+          <div className="w-8"></div>
+          <div className="flex-1 min-w-0">Horse</div>
+          <div className="w-48">Track</div>
+          <div className="w-32">Date</div>
+          <div className="w-24">Duration</div>
+          <div className="w-24">Risk</div>
+        </div>
+      )}
+
       {/* Sessions List */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {isLoading ? (
           <>
             {[1, 2, 3].map((i) => (
               <Card key={i}>
-                <CardContent className="p-4">
-                  <Skeleton className="h-20 w-full" />
+                <CardContent className="p-2">
+                  <Skeleton className="h-16 w-full" />
                 </CardContent>
               </Card>
             ))}
@@ -385,69 +397,55 @@ export default function Sessions() {
                 key={session.id} 
                 className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between gap-2 sm:gap-4">
-                    {/* Left side: Checkbox + Session Info */}
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                <CardContent className="py-2 px-3">
+                  <div className="flex items-center gap-2">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => toggleSessionSelection(session.id)}
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
+                    >
+                      {isSelected ? (
+                        <CheckSquare className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Square className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </button>
+
+                    {/* Horse Name + Alias */}
+                    <div className="flex-1 min-w-0">
                       <button
-                        onClick={() => toggleSessionSelection(session.id)}
-                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
+                        onClick={() => setLocation(`/sessions/${session.id}`)}
+                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
                       >
-                        {isSelected ? (
-                          <CheckSquare className="h-5 w-5 text-primary" />
-                        ) : (
-                          <Square className="h-5 w-5 text-muted-foreground" />
+                        <h3 className="font-semibold text-sm hover:text-primary transition-colors truncate">
+                          {session.horseName || 'Unassigned'}
+                        </h3>
+                        {session.horseAlias && (
+                          <p className="text-xs text-muted-foreground truncate">{session.horseAlias}</p>
                         )}
                       </button>
-                      
-                      <div className="flex-1 min-w-0">
-                        <button
-                          onClick={() => setLocation(`/sessions/${session.id}`)}
-                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
-                        >
-                          <h3 className="font-semibold text-base hover:text-primary transition-colors truncate">
-                            {session.horseName || 'Unassigned'}
-                          </h3>
-                        </button>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>{formatDateShort(session.sessionDate)}</span>
-                          </div>
-                          <span className="hidden sm:inline">•</span>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            <span className="truncate">{session.trackName || `Track #${session.trackId}`}</span>
-                          </div>
-                        </div>
-                      </div>
                     </div>
 
-                    {/* Right side: Session Data + Risk */}
-                    <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-                      {/* Duration */}
-                      <div className="text-right min-w-[60px] sm:min-w-[80px] hidden sm:block">
-                        <p className="text-xs text-muted-foreground mb-0.5">Duration</p>
-                        <span className="text-sm font-medium">
-                          {session.performanceData?.duration 
-                            ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
-                            : "—"}
-                        </span>
-                      </div>
+                    {/* Track */}
+                    <div className="w-48 text-sm truncate text-muted-foreground">
+                      {session.trackName || `Track #${session.trackId}`}
+                    </div>
 
-                      {/* Temperature */}
-                      <div className="text-right min-w-[60px] sm:min-w-[80px] hidden md:block">
-                        <p className="text-xs text-muted-foreground mb-0.5">Temp</p>
-                        <div className="text-sm font-medium flex items-center justify-end gap-1">
-                          <Thermometer className="h-3 w-3" />
-                          <span>{session.performanceData?.temperature || "—"}°C</span>
-                        </div>
-                      </div>
+                    {/* Date */}
+                    <div className="w-32 text-sm text-muted-foreground">
+                      {formatDateShort(session.sessionDate)}
+                    </div>
 
-                      {/* Injury Risk */}
-                      <div className="text-right min-w-[90px] sm:min-w-[120px]">
-                        <p className="text-xs text-muted-foreground mb-0.5 hidden sm:block">Injury Risk</p>
-                        <Badge className={getRiskColor(session.injuryRisk || "low")}>
+                    {/* Duration */}
+                    <div className="w-24 text-sm text-right">
+                      {session.performanceData?.duration 
+                        ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
+                        : "—"}
+                    </div>
+
+                    {/* Injury Risk */}
+                    <div className="w-24 text-right">
+                      <Badge className={getRiskColor(session.injuryRisk || "low")}>
                           {session.injuryRisk || "low"}
                         </Badge>
                       </div>
