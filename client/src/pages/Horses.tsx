@@ -260,12 +260,12 @@ export default function Horses() {
       {/* Statistics Cards */}
       <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-5">
         <Card className="border-0 shadow-none bg-gray-50">
-          <CardContent className="p-3">
+          <CardContent className="py-2 px-3">
             <div className="text-center">
-              <div className="text-2xl font-bold">{activeHorses}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Active Horses</div>
+              <div className="text-2xl font-bold leading-none">{activeHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Active Horses</div>
               {statsLoading ? (
-                <Skeleton className="h-2 w-10 mt-1 mx-auto" />
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
               ) : (
                 <div className="text-xs text-green-600 mt-0.5">+{newHorses30Days} new (30d)</div>
               )}
@@ -273,45 +273,38 @@ export default function Horses() {
           </CardContent>
         </Card>
         <Card className="border-0 shadow-none bg-gray-50">
-          <CardContent className="p-3">
+          <CardContent className="py-2 px-3">
             <div className="text-center">
-              <div className="text-2xl font-bold">{trainingHorses}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Training Horses</div>
+              <div className="text-2xl font-bold leading-none">{trainingHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Training Horses</div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-0 shadow-none bg-gray-50">
-          <CardContent className="p-3">
+          <CardContent className="py-2 px-3">
             <div className="text-center">
-              <div className="text-2xl font-bold">{retiredHorses}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Retired Horses</div>
+              <div className="text-2xl font-bold leading-none">{retiredHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Retired Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+           <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{injuredHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Injured Horses</div>
             </div>
           </CardContent>
         </Card>
         <Card className="border-0 shadow-none bg-gray-50">
-          <CardContent className="p-3">
+          <CardContent className="py-2 px-3">
             <div className="text-center">
-              <div className="text-2xl font-bold">{injuredHorses}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">Injured Horses</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-none bg-gray-50">
-          <CardContent className="p-3">
-            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{recentChanges30Days}</div>
+              <div className="text-xs text-muted-foreground mt-1">Recent Changes</div>
               {statsLoading ? (
-                <Skeleton className="h-6 w-10 mx-auto" />
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
               ) : (
-                <div className="text-2xl font-bold">{recentChanges30Days}</div>
-              )}
-              <div className="text-xs text-muted-foreground mt-0.5">Recent Changes</div>
-              {statsLoading ? (
-                <Skeleton className="h-2 w-14 mt-0.5 mx-auto" />
-              ) : (
-                <>
-                  <div className="text-xs text-green-600 mt-0.5">Last 30 days</div>
-                  <div className="text-xs text-purple-600">{sessions30Days} sessions</div>
-                </>
+                <div className="text-xs text-blue-600 mt-0.5">{sessions30Days} sessions</div>
               )}
             </div>
           </CardContent>
