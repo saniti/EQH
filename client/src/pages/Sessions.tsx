@@ -254,65 +254,7 @@ export default function Sessions() {
           </div>
         )}
         
-        {/* Sort Options */}
-        <div className="flex gap-2">
-          <Button 
-            variant={sortBy === 'date' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => {
-              if (sortBy === 'date') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('date');
-                setSortOrder('desc');
-              }
-            }}
-          >
-            Date {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </Button>
-          <Button 
-            variant={sortBy === 'horse' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => {
-              if (sortBy === 'horse') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('horse');
-                setSortOrder('asc');
-              }
-            }}
-          >
-            Horse {sortBy === 'horse' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </Button>
-          <Button 
-            variant={sortBy === 'duration' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => {
-              if (sortBy === 'duration') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('duration');
-                setSortOrder('asc');
-              }
-            }}
-          >
-            Duration {sortBy === 'duration' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </Button>
-          <Button 
-            variant={sortBy === 'risk' ? 'default' : 'outline'} 
-            size="sm"
-            onClick={() => {
-              if (sortBy === 'risk') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('risk');
-                setSortOrder('asc');
-              }
-            }}
-          >
-            Risk {sortBy === 'risk' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </Button>
-        </div>
+
       </div>
 
       {/* Select All Checkbox */}
@@ -349,7 +291,7 @@ export default function Sessions() {
           <div className="w-48">Track</div>
           <div className="w-32">Date</div>
           <div className="w-24">Duration</div>
-          <div className="w-24">Risk</div>
+          <div className="w-24 text-right">Risk</div>
         </div>
       )}
 
