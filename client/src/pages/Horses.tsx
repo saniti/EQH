@@ -1,7 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateTimeShort } from "@/lib/dateFormat";
 import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,32 +42,42 @@ export default function Horses() {
       limit: 100,
       offset: 0,
     },
-    { enabled: !!selectedOrgId }
-  );
-
-  const { data: stats, isLoading: statsLoading } = trpc.horses.getStats.useQuery(
-    { organizationId: selectedOrgId! },
-    { enabled: !!selectedOrgId }
+    { enabled: !!selectedOrgId, refetchOnWindowFocus: false }
   );
 
   const utils = trpc.useUtils();
+
+  const { data: stats, isLoading: statsLoading } = trpc.horses.getStats.useQuery(
+    { organizationId: selectedOrgId! },
+    { enabled: !!selectedOrgId, refetchOnWindowFocus: false }
+  );
+
+  // Invalidate stats when organization changes
+  useEffect(() => {
+    utils.horses.getStats.invalidate();
+    utils.horses.list.invalidate();
+  }, [selectedOrgId, utils]);
+
   const [, setLocation] = useLocation();
 
   const addFavorite = trpc.horses.addFavorite.useMutation({
     onSuccess: () => {
       utils.horses.list.invalidate();
+      utils.horses.getStats.invalidate();
     },
   });
 
   const removeFavorite = trpc.horses.removeFavorite.useMutation({
     onSuccess: () => {
       utils.horses.list.invalidate();
+      utils.horses.getStats.invalidate();
     },
   });
 
   const updateHorse = trpc.horses.update.useMutation({
     onSuccess: () => {
       utils.horses.list.invalidate();
+      utils.horses.getStats.invalidate();
       setEditingHorseId(null);
     },
   });
@@ -189,14 +199,14 @@ export default function Horses() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-4xl font-bold">{activeHorses}</div>
-              <div className="text-sm text-muted-foreground mt-1">Active Horses</div>
+              <div className="text-3xl font-bold">{activeHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Active Horses</div>
               {statsLoading ? (
-                <Skeleton className="h-4 w-16 mt-1" />
+                <Skeleton className="h-3 w-12 mt-1 mx-auto" />
               ) : (
                 <div className="text-xs text-green-600 mt-1">+{newHorses30Days} new (30d)</div>
               )}
@@ -204,40 +214,40 @@ export default function Horses() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-4xl font-bold">{trainingHorses}</div>
-              <div className="text-sm text-muted-foreground mt-1">Training Horses</div>
+              <div className="text-3xl font-bold">{trainingHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Training Horses</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-4xl font-bold">{retiredHorses}</div>
-              <div className="text-sm text-muted-foreground mt-1">Retired Horses</div>
+              <div className="text-3xl font-bold">{retiredHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Retired Horses</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-4xl font-bold">{injuredHorses}</div>
-              <div className="text-sm text-muted-foreground mt-1">Injured Horses</div>
+              <div className="text-3xl font-bold">{injuredHorses}</div>
+              <div className="text-xs text-muted-foreground mt-1">Injured Horses</div>
             </div>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center">
               {statsLoading ? (
-                <Skeleton className="h-10 w-16" />
+                <Skeleton className="h-8 w-12 mx-auto" />
               ) : (
-                <div className="text-4xl font-bold">{recentChanges30Days}</div>
+                <div className="text-3xl font-bold">{recentChanges30Days}</div>
               )}
-              <div className="text-sm text-muted-foreground mt-1">Recent Changes</div>
+              <div className="text-xs text-muted-foreground mt-1">Recent Changes</div>
               {statsLoading ? (
-                <Skeleton className="h-4 w-20 mt-1" />
+                <Skeleton className="h-3 w-16 mt-1 mx-auto" />
               ) : (
                 <>
                   <div className="text-xs text-green-600 mt-1">Last 30 days</div>

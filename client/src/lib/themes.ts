@@ -27,6 +27,32 @@ export type ThemePreset = {
 
 export const themePresets: ThemePreset[] = [
   {
+    id: "modern",
+    name: "Modern Minimal",
+    description: "Contemporary design with vibrant accent",
+    colors: {
+      primary: "212 100% 50%",
+      primaryForeground: "0 0% 100%",
+      secondary: "210 40% 96%",
+      secondaryForeground: "210 20% 20%",
+      accent: "280 85% 55%",
+      accentForeground: "0 0% 100%",
+      background: "0 0% 99%",
+      foreground: "210 15% 10%",
+      muted: "210 20% 92%",
+      mutedForeground: "210 15% 50%",
+      border: "210 20% 90%",
+      input: "210 20% 90%",
+      ring: "212 100% 50%",
+      card: "0 0% 100%",
+      cardForeground: "210 15% 10%",
+      destructive: "0 84% 60%",
+      destructiveForeground: "0 0% 100%",
+      popover: "0 0% 100%",
+      popoverForeground: "210 15% 10%",
+    },
+  },
+  {
     id: "default",
     name: "Professional Blue",
     description: "Clean and professional blue theme",
@@ -197,6 +223,6 @@ export function applyTheme(theme: ThemePreset) {
 
 export function getStoredTheme(): ThemePreset {
   const storedId = localStorage.getItem("theme-preset");
-  return themePresets.find(t => t.id === storedId) || themePresets[0];
+  return themePresets.find(t => t.id === storedId) || themePresets.find(t => t.id === "modern") || themePresets[0];
 }
 
