@@ -22,6 +22,7 @@ export default function Horses() {
   const { selectedOrgId, selectedOrg } = useOrganization();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("latestSession");
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({
     name: "",
@@ -93,19 +94,34 @@ export default function Horses() {
   // Sort horses based on selected option
   const sortHorses = (horseList: any[]) => {
     const sorted = [...horseList];
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    
     switch (sortBy) {
       case "latestSession":
         return sorted.sort((a, b) => {
           const aDate = a.latestSession?.sessionDate ? new Date(a.latestSession.sessionDate).getTime() : 0;
           const bDate = b.latestSession?.sessionDate ? new Date(b.latestSession.sessionDate).getTime() : 0;
-          return bDate - aDate;
+          return (bDate - aDate) * multiplier;
         });
       case "name":
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+        return sorted.sort((a, b) => a.name.localeCompare(b.name) * multiplier);
+      case "duration":
+        return sorted.sort((a, b) => {
+          const aDuration = (a.latestSession?.performanceData as any)?.duration || 0;
+          const bDuration = (b.latestSession?.performanceData as any)?.duration || 0;
+          return (aDuration - bDuration) * multiplier;
+        });
+      case "risk":
+        return sorted.sort((a, b) => {
+          const riskOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1, null: 0 };
+          const aRisk = riskOrder[a.latestSession?.injuryRisk as keyof typeof riskOrder] || 0;
+          const bRisk = riskOrder[b.latestSession?.injuryRisk as keyof typeof riskOrder] || 0;
+          return (aRisk - bRisk) * multiplier;
+        });
       case "status":
-        return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || ''));
+        return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || '') * multiplier);
       case "breed":
-        return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || ''));
+        return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || '') * multiplier);
       default:
         return sorted;
     }
@@ -299,10 +315,70 @@ export default function Horses() {
       <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground">
         <div className="flex items-center">
           <div className="w-8"></div>
-          <div className="flex-1">Horse Name</div>
-          <div className="w-48">Latest Session</div>
-          <div className="w-24">Duration</div>
-          <div className="w-24">Injury Risk</div>
+          <button
+            onClick={() => {
+              if (sortBy === 'name') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('name');
+                setSortOrder('asc');
+              }
+            }}
+            className="flex-1 text-left hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Horse Name
+            {sortBy === 'name' && (
+              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              if (sortBy === 'latestSession') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('latestSession');
+                setSortOrder('desc');
+              }
+            }}
+            className="w-48 text-left hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Latest Session
+            {sortBy === 'latestSession' && (
+              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              if (sortBy === 'duration') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('duration');
+                setSortOrder('asc');
+              }
+            }}
+            className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Duration
+            {sortBy === 'duration' && (
+              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            )}
+          </button>
+          <button
+            onClick={() => {
+              if (sortBy === 'risk') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('risk');
+                setSortOrder('asc');
+              }
+            }}
+            className="w-24 text-left hover:text-foreground transition-colors flex items-center gap-1"
+          >
+            Injury Risk
+            {sortBy === 'risk' && (
+              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+            )}
+          </button>
           <div className="w-8"></div>
         </div>
       </div>

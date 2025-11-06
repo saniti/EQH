@@ -30,6 +30,8 @@ export default function Sessions() {
   const [showAssignHorseDialog, setShowAssignHorseDialog] = useState(false);
   const [selectedHorseId, setSelectedHorseId] = useState<number | undefined>();
   const [selectedTrackId, setSelectedTrackId] = useState<number | undefined>();
+  const [sortBy, setSortBy] = useState<'date' | 'horse' | 'duration' | 'risk'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     if (horseIdFromUrl) {
@@ -251,6 +253,66 @@ export default function Sessions() {
             </Button>
           </div>
         )}
+        
+        {/* Sort Options */}
+        <div className="flex gap-2 ml-auto">
+          <Button 
+            variant={sortBy === 'date' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'date') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('date');
+                setSortOrder('desc');
+              }
+            }}
+          >
+            Date {sortBy === 'date' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </Button>
+          <Button 
+            variant={sortBy === 'horse' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'horse') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('horse');
+                setSortOrder('asc');
+              }
+            }}
+          >
+            Horse {sortBy === 'horse' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </Button>
+          <Button 
+            variant={sortBy === 'duration' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'duration') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('duration');
+                setSortOrder('asc');
+              }
+            }}
+          >
+            Duration {sortBy === 'duration' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </Button>
+          <Button 
+            variant={sortBy === 'risk' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => {
+              if (sortBy === 'risk') {
+                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+              } else {
+                setSortBy('risk');
+                setSortOrder('asc');
+              }
+            }}
+          >
+            Risk {sortBy === 'risk' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </Button>
+        </div>
       </div>
 
       {/* Select All Checkbox */}
@@ -299,7 +361,24 @@ export default function Sessions() {
             </CardContent>
           </Card>
         ) : displaySessions && displaySessions.length > 0 ? (
-          displaySessions.map((session) => {
+          [...displaySessions].sort((a, b) => {
+            const multiplier = sortOrder === 'asc' ? 1 : -1;
+            switch (sortBy) {
+              case 'date':
+                return (new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime()) * multiplier;
+              case 'horse':
+                return (a.horseName || '').localeCompare(b.horseName || '') * multiplier;
+              case 'duration':
+                return ((a.performanceData as any)?.duration || 0 - (b.performanceData as any)?.duration || 0) * multiplier;
+              case 'risk':
+                const riskOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1, null: 0 };
+                const aRisk = riskOrder[a.injuryRisk as keyof typeof riskOrder] || 0;
+                const bRisk = riskOrder[b.injuryRisk as keyof typeof riskOrder] || 0;
+                return (aRisk - bRisk) * multiplier;
+              default:
+                return 0;
+            }
+          }).map((session) => {
             const isSelected = selectedSessions.includes(session.id);
             return (
               <Card 
