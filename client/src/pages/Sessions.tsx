@@ -428,7 +428,7 @@ export default function Sessions() {
                 className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
               >
                 <CardContent className="py-2 px-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                     {/* Checkbox */}
                     <button
                       onClick={() => toggleSessionSelection(session.id)}
@@ -457,36 +457,36 @@ export default function Sessions() {
                     </div>
 
                     {/* Risk */}
-                    <div className="w-24">
+                    <div className="w-20 md:w-24 flex-shrink-0">
                       <Badge className={getRiskColor(session.injuryRisk || "low")}>
                         {session.injuryRisk || "low"}
                       </Badge>
                     </div>
 
                     {/* Date */}
-                    <div className="w-32 text-sm text-muted-foreground">
+                    <div className="w-24 md:w-32 text-xs md:text-sm text-muted-foreground flex-shrink-0">
                       {formatDateShort(session.sessionDate)}
                     </div>
 
                     {/* Duration */}
-                    <div className="w-24 text-sm">
+                    <div className="w-16 md:w-24 text-xs md:text-sm flex-shrink-0">
                       {session.performanceData?.duration 
                         ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
                         : "—"}
                     </div>
 
                     {/* Track */}
-                    <div className="w-48 text-sm truncate text-muted-foreground">
+                    <div className="hidden md:block w-48 text-xs md:text-sm truncate text-muted-foreground flex-shrink-0">
                       {session.trackName || `Track #${session.trackId}`}
                     </div>
 
                     {/* Delete Button */}
                     <button
                       onClick={() => deleteSession.mutate(session.id)}
-                      className="w-8 flex items-center justify-center hover:text-destructive transition-colors"
+                      className="w-6 md:w-8 flex items-center justify-end flex-shrink-0 hover:text-destructive transition-colors"
                       title="Delete session"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                     </button>
                   </div>
                 </CardContent>

@@ -548,10 +548,10 @@ export default function Horses() {
             }
 
             return (
-              <div key={horse.id} className="border-b p-3 md:p-4 hover:bg-gray-50 transition-colors overflow-x-auto">
-                <div className="flex items-center gap-2 md:gap-4 min-w-max md:min-w-0">
+              <div key={horse.id} className="border-b p-3 md:p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                   {/* Favorite Icon + Horse Name and Alias */}
-                  <div className="flex items-center gap-2 flex-1 min-w-[120px]">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
                     <button
                       onClick={() => handleToggleFavorite(horse.id, isFavorite)}
                       className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
@@ -622,14 +622,14 @@ export default function Horses() {
                   </div>
 
                   {/* Edit Button */}
-                  <div className="w-6 md:w-8 flex justify-center flex-shrink-0">
+                  <div className="w-6 md:w-8 flex justify-end flex-shrink-0">
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => handleEditClick(horse)}
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 p-0"
                     >
-                      <Edit2 className="h-4 w-4" />
+                      <Edit2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>
