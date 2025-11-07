@@ -204,7 +204,7 @@ export default function Sessions() {
     }
     
     // Filter by risk
-    if (riskFilter !== "all" && session.riskLevel !== riskFilter) {
+    if (riskFilter !== "all" && session.injuryRisk !== riskFilter) {
       return false;
     }
     
@@ -438,7 +438,7 @@ export default function Sessions() {
                 return ((a.performanceData as any)?.duration || 0 - (b.performanceData as any)?.duration || 0) * multiplier;
               case 'risk':
                 const riskOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-                return ((riskOrder[(a.riskLevel as keyof typeof riskOrder) || 'low'] || 0) - (riskOrder[(b.riskLevel as keyof typeof riskOrder) || 'low'] || 0)) * multiplier;
+                return ((riskOrder[(a.injuryRisk as keyof typeof riskOrder) || 'low'] || 0) - (riskOrder[(b.injuryRisk as keyof typeof riskOrder) || 'low'] || 0)) * multiplier;
               default:
                 return 0;
             }
@@ -461,9 +461,9 @@ export default function Sessions() {
                 {session.horseAlias && <div className="text-xs text-muted-foreground">{session.horseAlias}</div>}
               </td>
               <td className="px-4 py-3 text-sm">
-                {session.riskLevel && (
-                  <Badge variant={getRiskColor(session.riskLevel)}>
-                    {session.riskLevel}
+                {session.injuryRisk && (
+                  <Badge variant={getRiskColor(session.injuryRisk)}>
+                    {session.injuryRisk}
                   </Badge>
                 )}
               </td>
