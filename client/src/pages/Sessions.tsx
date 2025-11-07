@@ -35,6 +35,19 @@ export default function Sessions() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [countryFilter, setCountryFilter] = useState<string>("");
   const [trackTypeFilter, setTrackTypeFilter] = useState<string>("");
+  const [initialized, setInitialized] = useState(false);
+
+  // Initialize filters on component mount only once
+  useEffect(() => {
+    if (!initialized) {
+      setSearch("");
+      setRiskFilter("all");
+      setDateFilter("30days");
+      setCurrentPage(1);
+      setSelectedSessions([]);
+      setInitialized(true);
+    }
+  }, [initialized])
 
   useEffect(() => {
     if (horseIdFromUrl) {
