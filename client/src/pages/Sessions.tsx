@@ -46,50 +46,15 @@ export default function Sessions() {
     console.log('[Sessions] selectedOrg:', selectedOrg?.name);
   }, [selectedOrgId, selectedOrg]);
 
-  // Calculate date range based on filter
-  const getDateRange = () => {
-    const now = new Date();
-    const endDate = new Date();
-    let startDate = new Date();
 
-    switch (dateFilter) {
-      case "7days":
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case "30days":
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case "60days":
-        startDate.setDate(now.getDate() - 60);
-        break;
-      case "90days":
-        startDate.setDate(now.getDate() - 90);
-        break;
-      case "all":
-        startDate = new Date(2000, 0, 1);
-        break;
-    }
 
-    return { startDate, endDate };
-  };
-
-  const dateRange = getDateRange();
   const limit = 10;
   const offset = (currentPage - 1) * limit;
-  
-  // Memoize dateRange to prevent unnecessary re-renders
-  const memoizedDateRange = {
-    startDate: dateRange.startDate.toISOString(),
-    endDate: dateRange.endDate.toISOString(),
-  };
 
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
       organizationId: selectedOrgId!,
-      horseId: horseFilter,
-      injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
-      startDate: memoizedDateRange.startDate,
-      endDate: memoizedDateRange.endDate,
+      horseId: horseFilter || undefined,
       limit: limit + 1, // Fetch one extra to check if there are more pages
       offset,
     },
