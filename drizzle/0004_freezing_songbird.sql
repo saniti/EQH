@@ -1,0 +1,1 @@
+ALTER TABLE `tracks` ADD `country` varchar(100) DEFAULT 'Australia';

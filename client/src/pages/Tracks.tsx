@@ -132,7 +132,8 @@ export default function Tracks() {
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {track.country && <Badge variant="outline">{track.country}</Badge>}
                           {track.type && <Badge variant="outline">{track.type}</Badge>}
                           <Badge variant="secondary">Global</Badge>
                         </div>
@@ -197,17 +198,12 @@ export default function Tracks() {
                         )}
                       </div>
                       
-                      {/* Organization ownership */}
-                      {track.organizationId && (
-                        <div className="text-xs text-muted-foreground">
-                          Owned by: <span className="font-medium">{orgMap[track.organizationId] || `Organization ${track.organizationId}`}</span>
-                        </div>
-                      )}
-                      
+                      {/* Country and Organization ownership */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {track.country && <Badge variant="outline">{track.country}</Badge>}
                           {track.type && <Badge variant="outline">{track.type}</Badge>}
-                          <Badge variant="default">Organization</Badge>
+                          <Badge variant="secondary">Organization</Badge>
                         </div>
                         <div className="flex items-center gap-1">
                           {isAdmin && (
@@ -231,6 +227,11 @@ export default function Tracks() {
                           </Button>
                         </div>
                       </div>
+                      {track.organizationId && (
+                        <div className="text-xs text-muted-foreground">
+                          Owned by: <span className="font-medium">{orgMap[track.organizationId] || `Organization ${track.organizationId}`}</span>
+                        </div>
+                      )}
 
                       {track.description && (
                         <div className="text-sm text-muted-foreground mt-2">

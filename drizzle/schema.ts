@@ -139,6 +139,7 @@ export const tracks = mysqlTable("tracks", {
   name: varchar("name", { length: 255 }).notNull(),
   type: varchar("type", { length: 50 }),
   scope: mysqlEnum("scope", ["global", "local"]).default("local").notNull(),
+  country: varchar("country", { length: 100 }).default("Australia"),
   organizationId: int("organizationId"),
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow(),

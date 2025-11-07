@@ -211,6 +211,7 @@ async function seed() {
         name: track.name,
         type: track.type,
         scope: "global",
+        country: "Australia",
         description: `${track.description} - Located in ${track.location}`,
       });
     }
@@ -222,6 +223,7 @@ async function seed() {
         name: track.name,
         type: track.type,
         scope: "global",
+        country: "USA",
         description: `${track.description} - Located in ${track.location}`,
       });
     }
@@ -229,14 +231,17 @@ async function seed() {
     // 4. Create training tracks (local to each organization)
     console.log("Creating training facilities...");
     const orgNames = ["Melbourne Racing Stables", "Sydney Equestrian Center", "Kentucky Derby Training Facility"];
+    const orgCountries = ["Australia", "Australia", "USA"];
     for (let i = 0; i < orgIds.length; i++) {
       const orgId = orgIds[i];
       const orgName = orgNames[i];
+      const country = orgCountries[i];
       for (const track of trainingTracks) {
         await db.insert(schema.tracks).values({
           name: `${track.name} - ${orgName}`,
           type: track.type,
           scope: "local",
+          country: country,
           organizationId: orgId,
           description: track.description,
         });
