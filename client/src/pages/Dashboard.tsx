@@ -12,11 +12,11 @@ export default function Dashboard() {
   const utils = trpc.useUtils();
   
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery(
-    undefined,
+    { organizationId: selectedOrgId },
     { enabled: !!selectedOrgId }
   );
   const { data: favoriteHorses, isLoading: favoritesLoading } = trpc.dashboard.getFavoriteHorses.useQuery(
-    undefined,
+    { organizationId: selectedOrgId },
     { enabled: !!selectedOrgId }
   );
 
@@ -104,6 +104,60 @@ export default function Dashboard() {
             <p className="text-xs text-muted-foreground mt-1">
               High/critical risk
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Horse Statistics */}
+      <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-5">
+        <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.activeHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Active Horses</div>
+              {statsLoading ? (
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
+              ) : (
+                <div className="text-xs text-green-600 mt-0.5">+{stats?.newHorses30Days || 0} new (30d)</div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.trainingHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Training Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.retiredHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Retired Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.injuredHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Injured Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-gray-50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.recentChanges30Days || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Recent Changes</div>
+              {statsLoading ? (
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
+              ) : (
+                <div className="text-xs text-blue-600 mt-0.5">{stats?.sessions30Days || 0} sessions</div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

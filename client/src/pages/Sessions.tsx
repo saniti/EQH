@@ -107,7 +107,7 @@ export default function Sessions() {
 
   // Fetch organization horses
   const { data: horses } = trpc.horses.list.useQuery(
-    { organizationId: selectedOrgId || 0 },
+    { organizationId: selectedOrgId!, limit: 100, offset: 0 },
     { enabled: !!selectedOrgId }
   );
 
@@ -217,59 +217,84 @@ export default function Sessions() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center flex-wrap">
-        <div className="flex-1 min-w-[200px]">
+      <div className="space-y-4">
+        <div className="flex gap-3 items-center flex-wrap">
           <Input
             placeholder="Search by horse name or location..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full"
+            className="w-full max-w-xs"
           />
+          
+          <Select value={riskFilter} onValueChange={setRiskFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All risk levels</SelectItem>
+              <SelectItem value="low">Low risk</SelectItem>
+              <SelectItem value="medium">Medium risk</SelectItem>
+              <SelectItem value="high">High risk</SelectItem>
+              <SelectItem value="critical">Critical risk</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {selectedSessions.length > 0 && (
+            <div className="flex gap-2 ml-auto">
+              <Button onClick={() => setShowAssignDialog(true)} variant="default" size="sm">
+                Assign to Track
+              </Button>
+              <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary" size="sm">
+                Assign to Horse
+              </Button>
+            </div>
+          )}
         </div>
-        
-        <Select value={dateFilter} onValueChange={setDateFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7days">Last 7 days</SelectItem>
-            <SelectItem value="30days">Last 30 days</SelectItem>
-            <SelectItem value="60days">Last 60 days</SelectItem>
-            <SelectItem value="90days">Last 90 days</SelectItem>
-            <SelectItem value="all">All time</SelectItem>
-          </SelectContent>
-        </Select>
 
-        <Select value={riskFilter} onValueChange={setRiskFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All risk levels</SelectItem>
-            <SelectItem value="low">Low risk</SelectItem>
-            <SelectItem value="medium">Medium risk</SelectItem>
-            <SelectItem value="high">High risk</SelectItem>
-            <SelectItem value="critical">Critical risk</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {selectedSessions.length > 0 && (
-          <div className="flex gap-2">
-            <Button onClick={() => setShowAssignDialog(true)} variant="default">
-              Assign {selectedSessions.length} to Track
-            </Button>
-            <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary">
-              Assign {selectedSessions.length} to Horse
-            </Button>
-          </div>
-        )}
-        
-
+        {/* Date Filter Buttons */}
+        <div className="flex gap-2 items-center flex-wrap">
+          <span className="text-sm text-muted-foreground">Date:</span>
+          <Button
+            variant={dateFilter === '7days' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setDateFilter('7days')}
+          >
+            7 days
+          </Button>
+          <Button
+            variant={dateFilter === '30days' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setDateFilter('30days')}
+          >
+            30 days
+          </Button>
+          <Button
+            variant={dateFilter === '60days' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setDateFilter('60days')}
+          >
+            60 days
+          </Button>
+          <Button
+            variant={dateFilter === '90days' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setDateFilter('90days')}
+          >
+            90 days
+          </Button>
+          <Button
+            variant={dateFilter === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setDateFilter('all')}
+          >
+            All time
+          </Button>
+        </div>
       </div>
 
       {/* Select All Checkbox */}
       {displaySessions.length > 0 && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 border-b pb-3">
           <button
             onClick={toggleSelectAll}
             className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -592,24 +617,28 @@ export default function Sessions() {
           <DialogHeader>
             <DialogTitle>Assign Sessions to Horse</DialogTitle>
             <DialogDescription>
-              Assign {selectedSessions.length} selected session(s) to a horse in your organization
+              Select a horse to assign {selectedSessions.length} session(s) to
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <div>
-              <h4 className="font-medium mb-2">Select Horse</h4>
-              <Select value={selectedHorseId?.toString() || "unassigned"} onValueChange={(v) => setSelectedHorseId(v === "unassigned" ? undefined : parseInt(v))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a horse or leave unassigned" />
+            <div className="space-y-2">
+              <Label>Horse</Label>
+              <Select value={selectedHorseId?.toString() || ''} onValueChange={(v) => setSelectedHorseId(v ? parseInt(v) : undefined)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a horse" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
-                  {horses?.map(horse => (
-                    <SelectItem key={horse.id} value={horse.id.toString()}>
-                      {horse.name} - {horse.breed}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="w-full">
+                  <SelectItem value="">Unassign from horse</SelectItem>
+                  {horses && horses.length > 0 ? (
+                    horses.map((horse) => (
+                      <SelectItem key={horse.id} value={horse.id.toString()}>
+                        {horse.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground">No horses available</div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -620,7 +649,7 @@ export default function Sessions() {
               Cancel
             </Button>
             <Button onClick={handleAssignToHorse}>
-              Assign to Horse
+              Assign
             </Button>
           </DialogFooter>
         </DialogContent>
