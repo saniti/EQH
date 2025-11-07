@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateShort } from "@/lib/dateFormat";
-import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2 } from "lucide-react";
+import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2, Search } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -236,87 +236,89 @@ export default function Sessions() {
       </div>
 
       {/* Filters */}
-      <div className="space-y-4">
-        <div className="flex gap-3 items-center flex-wrap">
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by horse name or location..."
+            placeholder="Search by horse name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-xs"
+            className="pl-9"
           />
-          
-          <Select value={riskFilter} onValueChange={setRiskFilter}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All risk levels</SelectItem>
-              <SelectItem value="low">Low risk</SelectItem>
-              <SelectItem value="medium">Medium risk</SelectItem>
-              <SelectItem value="high">High risk</SelectItem>
-              <SelectItem value="critical">Critical risk</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {selectedSessions.length > 0 && (
-            <div className="flex gap-2 ml-auto">
-              <Button onClick={() => setShowAssignDialog(true)} variant="default" size="sm">
-                Assign to Track
-              </Button>
-              <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary" size="sm">
-                Assign to Horse
-              </Button>
-            </div>
-          )}
         </div>
-
-        {/* Date Filter Buttons */}
-        <div className="flex gap-2 items-center flex-wrap">
-          <span className="text-sm text-muted-foreground">Date:</span>
-          <Button
-            variant={dateFilter === '7days' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setDateFilter('7days')}
-          >
-            7 days
-          </Button>
-          <Button
-            variant={dateFilter === '30days' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setDateFilter('30days')}
-          >
-            30 days
-          </Button>
-          <Button
-            variant={dateFilter === '60days' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setDateFilter('60days')}
-          >
-            60 days
-          </Button>
-          <Button
-            variant={dateFilter === '90days' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setDateFilter('90days')}
-          >
-            90 days
-          </Button>
-          <Button
-            variant={dateFilter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setDateFilter('all')}
-          >
-            All time
-          </Button>
-        </div>
+        
+        <Select value={riskFilter} onValueChange={setRiskFilter}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All risk levels</SelectItem>
+            <SelectItem value="low">Low risk</SelectItem>
+            <SelectItem value="medium">Medium risk</SelectItem>
+            <SelectItem value="high">High risk</SelectItem>
+            <SelectItem value="critical">Critical risk</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      {/* Date Filter Buttons */}
+      <div className="flex gap-2 items-center flex-wrap">
+        <span className="text-sm text-muted-foreground">Date:</span>
+        <Button
+          variant={dateFilter === '7days' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setDateFilter('7days')}
+        >
+          7 days
+        </Button>
+        <Button
+          variant={dateFilter === '30days' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setDateFilter('30days')}
+        >
+          30 days
+        </Button>
+        <Button
+          variant={dateFilter === '60days' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setDateFilter('60days')}
+        >
+          60 days
+        </Button>
+        <Button
+          variant={dateFilter === '90days' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setDateFilter('90days')}
+        >
+          90 days
+        </Button>
+        <Button
+          variant={dateFilter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setDateFilter('all')}
+        >
+          All time
+        </Button>
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedSessions.length > 0 && (
+        <div className="flex gap-2">
+          <Button onClick={() => setShowAssignDialog(true)} variant="default" size="sm">
+            Assign to Track
+          </Button>
+          <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary" size="sm">
+            Assign to Horse
+          </Button>
+        </div>
+      )}
 
       {/* Sessions Table */}
       {!isLoading && filteredSessions.length > 0 && (
-        <div className="overflow-x-auto">
+        <div className="border rounded-lg overflow-x-auto">
           <table className="w-full">
-            <thead>
-              <tr className="border-b">
+            <thead className="bg-gray-50 border-b">
+              <tr>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8">
                   <button onClick={toggleSelectAll} className="flex items-center gap-2">
                     {selectedSessions.length === filteredSessions.length ? (
@@ -401,7 +403,9 @@ export default function Sessions() {
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  Risk
+                </th>
               </tr>
             </thead>
             <tbody>
