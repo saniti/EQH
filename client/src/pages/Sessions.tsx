@@ -40,6 +40,18 @@ export default function Sessions() {
     }
   }, [horseIdFromUrl]);
 
+  // Clear all filters when navigating to Sessions page
+  useEffect(() => {
+    setSearch("");
+    setRiskFilter("all");
+    setDateFilter("30days");
+    setCurrentPage(1);
+    setSelectedSessions([]);
+    if (!horseIdFromUrl) {
+      setHorseFilter(undefined);
+    }
+  }, []);
+
   useEffect(() => {
     console.log('[Sessions] selectedOrgId changed to:', selectedOrgId);
     console.log('[Sessions] selectedOrg:', selectedOrg?.name);
