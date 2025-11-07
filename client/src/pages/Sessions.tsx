@@ -403,9 +403,7 @@ export default function Sessions() {
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                  Risk
-                </th>
+                <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
               </tr>
             </thead>
             <tbody>
