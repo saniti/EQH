@@ -342,112 +342,127 @@ export default function Horses() {
       </div>
 
       {/* Table Header */}
-      <div className="border rounded-lg bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
-        <div className="flex items-center whitespace-nowrap">
-          <div className="px-3 py-2 w-6 flex-shrink-0"></div>
-          <button
-            onClick={() => {
-              if (sortBy === 'name') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('name');
-                setSortOrder('asc');
-              }
-            }}
-            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
-          >
-            Horse
-            {sortBy === 'name' && (
-              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              if (sortBy === 'risk') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('risk');
-                setSortOrder('asc');
-              }
-            }}
-            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-          >
-            Risk
-            {sortBy === 'risk' && (
-              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              if (sortBy === 'latestSession') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('latestSession');
-                setSortOrder('desc');
-              }
-            }}
-            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-          >
-            Date
-            {sortBy === 'latestSession' && (
-              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              if (sortBy === 'duration') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('duration');
-                setSortOrder('asc');
-              }
-            }}
-            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-          >
-            Duration
-            {sortBy === 'duration' && (
-              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-            )}
-          </button>
-          <button
-            onClick={() => {
-              if (sortBy === 'track') {
-                setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-              } else {
-                setSortBy('track');
-                setSortOrder('asc');
-              }
-            }}
-            className="hidden md:flex px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-          >
-            Track
-            {sortBy === 'track' && (
-              <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-            )}
-          </button>
-          <div className="px-3 py-2 w-6 flex-shrink-0"></div>
-        </div>
-      </div>
+      <div className="border rounded-lg overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8"></th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'name') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('name');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Horse
+                  {sortBy === 'name' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'risk') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('risk');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Risk
+                  {sortBy === 'risk' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'latestSession') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('latestSession');
+                      setSortOrder('desc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Date
+                  {sortBy === 'latestSession' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'duration') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('duration');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Duration
+                  {sortBy === 'duration' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'track') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('track');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Track
+                  {sortBy === 'track' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
+            </tr>
+          </thead>
+          <tbody>
 
       {/* Horses List */}
-      <div className="space-y-0">
-        {isLoading ? (
-          <>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-4 border-b">
+      {isLoading ? (
+        <>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <tr key={i}>
+              <td colSpan={7} className="p-4 border-b">
                 <Skeleton className="h-12 w-full" />
-              </div>
-            ))}
-          </>
-        ) : sortedHorses.length > 0 ? (
-          sortedHorses.map((horse, index) => {
-            const isFavorite = favoriteIds.has(horse.id);
-            const isEditing = editingHorseId === horse.id;
-            const latestSession = (horse as any).latestSession;
+              </td>
+            </tr>
+          ))}
+        </>
+      ) : sortedHorses.length > 0 ? (
+        sortedHorses.map((horse, index) => {
+          const isFavorite = favoriteIds.has(horse.id);
+          const isEditing = editingHorseId === horse.id;
+          const latestSession = (horse as any).latestSession;
 
-            if (isEditing) {
-              return (
-                <div key={horse.id} className="p-6 border-b bg-white">
+          if (isEditing) {
+            return (
+              <tr key={horse.id}>
+                <td colSpan={7} className="p-6 border-b bg-white">
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -543,104 +558,92 @@ export default function Horses() {
                       </Button>
                     </div>
                   </div>
-                </div>
-              );
-            }
-
-            return (
-              <div key={horse.id} className="border-b hover:bg-gray-50 transition-colors">
-                <div className="flex flex-col md:flex-row md:items-center">
-                  {/* Favorite Icon + Horse Name and Alias */}
-                  <div className="flex items-center gap-2 px-3 py-2 flex-1 min-w-0">
-                    <button
-                      onClick={() => handleToggleFavorite(horse.id, isFavorite)}
-                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
-                    >
-                      <Heart
-                        className={`h-5 w-5 transition-colors ${
-                          isFavorite
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300 hover:text-yellow-400"
-                        }`}
-                      />
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <button
-                        onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
-                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                      >
-                        <h3 className="font-semibold text-sm md:text-base hover:text-primary transition-colors truncate">
-                          {horse.name}
-                        </h3>
-                      </button>
-                      <p className="text-xs text-muted-foreground truncate">{(horse as any).alias || 'No alias'}</p>
-                    </div>
-                  </div>
-
-                  {/* Injury Risk */}
-                  <div className="px-3 py-2 flex-shrink-0">
-                    {latestSession?.injuryRisk ? (
-                      <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
-                        {latestSession.injuryRisk}
-                      </Badge>
-                    ) : (
-                      <Badge variant={getRiskColor(null) as any}>no-data</Badge>
-                    )}
-                  </div>
-
-                  {/* Latest Session Date */}
-                  <div className="px-3 py-2 text-xs md:text-sm text-left flex-shrink-0 whitespace-nowrap">
-                    {latestSession ? (
-                      <button
-                        onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
-                      >
-                        <Clock className="h-4 w-4 flex-shrink-0" />
-                        <span className="truncate">
-                          {formatDateTimeShort(latestSession.sessionDate)}
-                        </span>
-                      </button>
-                    ) : (
-                      <span className="text-muted-foreground">No sessions</span>
-                    )}
-                  </div>
-
-                  {/* Duration */}
-                  <div className="px-3 py-2 text-xs md:text-sm text-left flex-shrink-0 whitespace-nowrap">
-                    {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
-                      <span>
-                        {formatDuration((latestSession.performanceData as any).duration)}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </div>
-
-                  {/* Track - hidden on mobile */}
-                  <div className="hidden md:flex px-3 py-2 text-sm text-left text-muted-foreground flex-shrink-0 whitespace-nowrap">
-                    {(horse as any).trackName || '—'}
-                  </div>
-
-                  {/* Edit Button */}
-                  <div className="px-3 py-2 flex justify-end flex-shrink-0">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEditClick(horse)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                </td>
+              </tr>
             );
-          })
-        ) : (
-          <div className="p-12 text-center text-muted-foreground">
+          }
+
+          return (
+            <tr key={horse.id} className="border-b hover:bg-gray-50 transition-colors">
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => handleToggleFavorite(horse.id, isFavorite)}
+                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  <Heart
+                    className={`h-5 w-5 transition-colors ${
+                      isFavorite
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300 hover:text-yellow-400"
+                    }`}
+                  />
+                </button>
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
+                  className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                    {horse.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">{(horse as any).alias || 'No alias'}</p>
+                </button>
+              </td>
+              <td className="px-4 py-3">
+                {latestSession?.injuryRisk ? (
+                  <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
+                    {latestSession.injuryRisk}
+                  </Badge>
+                ) : (
+                  <Badge variant={getRiskColor(null) as any}>no-data</Badge>
+                )}
+              </td>
+              <td className="px-4 py-3 text-sm">
+                {latestSession ? (
+                  <button
+                    onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <Clock className="h-4 w-4 flex-shrink-0" />
+                    <span>{formatDateTimeShort(latestSession.sessionDate)}</span>
+                  </button>
+                ) : (
+                  <span className="text-muted-foreground">No sessions</span>
+                )}
+              </td>
+              <td className="px-4 py-3 text-sm">
+                {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
+                  <span>{formatDuration((latestSession.performanceData as any).duration)}</span>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </td>
+              <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
+                {(horse as any).trackName || '—'}
+              </td>
+              <td className="px-4 py-3 text-right">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleEditClick(horse)}
+                  className="h-7 w-7 p-0"
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
+                </Button>
+              </td>
+            </tr>
+          );
+        })
+      ) : (
+        <tr>
+          <td colSpan={7} className="p-12 text-center text-muted-foreground">
             No horses found. Try adjusting your search or filters.
-          </div>
-        )}
+          </td>
+        </tr>
+      )}
+          </tbody>
+        </table>
       </div>
 
       {/* Add Horse Dialog */}

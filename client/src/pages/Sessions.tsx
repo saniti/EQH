@@ -295,114 +295,125 @@ export default function Sessions() {
 
       {/* Sessions Table Header */}
       {displaySessions && displaySessions.length > 0 && (
-        <div className="border rounded-lg bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
-          <div className="flex items-center whitespace-nowrap">
-            <div className="px-3 py-2 w-6 flex-shrink-0"></div>
-            <button
-              onClick={() => {
-                if (sortBy === 'horse') {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortBy('horse');
-                  setSortOrder('asc');
-                }
-              }}
-              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
-            >
-              Horse
-              {sortBy === 'horse' && (
-                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-             <button
-              onClick={() => {
-                if (sortBy === 'risk') {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortBy('risk');
-                  setSortOrder('asc');
-                }
-              }}
-              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-            >
-              Risk
-              {sortBy === 'risk' && (
-                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                if (sortBy === 'date') {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortBy('date');
-                  setSortOrder('desc');
-                }
-              }}
-              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-            >
-              Date
-              {sortBy === 'date' && (
-                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                if (sortBy === 'duration') {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortBy('duration');
-                  setSortOrder('asc');
-                }
-              }}
-              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-            >
-              Duration
-              {sortBy === 'duration' && (
-                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                if (sortBy === 'track') {
-                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                } else {
-                  setSortBy('track');
-                  setSortOrder('asc');
-                }
-              }}
-              className="hidden md:flex px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
-            >
-              Track
-              {sortBy === 'track' && (
-                <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-              )}
-            </button>
-            <div className="px-3 py-2 w-6 flex-shrink-0"></div>
-          </div>
-        </div>
-      )}
+        <div className="border rounded-lg overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8"></th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  <button
+                    onClick={() => {
+                      if (sortBy === 'horse') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('horse');
+                        setSortOrder('asc');
+                      }
+                    }}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    Horse
+                    {sortBy === 'horse' && (
+                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  <button
+                    onClick={() => {
+                      if (sortBy === 'risk') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('risk');
+                        setSortOrder('asc');
+                      }
+                    }}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    Risk
+                    {sortBy === 'risk' && (
+                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  <button
+                    onClick={() => {
+                      if (sortBy === 'date') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('date');
+                        setSortOrder('desc');
+                      }
+                    }}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    Date
+                    {sortBy === 'date' && (
+                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  <button
+                    onClick={() => {
+                      if (sortBy === 'duration') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('duration');
+                        setSortOrder('asc');
+                      }
+                    }}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    Duration
+                    {sortBy === 'duration' && (
+                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </button>
+                </th>
+                <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                  <button
+                    onClick={() => {
+                      if (sortBy === 'track') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy('track');
+                        setSortOrder('asc');
+                      }
+                    }}
+                    className="hover:text-foreground transition-colors flex items-center gap-1"
+                  >
+                    Track
+                    {sortBy === 'track' && (
+                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
+                  </button>
+                </th>
+                <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
+              </tr>
+            </thead>
+            <tbody>
 
       {/* Sessions List */}
-      <div className="space-y-2">
-        {isLoading ? (
-          <>
-            {[1, 2, 3].map((i) => (
-              <Card key={i}>
-                <CardContent className="p-2">
-                  <Skeleton className="h-16 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </>
-        ) : !isLoading && (!displaySessions || displaySessions.length === 0) ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <p className="text-muted-foreground">No sessions found for the selected filters.</p>
-              <p className="text-sm text-muted-foreground mt-2">Try adjusting your date range or filters.</p>
-            </CardContent>
-          </Card>
-        ) : displaySessions && displaySessions.length > 0 ? (
+      {isLoading ? (
+        <>
+          {[1, 2, 3].map((i) => (
+            <tr key={i}>
+              <td colSpan={7} className="p-4 border-b">
+                <Skeleton className="h-12 w-full" />
+              </td>
+            </tr>
+          ))}
+        </>
+      ) : !isLoading && (!displaySessions || displaySessions.length === 0) ? (
+        <tr>
+          <td colSpan={7} className="p-8 text-center">
+            <p className="text-muted-foreground">No sessions found for the selected filters.</p>
+            <p className="text-sm text-muted-foreground mt-2">Try adjusting your date range or filters.</p>
+          </td>
+        </tr>
+      ) : displaySessions && displaySessions.length > 0 ? (
           [...displaySessions].sort((a, b) => {
             const multiplier = sortOrder === 'asc' ? 1 : -1;
             switch (sortBy) {
@@ -423,81 +434,73 @@ export default function Sessions() {
           }).map((session) => {
             const isSelected = selectedSessions.includes(session.id);
             return (
-              <Card 
-                key={session.id} 
-                className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
+              <tr
+                key={session.id}
+                className={`border-b hover:bg-gray-50 transition-colors ${
+                  isSelected ? 'bg-primary/5' : ''
+                }`}
               >
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row md:items-center">
-                    {/* Checkbox */}
-                    <button
-                      onClick={() => toggleSessionSelection(session.id)}
-                      className="px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
-                    >
-                      {isSelected ? (
-                        <CheckSquare className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Square className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </button>
-
-                    {/* Horse Name + Alias */}
-                    <div className="px-3 py-2 flex-1 min-w-0">
-                      <button
-                        onClick={() => setLocation(`/sessions/${session.id}`)}
-                        className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
-                      >
-                        <h3 className="font-semibold text-sm hover:text-primary transition-colors truncate">
-                          {session.horseName || 'Unassigned'}
-                        </h3>
-                        {session.horseAlias && (
-                          <p className="text-xs text-muted-foreground truncate">{session.horseAlias}</p>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Risk */}
-                    <div className="px-3 py-2 flex-shrink-0">
-                      <Badge className={getRiskColor(session.injuryRisk || "low")}>
-                        {session.injuryRisk || "low"}
-                      </Badge>
-                    </div>
-
-                    {/* Date */}
-                    <div className="px-3 py-2 text-xs md:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap">
-                      {formatDateShort(session.sessionDate)}
-                    </div>
-
-                    {/* Duration */}
-                    <div className="px-3 py-2 text-xs md:text-sm flex-shrink-0 whitespace-nowrap">
-                      {session.performanceData?.duration 
-                        ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
-                        : "—"}
-                    </div>
-
-                    {/* Track */}
-                    <div className="hidden md:flex px-3 py-2 text-xs md:text-sm truncate text-muted-foreground flex-shrink-0 whitespace-nowrap">
-                      {session.trackName || `Track #${session.trackId}`}
-                    </div>
-
-                    {/* Delete Button */}
-                    <button
-                      onClick={() => deleteSession.mutate(session.id)}
-                      className="px-3 py-2 flex items-center justify-end flex-shrink-0 hover:text-destructive transition-colors"
-                      title="Delete session"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
+                <td className="px-4 py-3">
+                  <button
+                    onClick={() => toggleSessionSelection(session.id)}
+                    className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  >
+                    {isSelected ? (
+                      <CheckSquare className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Square className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </button>
+                </td>
+                <td className="px-4 py-3">
+                  <button
+                    onClick={() => setLocation(`/sessions/${session.id}`)}
+                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  >
+                    <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                      {session.horseName || 'Unassigned'}
+                    </h3>
+                    {session.horseAlias && (
+                      <p className="text-xs text-muted-foreground">{session.horseAlias}</p>
+                    )}
+                  </button>
+                </td>
+                <td className="px-4 py-3">
+                  <Badge className={getRiskColor(session.injuryRisk || "low")}>
+                    {session.injuryRisk || "low"}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3 text-sm">
+                  {formatDateShort(session.sessionDate)}
+                </td>
+                <td className="px-4 py-3 text-sm">
+                  {session.performanceData?.duration 
+                    ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
+                    : "—"}
+                </td>
+                <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
+                  {session.trackName || `Track #${session.trackId}`}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => deleteSession.mutate(session.id)}
+                    className="hover:text-destructive transition-colors"
+                    title="Delete session"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </td>
+              </tr>
             );
           })
-        ) : null}
-      </div>
+      ) : null}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Pagination */}
-      {displaySessions.length > 0 && (
+      {displaySessions && displaySessions.length > 0 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             Showing {offset + 1} to {Math.min(offset + limit, offset + displaySessions.length)} sessions
