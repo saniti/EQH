@@ -76,14 +76,20 @@ export default function Sessions() {
   const dateRange = getDateRange();
   const limit = 10;
   const offset = (currentPage - 1) * limit;
+  
+  // Memoize dateRange to prevent unnecessary re-renders
+  const memoizedDateRange = {
+    startDate: dateRange.startDate.toISOString(),
+    endDate: dateRange.endDate.toISOString(),
+  };
 
   const { data: sessions, isLoading } = trpc.sessions.list.useQuery(
     {
       organizationId: selectedOrgId!,
       horseId: horseFilter,
       injuryRisk: riskFilter !== "all" ? riskFilter : undefined,
-      startDate: dateRange.startDate,
-      endDate: dateRange.endDate,
+      startDate: memoizedDateRange.startDate,
+      endDate: memoizedDateRange.endDate,
       limit: limit + 1, // Fetch one extra to check if there are more pages
       offset,
     },
