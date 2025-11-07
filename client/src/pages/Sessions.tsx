@@ -167,6 +167,56 @@ export default function Sessions() {
     });
   };
 
+  // Apply client-side filtering
+  const getDateRange = () => {
+    const now = new Date();
+    const endDate = new Date();
+    let startDate = new Date();
+
+    switch (dateFilter) {
+      case "7days":
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case "30days":
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case "60days":
+        startDate.setDate(now.getDate() - 60);
+        break;
+      case "90days":
+        startDate.setDate(now.getDate() - 90);
+        break;
+      case "all":
+        startDate = new Date(2000, 0, 1);
+        break;
+    }
+
+    return { startDate, endDate };
+  };
+
+  const dateRange = getDateRange();
+
+  // Filter sessions client-side
+  const filteredSessions = displaySessions?.filter(session => {
+    // Filter by search
+    if (search && !session.horseName?.toLowerCase().includes(search.toLowerCase())) {
+      return false;
+    }
+    
+    // Filter by risk
+    if (riskFilter !== "all" && session.riskLevel !== riskFilter) {
+      return false;
+    }
+    
+    // Filter by date range
+    const sessionDate = new Date(session.sessionDate);
+    if (sessionDate < dateRange.startDate || sessionDate > dateRange.endDate) {
+      return false;
+    }
+    
+    return true;
+  }) || [];
+
   const globalTracks = tracks?.filter(t => t.scope === "global") || [];
   const localTracks = tracks?.filter(t => t.scope === "local") || [];
   
@@ -262,14 +312,14 @@ export default function Sessions() {
       </div>
 
       {/* Sessions Table */}
-      {!isLoading && displaySessions.length > 0 && (
+      {!isLoading && filteredSessions.length > 0 && (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8">
                   <button onClick={toggleSelectAll} className="flex items-center gap-2">
-                    {selectedSessions.length === displaySessions.length ? (
+                    {selectedSessions.length === filteredSessions.length ? (
                       <CheckSquare className="h-4 w-4" />
                     ) : (
                       <Square className="h-4 w-4" />
@@ -367,15 +417,15 @@ export default function Sessions() {
             </tr>
           ))}
         </>
-      ) : !isLoading && (!displaySessions || displaySessions.length === 0) ? (
+      ) : !isLoading && (!filteredSessions || filteredSessions.length === 0) ? (
         <tr>
           <td colSpan={7} className="p-8 text-center">
             <p className="text-muted-foreground">No sessions found for the selected filters.</p>
             <p className="text-sm text-muted-foreground mt-2">Try adjusting your date range or filters.</p>
           </td>
         </tr>
-      ) : displaySessions && displaySessions.length > 0 ? (
-          [...displaySessions].sort((a, b) => {
+      ) : filteredSessions && filteredSessions.length > 0 ? (
+          [...filteredSessions].sort((a, b) => {
             const multiplier = sortOrder === 'asc' ? 1 : -1;
             switch (sortBy) {
               case 'date':
