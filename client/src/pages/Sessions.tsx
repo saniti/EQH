@@ -295,9 +295,9 @@ export default function Sessions() {
 
       {/* Sessions Table Header */}
       {displaySessions && displaySessions.length > 0 && (
-        <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
-          <div className="flex items-center min-w-max md:min-w-0">
-            <div className="w-6 md:w-8 flex-shrink-0"></div>
+        <div className="border rounded-lg bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
+          <div className="flex items-center whitespace-nowrap">
+            <div className="px-3 py-2 w-6 flex-shrink-0"></div>
             <button
               onClick={() => {
                 if (sortBy === 'horse') {
@@ -307,14 +307,14 @@ export default function Sessions() {
                   setSortOrder('asc');
                 }
               }}
-              className="flex-1 min-w-[120px] md:min-w-0 text-left hover:text-foreground transition-colors flex items-center gap-1"
+              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
             >
               Horse
               {sortBy === 'horse' && (
                 <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
               )}
             </button>
-            <button
+             <button
               onClick={() => {
                 if (sortBy === 'risk') {
                   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -323,7 +323,7 @@ export default function Sessions() {
                   setSortOrder('asc');
                 }
               }}
-              className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
             >
               Risk
               {sortBy === 'risk' && (
@@ -339,7 +339,7 @@ export default function Sessions() {
                   setSortOrder('desc');
                 }
               }}
-              className="w-20 md:w-32 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
             >
               Date
               {sortBy === 'date' && (
@@ -355,7 +355,7 @@ export default function Sessions() {
                   setSortOrder('asc');
                 }
               }}
-              className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+              className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
             >
               Duration
               {sortBy === 'duration' && (
@@ -371,14 +371,14 @@ export default function Sessions() {
                   setSortOrder('asc');
                 }
               }}
-              className="hidden md:flex w-32 text-left hover:text-foreground transition-colors items-center gap-1 flex-shrink-0"
+              className="hidden md:flex px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
             >
               Track
               {sortBy === 'track' && (
                 <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
               )}
             </button>
-            <div className="w-6 md:w-8 flex-shrink-0"></div>
+            <div className="px-3 py-2 w-6 flex-shrink-0"></div>
           </div>
         </div>
       )}
@@ -427,12 +427,12 @@ export default function Sessions() {
                 key={session.id} 
                 className={`hover:shadow-md transition-shadow ${isSelected ? 'ring-2 ring-primary' : ''}`}
               >
-                <CardContent className="py-2 px-3">
-                  <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row md:items-center">
                     {/* Checkbox */}
                     <button
                       onClick={() => toggleSessionSelection(session.id)}
-                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
+                      className="px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
                     >
                       {isSelected ? (
                         <CheckSquare className="h-5 w-5 text-primary" />
@@ -442,7 +442,7 @@ export default function Sessions() {
                     </button>
 
                     {/* Horse Name + Alias */}
-                    <div className="flex-1 min-w-0">
+                    <div className="px-3 py-2 flex-1 min-w-0">
                       <button
                         onClick={() => setLocation(`/sessions/${session.id}`)}
                         className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded w-full"
@@ -457,33 +457,33 @@ export default function Sessions() {
                     </div>
 
                     {/* Risk */}
-                    <div className="w-20 md:w-24 flex-shrink-0">
+                    <div className="px-3 py-2 flex-shrink-0">
                       <Badge className={getRiskColor(session.injuryRisk || "low")}>
                         {session.injuryRisk || "low"}
                       </Badge>
                     </div>
 
                     {/* Date */}
-                    <div className="w-24 md:w-32 text-xs md:text-sm text-muted-foreground flex-shrink-0">
+                    <div className="px-3 py-2 text-xs md:text-sm text-muted-foreground flex-shrink-0 whitespace-nowrap">
                       {formatDateShort(session.sessionDate)}
                     </div>
 
                     {/* Duration */}
-                    <div className="w-16 md:w-24 text-xs md:text-sm flex-shrink-0">
+                    <div className="px-3 py-2 text-xs md:text-sm flex-shrink-0 whitespace-nowrap">
                       {session.performanceData?.duration 
                         ? `${Math.floor(session.performanceData.duration / 3600)}h ${Math.floor((session.performanceData.duration % 3600) / 60)}m`
                         : "—"}
                     </div>
 
                     {/* Track */}
-                    <div className="hidden md:block w-48 text-xs md:text-sm truncate text-muted-foreground flex-shrink-0">
+                    <div className="hidden md:flex px-3 py-2 text-xs md:text-sm truncate text-muted-foreground flex-shrink-0 whitespace-nowrap">
                       {session.trackName || `Track #${session.trackId}`}
                     </div>
 
                     {/* Delete Button */}
                     <button
                       onClick={() => deleteSession.mutate(session.id)}
-                      className="w-6 md:w-8 flex items-center justify-end flex-shrink-0 hover:text-destructive transition-colors"
+                      className="px-3 py-2 flex items-center justify-end flex-shrink-0 hover:text-destructive transition-colors"
                       title="Delete session"
                     >
                       <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />

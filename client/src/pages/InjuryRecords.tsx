@@ -194,7 +194,7 @@ export default function InjuryRecords() {
       </Card>
 
       {/* Injury Records List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isLoading ? (
           <>
             {[1, 2, 3].map((i) => (
@@ -208,17 +208,17 @@ export default function InjuryRecords() {
         ) : filteredInjuries.length > 0 ? (
           filteredInjuries.map((injury) => (
             <Card key={injury.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-3">
+              <CardContent className="p-4">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                  <div className="flex-1 space-y-2">
                     {/* Header */}
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4 text-orange-500 flex-shrink-0" />
                       <div>
-                        <h3 className="text-lg font-semibold">
+                        <h3 className="text-base font-semibold">
                           {injury.horse?.name || "Unknown Horse"}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           Session on {injury.session?.sessionDate ? formatDateShort(new Date(injury.session.sessionDate)) : "Unknown date"}
                         </p>
                       </div>
@@ -226,7 +226,7 @@ export default function InjuryRecords() {
 
                     {/* Affected Parts */}
                     <div>
-                      <p className="text-sm font-medium mb-1">Affected Parts:</p>
+                      <p className="text-xs font-medium mb-1">Affected Parts:</p>
                       <div className="flex flex-wrap gap-2">
                         {injury.affectedParts.map((part, idx) => (
                           <Badge key={idx} variant="outline">{part}</Badge>
@@ -237,16 +237,16 @@ export default function InjuryRecords() {
                     {/* Notes */}
                     {injury.notes && (
                       <div>
-                        <p className="text-sm font-medium mb-1">Notes:</p>
-                        <p className="text-sm text-muted-foreground">{injury.notes}</p>
+                        <p className="text-xs font-medium mb-1">Notes:</p>
+                        <p className="text-xs text-muted-foreground">{injury.notes}</p>
                       </div>
                     )}
 
                     {/* Medical Diagnosis */}
                     {injury.medicalDiagnosis && (
                       <div>
-                        <p className="text-sm font-medium mb-1">Medical Diagnosis:</p>
-                        <p className="text-sm text-muted-foreground">{injury.medicalDiagnosis}</p>
+                        <p className="text-xs font-medium mb-1">Medical Diagnosis:</p>
+                        <p className="text-xs text-muted-foreground">{injury.medicalDiagnosis}</p>
                       </div>
                     )}
 
@@ -263,30 +263,30 @@ export default function InjuryRecords() {
                   </div>
 
                   {/* Status and Actions */}
-                  <div className="flex flex-col items-end gap-3">
-                    <Badge variant={getStatusColor(injury.status) as any}>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-3 md:mt-0">
+                    <Badge variant={getStatusColor(injury.status) as any} className="whitespace-nowrap">
                       {injury.status}
                     </Badge>
                     
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 md:ml-auto">
                       {isVet && (
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-8 w-8 p-0"
+                          className="h-7 w-7 p-0"
                           onClick={() => handleEditClick(injury)}
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={() => handleDelete(injury.id, injury.horse?.name || "this horse")}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                          onClick={() => handleDelete(injury.id, injury.horse?.name || "Unknown")}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
                     </div>
                   </div>
                 </div>

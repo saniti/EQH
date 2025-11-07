@@ -342,9 +342,9 @@ export default function Horses() {
       </div>
 
       {/* Table Header */}
-      <div className="border rounded-lg p-4 bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
-        <div className="flex items-center min-w-max md:min-w-0">
-          <div className="w-6 md:w-8 flex-shrink-0"></div>
+      <div className="border rounded-lg bg-gray-50 font-medium text-sm text-muted-foreground overflow-x-auto">
+        <div className="flex items-center whitespace-nowrap">
+          <div className="px-3 py-2 w-6 flex-shrink-0"></div>
           <button
             onClick={() => {
               if (sortBy === 'name') {
@@ -354,7 +354,7 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="flex-1 min-w-[120px] md:min-w-0 text-left hover:text-foreground transition-colors flex items-center gap-1"
+            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
           >
             Horse
             {sortBy === 'name' && (
@@ -370,7 +370,7 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
           >
             Risk
             {sortBy === 'risk' && (
@@ -386,7 +386,7 @@ export default function Horses() {
                 setSortOrder('desc');
               }
             }}
-            className="w-20 md:w-32 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
           >
             Date
             {sortBy === 'latestSession' && (
@@ -402,7 +402,7 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="w-16 md:w-24 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+            className="px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
           >
             Duration
             {sortBy === 'duration' && (
@@ -418,14 +418,14 @@ export default function Horses() {
                 setSortOrder('asc');
               }
             }}
-            className="w-20 md:w-32 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0"
+            className="hidden md:flex px-3 py-2 text-left hover:text-foreground transition-colors flex items-center gap-1 flex-shrink-0 whitespace-nowrap"
           >
             Track
             {sortBy === 'track' && (
               <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
             )}
           </button>
-          <div className="w-6 md:w-8 flex-shrink-0"></div>
+          <div className="px-3 py-2 w-6 flex-shrink-0"></div>
         </div>
       </div>
 
@@ -548,10 +548,10 @@ export default function Horses() {
             }
 
             return (
-              <div key={horse.id} className="border-b p-3 md:p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+              <div key={horse.id} className="border-b hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col md:flex-row md:items-center">
                   {/* Favorite Icon + Horse Name and Alias */}
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className="flex items-center gap-2 px-3 py-2 flex-1 min-w-0">
                     <button
                       onClick={() => handleToggleFavorite(horse.id, isFavorite)}
                       className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded flex-shrink-0"
@@ -578,7 +578,7 @@ export default function Horses() {
                   </div>
 
                   {/* Injury Risk */}
-                  <div className="w-16 md:w-24 flex-shrink-0">
+                  <div className="px-3 py-2 flex-shrink-0">
                     {latestSession?.injuryRisk ? (
                       <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
                         {latestSession.injuryRisk}
@@ -589,7 +589,7 @@ export default function Horses() {
                   </div>
 
                   {/* Latest Session Date */}
-                  <div className="w-20 md:w-32 text-xs md:text-sm text-left flex-shrink-0">
+                  <div className="px-3 py-2 text-xs md:text-sm text-left flex-shrink-0 whitespace-nowrap">
                     {latestSession ? (
                       <button
                         onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
@@ -606,7 +606,7 @@ export default function Horses() {
                   </div>
 
                   {/* Duration */}
-                  <div className="w-16 md:w-24 text-xs md:text-sm text-left flex-shrink-0">
+                  <div className="px-3 py-2 text-xs md:text-sm text-left flex-shrink-0 whitespace-nowrap">
                     {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
                       <span>
                         {formatDuration((latestSession.performanceData as any).duration)}
@@ -617,12 +617,12 @@ export default function Horses() {
                   </div>
 
                   {/* Track - hidden on mobile */}
-                  <div className="hidden md:block w-32 text-sm text-left text-muted-foreground flex-shrink-0">
+                  <div className="hidden md:flex px-3 py-2 text-sm text-left text-muted-foreground flex-shrink-0 whitespace-nowrap">
                     {(horse as any).trackName || '—'}
                   </div>
 
                   {/* Edit Button */}
-                  <div className="w-6 md:w-8 flex justify-end flex-shrink-0">
+                  <div className="px-3 py-2 flex justify-end flex-shrink-0">
                     <Button
                       size="sm"
                       variant="ghost"
