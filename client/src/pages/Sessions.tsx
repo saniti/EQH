@@ -35,37 +35,11 @@ export default function Sessions() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [countryFilter, setCountryFilter] = useState<string>("");
   const [trackTypeFilter, setTrackTypeFilter] = useState<string>("");
-  const [initialized, setInitialized] = useState(false);
-
-  // Initialize filters on component mount only once
-  useEffect(() => {
-    if (!initialized) {
-      setSearch("");
-      setRiskFilter("all");
-      setDateFilter("30days");
-      setCurrentPage(1);
-      setSelectedSessions([]);
-      setInitialized(true);
-    }
-  }, [initialized])
-
   useEffect(() => {
     if (horseIdFromUrl) {
       setHorseFilter(parseInt(horseIdFromUrl));
     }
   }, [horseIdFromUrl]);
-
-  // Clear all filters when navigating to Sessions page
-  useEffect(() => {
-    setSearch("");
-    setRiskFilter("all");
-    setDateFilter("30days");
-    setCurrentPage(1);
-    setSelectedSessions([]);
-    if (!horseIdFromUrl) {
-      setHorseFilter(undefined);
-    }
-  }, []);
 
   useEffect(() => {
     console.log('[Sessions] selectedOrgId changed to:', selectedOrgId);
