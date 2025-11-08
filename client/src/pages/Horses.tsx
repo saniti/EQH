@@ -591,8 +591,8 @@ export default function Horses() {
 
       {/* Cards - Mobile View */}
       <div className="md:hidden space-y-4">
-        {sortedFilteredHorses.map((horse) => {
-          const isFavorite = favorites.includes(horse.id);
+        {sortedHorses.map((horse) => {
+          const isFavorite = favoriteIds.has(horse.id);
           const latestSession = (horse as any).latestSession;
 
           return (
