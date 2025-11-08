@@ -287,9 +287,9 @@ export default function Sessions() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Training Sessions for {selectedOrg?.name || 'Organization'}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Sessions</h1>
         <p className="text-muted-foreground">
-          View and analyze training session data and performance metrics for {selectedOrg?.name || 'this organization'}
+          {selectedOrg?.name || 'Organization'}
         </p>
       </div>
 
@@ -437,7 +437,7 @@ export default function Sessions() {
                   key={session.id}
                   onClick={() => setLocation(`/sessions/${session.id}`)}
                   className={`border-b hover:bg-muted/50 cursor-pointer ${
-                    index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+                    index % 2 === 0 ? 'even-row' : 'odd-row'
                   }`}
                 >
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

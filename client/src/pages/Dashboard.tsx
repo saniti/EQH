@@ -34,9 +34,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard - {selectedOrg?.name || 'Organization'}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Overview of your horse health monitoring system for {selectedOrg?.name || 'this organization'}
+          {selectedOrg?.name || 'Organization'}
         </p>
       </div>
 

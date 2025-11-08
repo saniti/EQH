@@ -43,7 +43,7 @@
   --secondary-foreground: 0 0% 100%;
   --muted: 220 14% 96%;
   --muted-foreground: 220 9% 46%;
-  --accent: 173 80% 40%;
+  --accent: 24 95% 53%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
@@ -96,6 +96,24 @@
 }
 
 @layer components {
+  /* Table row alternating colors */
+  .even-row {
+    @apply bg-blue-50;
+  }
+  
+  .odd-row {
+    @apply bg-blue-100;
+  }
+  
+  /* Dark mode table row colors */
+  .dark .even-row {
+    @apply bg-slate-900;
+  }
+  
+  .dark .odd-row {
+    @apply bg-slate-800;
+  }
+  
   .container {
     width: 100%;
     margin-left: auto;

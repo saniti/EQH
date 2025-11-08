@@ -249,9 +249,9 @@ export default function Horses() {
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Horse Registry for {selectedOrg?.name || 'Organization'}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Horses</h1>
           <p className="text-muted-foreground mt-1">
-            Manage profiles for horses in {selectedOrg?.name || 'this organization'} ({totalHorses} total)
+            {selectedOrg?.name || 'Organization'}
           </p>
         </div>
         <Button 
@@ -507,7 +507,7 @@ export default function Horses() {
 
           return (
             <tr key={horse.id} className={`border-b hover:bg-muted/50 transition-colors ${
-              index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+              index % 2 === 0 ? 'even-row' : 'odd-row'
             }`}>
               <td className="px-4 py-3">
                 <button

@@ -171,9 +171,9 @@ export function Users() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Users</h1>
             <p className="text-muted-foreground mt-1">
-              Manage user accounts, roles, and organization assignments
+              User Management
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ export function Users() {
                 const userOrgCount = userOrganizations.length;
                 return (
                   <tr key={user.id} className={`hover:bg-muted/50 transition-colors ${
-                    index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+                    index % 2 === 0 ? 'even-row' : 'odd-row'
                   }`}>
                     <td className="px-4 py-3">
                         <div>

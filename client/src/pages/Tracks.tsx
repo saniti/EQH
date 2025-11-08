@@ -65,9 +65,9 @@ export default function Tracks() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Tracks for {selectedOrg?.name || 'Organization'}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Tracks</h1>
         <p className="text-muted-foreground mt-1">
-          Browse racetracks and training facilities available to {selectedOrg?.name || 'this organization'}
+          {selectedOrg?.name || 'Organization'}
         </p>
       </div>
 

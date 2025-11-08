@@ -76,7 +76,7 @@ export default function Organizations() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
           <p className="text-muted-foreground mt-1">
-            Manage organization profiles and settings
+            Manage Profiles
           </p>
         </div>
         {user?.role === "admin" && (

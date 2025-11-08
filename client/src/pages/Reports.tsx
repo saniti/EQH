@@ -8,7 +8,7 @@ export default function Reports() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
         <p className="text-muted-foreground mt-1">
-          Generate and view comprehensive reports on horse health and performance
+          Health & Performance
         </p>
       </div>
 
