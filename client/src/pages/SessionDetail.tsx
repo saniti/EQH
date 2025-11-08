@@ -9,13 +9,13 @@ import { useState } from "react";
 import Plot from "react-plotly.js";
 
 export default function SessionDetail() {
-  const { sessionId } = useParams<{ sessionId: string }>();
+  const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [isMetric, setIsMetric] = useState(true);
 
   const { data: session, isLoading, error } = trpc.sessions.get.useQuery(
-    { id: Number(sessionId) },
-    { enabled: !!sessionId }
+    { id: Number(id) },
+    { enabled: !!id }
   );
 
   if (isLoading) return <div className="p-4">Loading...</div>;
