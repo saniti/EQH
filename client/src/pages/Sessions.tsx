@@ -35,6 +35,8 @@ export default function Sessions() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [countryFilter, setCountryFilter] = useState<string>("");
   const [trackTypeFilter, setTrackTypeFilter] = useState<string>("");
+  const [sessionFilter, setSessionFilter] = useState<'all' | 'assigned' | 'unassigned'>('all');
+  
   useEffect(() => {
     if (horseIdFromUrl) {
       setHorseFilter(parseInt(horseIdFromUrl));
@@ -45,7 +47,6 @@ export default function Sessions() {
     console.log('[Sessions] selectedOrgId changed to:', selectedOrgId);
     console.log('[Sessions] selectedOrg:', selectedOrg?.name);
   }, [selectedOrgId, selectedOrg]);
-
 
 
   const limit = 10;
@@ -148,58 +149,73 @@ export default function Sessions() {
       toast.error("Please select a track");
       return;
     }
-    // Update all selected sessions
-    selectedSessions.forEach(sessionId => {
-      updateSessionTrack.mutate({
-        sessionId,
-        trackId: selectedTrackId,
-      });
+
+    updateSessionTrack.mutate({
+      sessionIds: selectedSessions,
+      trackId: selectedTrackId,
     });
   };
 
   const handleAssignToHorse = () => {
-    // Allow assigning to null (unassign)
-    selectedSessions.forEach(sessionId => {
-      assignToHorse.mutate({
-        sessionId,
-        horseId: selectedHorseId && selectedHorseId > 0 ? selectedHorseId : null,
-      });
+    if (!selectedHorseId) {
+      toast.error("Please select a horse");
+      return;
+    }
+
+    assignToHorse.mutate({
+      sessionIds: selectedSessions,
+      horseId: selectedHorseId === 0 ? null : selectedHorseId,
     });
   };
 
-  // Apply client-side filtering
   const getDateRange = () => {
     const now = new Date();
-    const endDate = new Date();
-    let startDate = new Date();
-
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
     switch (dateFilter) {
-      case "7days":
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case "30days":
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case "60days":
-        startDate.setDate(now.getDate() - 60);
-        break;
-      case "90days":
-        startDate.setDate(now.getDate() - 90);
-        break;
-      case "all":
-        startDate = new Date(2000, 0, 1);
-        break;
+      case '7days':
+        return {
+          startDate: new Date(startOfToday.getTime() - 7 * 24 * 60 * 60 * 1000),
+          endDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000)
+        };
+      case '30days':
+        return {
+          startDate: new Date(startOfToday.getTime() - 30 * 24 * 60 * 60 * 1000),
+          endDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000)
+        };
+      case '60days':
+        return {
+          startDate: new Date(startOfToday.getTime() - 60 * 24 * 60 * 60 * 1000),
+          endDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000)
+        };
+      case '90days':
+        return {
+          startDate: new Date(startOfToday.getTime() - 90 * 24 * 60 * 60 * 1000),
+          endDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000)
+        };
+      default: // 'all'
+        return {
+          startDate: new Date('1970-01-01'),
+          endDate: new Date('2099-12-31')
+        };
     }
-
-    return { startDate, endDate };
   };
 
   const dateRange = getDateRange();
 
   // Filter sessions client-side
   const filteredSessions = displaySessions?.filter(session => {
+    // Filter by assigned/unassigned
+    if (sessionFilter === 'assigned' && !session.horseId) {
+      return false;
+    }
+    if (sessionFilter === 'unassigned' && session.horseId) {
+      return false;
+    }
+    
     // Filter by search
-    if (search && !session.horseName?.toLowerCase().includes(search.toLowerCase())) {
+    const displayName = session.horseId ? session.horseName : 'new session';
+    if (search && !displayName?.toLowerCase().includes(search.toLowerCase())) {
       return false;
     }
     
@@ -216,6 +232,16 @@ export default function Sessions() {
     
     return true;
   }) || [];
+
+  // Sort unassigned sessions to top, then by date
+  const sortedFilteredSessions = [...filteredSessions].sort((a, b) => {
+    // Unassigned sessions always come first
+    if (!a.horseId && b.horseId) return -1;
+    if (a.horseId && !b.horseId) return 1;
+    
+    // Then sort by date (newest first)
+    return new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime();
+  });
 
   const globalTracks = tracks?.filter(t => t.scope === "global") || [];
   const localTracks = tracks?.filter(t => t.scope === "local") || [];
@@ -259,6 +285,28 @@ export default function Sessions() {
             <SelectItem value="critical">Critical risk</SelectItem>
           </SelectContent>
         </Select>
+
+        <Button
+          variant={sessionFilter === 'assigned' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSessionFilter('assigned')}
+        >
+          Assigned
+        </Button>
+        <Button
+          variant={sessionFilter === 'unassigned' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSessionFilter('unassigned')}
+        >
+          Unassigned
+        </Button>
+        <Button
+          variant={sessionFilter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setSessionFilter('all')}
+        >
+          All
+        </Button>
       </div>
 
       {/* Date Filter Buttons */}
@@ -304,255 +352,166 @@ export default function Sessions() {
       {/* Bulk Actions */}
       {selectedSessions.length > 0 && (
         <div className="flex gap-2">
-          <Button onClick={() => setShowAssignDialog(true)} variant="default" size="sm">
+          <Button
+            size="sm"
+            onClick={() => setShowAssignDialog(true)}
+          >
             Assign to Track
           </Button>
-          <Button onClick={() => setShowAssignHorseDialog(true)} variant="secondary" size="sm">
+          <Button
+            size="sm"
+            onClick={() => setShowAssignHorseDialog(true)}
+          >
             Assign to Horse
           </Button>
         </div>
       )}
 
-      {/* Sessions Table */}
-      {!isLoading && filteredSessions.length > 0 && (
-        <div className="border rounded-lg overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8">
-                  <button onClick={toggleSelectAll} className="flex items-center gap-2">
-                    {selectedSessions.length === filteredSessions.length ? (
-                      <CheckSquare className="h-4 w-4" />
+      {/* Table */}
+      <div className="border rounded-lg overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8">
+                <input
+                  type="checkbox"
+                  checked={selectedSessions.length === sortedFilteredSessions.length && sortedFilteredSessions.length > 0}
+                  onChange={toggleSelectAll}
+                  className="rounded"
+                />
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Horse</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Risk</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Date ↓</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Duration</th>
+              <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Track</th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i}>
+                    <td colSpan={7} className="p-4 border-b">
+                      <Skeleton className="h-12 w-full" />
+                    </td>
+                  </tr>
+                ))}
+              </>
+            ) : sortedFilteredSessions.length > 0 ? (
+              sortedFilteredSessions.map((session) => (
+                <tr
+                  key={session.id}
+                  onClick={() => setLocation(`/sessions/${session.id}`)}
+                  className="border-b hover:bg-gray-50 cursor-pointer"
+                >
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={selectedSessions.includes(session.id)}
+                      onChange={() => toggleSessionSelection(session.id)}
+                      className="rounded"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div>
+                      <div className="font-medium">{session.horseId ? session.horseName : 'new session'}</div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {session.injuryRisk ? (
+                      <Badge variant={getRiskColor(session.injuryRisk) as any}>
+                        {session.injuryRisk}
+                      </Badge>
                     ) : (
-                      <Square className="h-4 w-4" />
+                      <Badge variant="secondary">no-data</Badge>
                     )}
-                  </button>
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                  <button
-                    onClick={() => {
-                      if (sortBy === 'horse') {
-                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                      } else {
-                        setSortBy('horse');
-                        setSortOrder('asc');
-                      }
-                    }}
-                    className="hover:text-foreground transition-colors flex items-center gap-1"
-                  >
-                    Horse
-                    {sortBy === 'horse' && (
-                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </button>
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                  Risk
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                  <button
-                    onClick={() => {
-                      if (sortBy === 'date') {
-                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                      } else {
-                        setSortBy('date');
-                        setSortOrder('asc');
-                      }
-                    }}
-                    className="hover:text-foreground transition-colors flex items-center gap-1"
-                  >
-                    Date
-                    {sortBy === 'date' && (
-                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </button>
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                  <button
-                    onClick={() => {
-                      if (sortBy === 'duration') {
-                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                      } else {
-                        setSortBy('duration');
-                        setSortOrder('asc');
-                      }
-                    }}
-                    className="hover:text-foreground transition-colors flex items-center gap-1"
-                  >
-                    Duration
-                    {sortBy === 'duration' && (
-                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </button>
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground hidden md:table-cell">
-                  <button
-                    onClick={() => {
-                      if (sortBy === 'track') {
-                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                      } else {
-                        setSortBy('track');
-                        setSortOrder('asc');
-                      }
-                    }}
-                    className="hover:text-foreground transition-colors flex items-center gap-1"
-                  >
-                    Track
-                    {sortBy === 'track' && (
-                      <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </button>
-                </th>
-                <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                      <div>
+                        <div>{formatDateShort(session.sessionDate)}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {new Date(session.sessionDate).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {session.performanceData && (session.performanceData as any).duration
+                      ? `${Math.round((session.performanceData as any).duration / 60)} min`
+                      : '—'}
+                  </td>
+                  <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
+                    {session.trackName || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => deleteSession.mutate({ id: session.id })}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="p-12 text-center text-muted-foreground">
+                  No sessions found
+                </td>
               </tr>
-            </thead>
-            <tbody>
-
-      {/* Sessions List */}
-      {isLoading ? (
-        <>
-          {[1, 2, 3].map((i) => (
-            <tr key={i}>
-              <td colSpan={7} className="p-4 border-b">
-                <Skeleton className="h-12 w-full" />
-              </td>
-            </tr>
-          ))}
-        </>
-      ) : !isLoading && (!filteredSessions || filteredSessions.length === 0) ? (
-        <tr>
-          <td colSpan={7} className="p-8 text-center">
-            <p className="text-muted-foreground">No sessions found for the selected filters.</p>
-            <p className="text-sm text-muted-foreground mt-2">Try adjusting your date range or filters.</p>
-          </td>
-        </tr>
-      ) : filteredSessions && filteredSessions.length > 0 ? (
-          [...filteredSessions].sort((a, b) => {
-            const multiplier = sortOrder === 'asc' ? 1 : -1;
-            switch (sortBy) {
-              case 'date':
-                return (new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime()) * multiplier;
-              case 'horse':
-                return (a.horseName || '').localeCompare(b.horseName || '') * multiplier;
-              case 'duration':
-                return ((a.performanceData as any)?.duration || 0 - (b.performanceData as any)?.duration || 0) * multiplier;
-              case 'risk':
-                const riskOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-                return ((riskOrder[(a.injuryRisk as keyof typeof riskOrder) || 'low'] || 0) - (riskOrder[(b.injuryRisk as keyof typeof riskOrder) || 'low'] || 0)) * multiplier;
-              default:
-                return 0;
-            }
-          }).map((session) => (
-            <tr key={session.id} className="border-b hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}?horseId=${session.horseId}`)}>
-              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => toggleSessionSelection(session.id)}
-                  className="flex items-center gap-2"
-                >
-                  {selectedSessions.includes(session.id) ? (
-                    <CheckSquare className="h-4 w-4" />
-                  ) : (
-                    <Square className="h-4 w-4" />
-                  )}
-                </button>
-              </td>
-              <td className="px-4 py-3 text-sm">
-                <div className="font-medium">{session.horseName || 'Unknown'}</div>
-                {session.horseAlias && <div className="text-xs text-muted-foreground">{session.horseAlias}</div>}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                {session.injuryRisk && (
-                  <Badge variant={getRiskColor(session.injuryRisk)}>
-                    {session.injuryRisk}
-                  </Badge>
-                )}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                <div>{formatDateShort(new Date(session.sessionDate))}</div>
-                <div className="text-xs text-muted-foreground">{new Date(session.sessionDate).toLocaleTimeString()}</div>
-              </td>
-              <td className="px-4 py-3 text-sm">
-                {(session.performanceData as any)?.duration ? `${(session.performanceData as any).duration} min` : '-'}
-              </td>
-              <td className="px-4 py-3 text-sm hidden md:table-cell">
-                {session.trackName || '-'}
-              </td>
-              <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => deleteSession.mutate(session.id)}
-                  className="hover:text-destructive transition-colors"
-                  title="Delete session"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </td>
-            </tr>
-          ))
-      ) : null}
-            </tbody>
-          </table>
-        </div>
-      )}
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
-      {displaySessions && displaySessions.length > 0 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing {offset + 1} to {Math.min(offset + limit, offset + displaySessions.length)} sessions
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
-            <span className="flex items-center px-3 text-sm">
-              Page {currentPage}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(p => p + 1)}
-              disabled={!hasNextPage}
-            >
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Page {currentPage}
         </div>
-      )}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={!hasNextPage}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
 
       {/* Assign to Track Dialog */}
-      <Dialog open={showAssignDialog} onOpenChange={(open) => {
-        setShowAssignDialog(open);
-        if (!open) {
-          setCountryFilter("");
-          setTrackTypeFilter("");
-          setSelectedTrackId(undefined);
-        }
-      }}>
-        <DialogContent>
+      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Assign Sessions to Track</DialogTitle>
             <DialogDescription>
-              Assign {selectedSessions.length} selected session(s) to a track
+              Select a country, track type, and then a track to assign {selectedSessions.length} session(s)
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4">
+            {/* Country Selection */}
             <div>
-              <Label className="font-medium mb-2 block">Step 1: Select Country</Label>
-              <Select value={countryFilter} onValueChange={(v) => {
-                setCountryFilter(v);
-                setTrackTypeFilter("");
-                setSelectedTrackId(undefined);
-              }}>
+              <Label className="text-sm font-medium mb-2 block">Country</Label>
+              <Select value={countryFilter} onValueChange={setCountryFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a country" />
+                  <SelectValue placeholder="Select country..." />
                 </SelectTrigger>
                 <SelectContent>
                   {countries.map(country => (
@@ -564,35 +523,38 @@ export default function Sessions() {
               </Select>
             </div>
 
+            {/* Track Type Selection */}
             {countryFilter && (
               <div>
-                <Label className="font-medium mb-2 block">Step 2: Select Track Type</Label>
-                <Select value={trackTypeFilter} onValueChange={(v) => {
-                  setTrackTypeFilter(v);
-                  setSelectedTrackId(undefined);
-                }}>
+                <Label className="text-sm font-medium mb-2 block">Track Type</Label>
+                <Select value={trackTypeFilter} onValueChange={setTrackTypeFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select track type" />
+                    <SelectValue placeholder="Select track type..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="global">Global Track</SelectItem>
-                    <SelectItem value="local">Local Track</SelectItem>
+                    {tracksByCountry(countryFilter, 'global').length > 0 && (
+                      <SelectItem value="global">Global</SelectItem>
+                    )}
+                    {tracksByCountry(countryFilter, 'local').length > 0 && (
+                      <SelectItem value="local">Local</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
             )}
 
+            {/* Track Selection */}
             {countryFilter && trackTypeFilter && (
               <div>
-                <Label className="font-medium mb-2 block">Step 3: Select Track</Label>
-                <Select value={selectedTrackId?.toString()} onValueChange={(v) => setSelectedTrackId(parseInt(v))}>
+                <Label className="text-sm font-medium mb-2 block">Track</Label>
+                <Select value={selectedTrackId?.toString() || ''} onValueChange={(val) => setSelectedTrackId(parseInt(val))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a track" />
+                    <SelectValue placeholder="Select track..." />
                   </SelectTrigger>
                   <SelectContent>
                     {tracksByCountry(countryFilter, trackTypeFilter).map(track => (
                       <SelectItem key={track.id} value={track.id.toString()}>
-                        {track.name} {track.description ? `- ${track.description}` : ''}
+                        {track.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -618,22 +580,22 @@ export default function Sessions() {
           <DialogHeader>
             <DialogTitle>Assign Sessions to Horse</DialogTitle>
             <DialogDescription>
-              Select a horse to assign {selectedSessions.length} session(s) to
+              Select a horse to assign {selectedSessions.length} session(s)
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4">
             <div>
-              <Label>Horse</Label>
-              <Select value={selectedHorseId?.toString() || ""} onValueChange={(v) => setSelectedHorseId(v ? parseInt(v) : undefined)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a horse or leave empty to unassign" />
+              <Label htmlFor="horse-select" className="text-sm font-medium mb-2 block">Horse</Label>
+              <Select value={selectedHorseId?.toString() || ''} onValueChange={(val) => setSelectedHorseId(val === 'unassign' ? 0 : parseInt(val))}>
+                <SelectTrigger id="horse-select">
+                  <SelectValue placeholder="Select a horse..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unassign">Unassign from horse</SelectItem>
+                  <SelectItem value="unassign">Unassign from Horse</SelectItem>
                   {horses?.map(horse => (
                     <SelectItem key={horse.id} value={horse.id.toString()}>
-                      {horse.name} {horse.alias ? `(${horse.alias})` : ''}
+                      {horse.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -645,8 +607,8 @@ export default function Sessions() {
             <Button variant="outline" onClick={() => setShowAssignHorseDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAssignToHorse}>
-              Assign
+            <Button onClick={handleAssignToHorse} disabled={selectedHorseId === undefined}>
+              Assign to Horse
             </Button>
           </DialogFooter>
         </DialogContent>
