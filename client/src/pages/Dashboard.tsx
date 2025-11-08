@@ -32,7 +32,7 @@ export default function Dashboard() {
   }, [selectedOrgId, utils]);
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6 bg-background">
       <div className="page-header">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
