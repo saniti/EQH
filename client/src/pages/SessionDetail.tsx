@@ -314,7 +314,7 @@ export default function SessionDetail() {
                   ]}
                   layout={{
                     title: '',
-                    height: 400,
+                    autosize: true,
                     hovermode: 'x unified',
                     xaxis: {
                       title: 'Time (seconds)',
@@ -333,6 +333,7 @@ export default function SessionDetail() {
                     },
                     margin: { l: 60, r: 60, t: 40, b: 40 },
                   }}
+                  style={{ width: '100%', height: '600px' }}
                   config={{ responsive: true }}
                 />
               </CardContent>
@@ -370,7 +371,7 @@ export default function SessionDetail() {
                   ]}
                   layout={{
                     title: '',
-                    height: 400,
+                    autosize: true,
                     hovermode: 'x unified',
                     xaxis: {
                       title: 'Interval Number',
@@ -389,6 +390,7 @@ export default function SessionDetail() {
                     },
                     margin: { l: 60, r: 60, t: 40, b: 40 },
                   }}
+                  style={{ width: '100%', height: '600px' }}
                   config={{ responsive: true }}
                 />
               </CardContent>
@@ -423,7 +425,7 @@ export default function SessionDetail() {
                   ]}
                   layout={{
                     title: '',
-                    height: 400,
+                    autosize: true,
                     xaxis: {
                       title: 'Gait Zone',
                     },
@@ -432,6 +434,7 @@ export default function SessionDetail() {
                     },
                     margin: { l: 60, r: 40, t: 40, b: 60 },
                   }}
+                  style={{ width: '100%', height: '500px' }}
                   config={{ responsive: true }}
                 />
               </CardContent>
@@ -461,7 +464,7 @@ export default function SessionDetail() {
                   ]}
                   layout={{
                     title: '',
-                    height: 400,
+                    autosize: true,
                     hovermode: 'x unified',
                     xaxis: {
                       title: 'Interval Number',
@@ -471,6 +474,7 @@ export default function SessionDetail() {
                     },
                     margin: { l: 60, r: 40, t: 40, b: 40 },
                   }}
+                  style={{ width: '100%', height: '500px' }}
                   config={{ responsive: true }}
                 />
               </CardContent>
