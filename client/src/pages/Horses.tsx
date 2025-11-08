@@ -347,26 +347,8 @@ export default function Horses() {
                   }}
                   className="hover:text-foreground transition-colors flex items-center gap-1"
                 >
-                  Date
+                  Latest Session
                   {sortBy === 'latestSession' && (
-                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
-                  )}
-                </button>
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
-                <button
-                  onClick={() => {
-                    if (sortBy === 'duration') {
-                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-                    } else {
-                      setSortBy('duration');
-                      setSortOrder('asc');
-                    }
-                  }}
-                  className="hover:text-foreground transition-colors flex items-center gap-1"
-                >
-                  Duration
-                  {sortBy === 'duration' && (
                     <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </button>
@@ -555,25 +537,21 @@ export default function Horses() {
                 {latestSession ? (
                   <button
                     onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors"
+                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
                   >
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 flex-shrink-0" />
-                      <div>
-                        <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
-                        <div className="text-xs text-muted-foreground">{new Date(latestSession.sessionDate).toLocaleTimeString()}</div>
+                    <Clock className="h-4 w-4 flex-shrink-0" />
+                    <div>
+                      <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(latestSession.sessionDate).toLocaleTimeString()}
+                        {latestSession?.performanceData && (latestSession.performanceData as any).duration && (
+                          <span> ({formatDuration((latestSession.performanceData as any).duration)})</span>
+                        )}
                       </div>
                     </div>
                   </button>
                 ) : (
                   <span className="text-muted-foreground">No sessions</span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
-                  <span>{formatDuration((latestSession.performanceData as any).duration)}</span>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
                 )}
               </td>
               <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
