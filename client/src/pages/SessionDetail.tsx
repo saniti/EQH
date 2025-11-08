@@ -215,7 +215,19 @@ export default function SessionDetail() {
                 )}
               </CardContent>
             </Card>
+          {/* Unit Toggle */}
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsMetric(!isMetric)}
+              className="gap-2"
+            >
+              {isMetric ? '📏 Metric' : '📏 Imperial'}
+            </Button>
           </div>
+
+                    </div>
 
           {/* Session Information */}
           <div className="grid gap-4 md:grid-cols-2">
@@ -299,49 +311,7 @@ export default function SessionDetail() {
 
         {/* Graphs Tab */}
         <TabsContent value="graphs" className="space-y-6">
-                  {/* Unit Toggle */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Units:</span>
-              <Button
-                variant={isMetric ? "default" : "outline"}
-                size="sm"
-                onClick={() => setIsMetric(true)}
-              >
-                Metric
-              </Button>
-              <Button
-                variant={!isMetric ? "default" : "outline"}
-                size="sm"
-                onClick={() => setIsMetric(false)}
-              >
-                Imperial
-              </Button>
-            </div>
-          </div>
-
-                    {/* Unit Toggle */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Units:</span>
-              <Button
-                variant={isMetric ? "default" : "outline"}
-                size="sm"
-                onClick={() => setIsMetric(true)}
-              >
-                Metric
-              </Button>
-              <Button
-                variant={!isMetric ? "default" : "outline"}
-                size="sm"
-                onClick={() => setIsMetric(false)}
-              >
-                Imperial
-              </Button>
-            </div>
-          </div>
-
-                    {/* Speed and Heart Rate Chart */}
+                  {/* Speed and Heart Rate Chart */}
           {performanceData.speedHeartRate?.speedHeartRateChart && (
             <Card>
               <CardHeader>
@@ -616,12 +586,12 @@ export default function SessionDetail() {
                       <tr className="border-b">
                         <th className="text-left py-2 px-3 font-semibold">Interval</th>
                         <th className="text-left py-2 px-3 font-semibold">Time (s)</th>
-                        <th className="text-left py-2 px-3 font-semibold">Distance (m)</th>
+                        <th className="text-left py-2 px-3 font-semibold">Distance ({isMetric ? "m" : "ft"}) </th>
                         <th className="text-left py-2 px-3 font-semibold">Speed Min</th>
                         <th className="text-left py-2 px-3 font-semibold">Speed Avg</th>
                         <th className="text-left py-2 px-3 font-semibold">Speed Max</th>
                         <th className="text-left py-2 px-3 font-semibold">Stride Freq</th>
-                        <th className="text-left py-2 px-3 font-semibold">Stride Len</th>
+                        <th className="text-left py-2 px-3 font-semibold">Stride Len ({isMetric ? "m" : "ft"})</th>
                         <th className="text-left py-2 px-3 font-semibold">HR Min</th>
                         <th className="text-left py-2 px-3 font-semibold">HR Avg</th>
                         <th className="text-left py-2 px-3 font-semibold">HR Max</th>
@@ -632,12 +602,12 @@ export default function SessionDetail() {
                         <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50/40' : 'bg-blue-100/30'}>
                           <td className="py-2 px-3">{idx + 1}</td>
                           <td className="py-2 px-3">{(stat.timeSplit / 1000).toFixed(1)}</td>
-                          <td className="py-2 px-3">{stat.travel.toFixed(0)}</td>
-                          <td className="py-2 px-3">{stat.speed.min.toFixed(2)}</td>
-                          <td className="py-2 px-3">{stat.speed.avg.toFixed(2)}</td>
-                          <td className="py-2 px-3">{stat.speed.max.toFixed(2)}</td>
+                          <td className="py-2 px-3">{convertDistance(stat.travel).toFixed(0)}</td>
+                          <td className="py-2 px-3">{convertSpeed(stat.speed.min).toFixed(2)}</td>
+                          <td className="py-2 px-3">{convertSpeed(stat.speed.avg).toFixed(2)}</td>
+                          <td className="py-2 px-3">{convertSpeed(stat.speed.max).toFixed(2)}</td>
                           <td className="py-2 px-3">{stat.stride.frequency.toFixed(2)}</td>
-                          <td className="py-2 px-3">{stat.stride.length.toFixed(2)}</td>
+                          <td className="py-2 px-3">{convertDistance(stat.stride.length).toFixed(2)}</td>
                           <td className="py-2 px-3">{stat.hr.min}</td>
                           <td className="py-2 px-3">{stat.hr.avg}</td>
                           <td className="py-2 px-3">{stat.hr.max}</td>
