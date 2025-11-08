@@ -347,29 +347,112 @@ async function seed() {
       const injuryRisks = ["low", "low", "low", "medium", "medium", "high", "critical"];
       const injuryRisk = injuryRisks[i % injuryRisks.length] as any;
 
-      // Generate realistic performance data
-      const heartRateData = Array.from({ length: 20 }, () => 
-        Math.floor(Math.random() * 40) + 100
-      );
-      const speedData = Array.from({ length: 20 }, () => 
-        Math.floor(Math.random() * 20) + 30
-      );
+      // Generate realistic performance data with detailed intervals
+      const duration = Math.floor(Math.random() * 1800) + 600; // 10-40 minutes in seconds
+      const distance = Math.floor(Math.random() * 5000) + 1000; // 1-6 km
+      const avgSpeed = distance / (duration / 60); // km/h
+      
+      // Generate interval statistics
+      const numIntervals = Math.floor(duration / 120) + 1; // One interval per 2 minutes
+      const intervalStats = [];
+      let cumulativeDistance = 0;
+      let cumulativeTime = 0;
+      
+      for (let j = 0; j < numIntervals; j++) {
+        const intervalDuration = Math.floor(Math.random() * 120000) + 60000; // 1-2 minutes in ms
+        const intervalDistance = Math.floor(Math.random() * 400) + 200; // 200-600m
+        cumulativeDistance += intervalDistance;
+        cumulativeTime += intervalDuration;
+        
+        const speedMin = Math.random() * 5 + 1;
+        const speedMax = speedMin + Math.random() * 10 + 5;
+        const speedAvg = (speedMin + speedMax) / 2;
+        
+        intervalStats.push({
+          date: new Date(sessionDate.getTime() + cumulativeTime).toISOString(),
+          duration: cumulativeTime,
+          timeSplit: intervalDuration,
+          travel: intervalDistance,
+          speed: {
+            min: parseFloat(speedMin.toFixed(2)),
+            avg: parseFloat(speedAvg.toFixed(2)),
+            max: parseFloat(speedMax.toFixed(2)),
+          },
+          stride: {
+            frequency: parseFloat((Math.random() * 1 + 2).toFixed(2)),
+            length: parseFloat((Math.random() * 3 + 1).toFixed(2)),
+          },
+          hr: {
+            min: Math.floor(Math.random() * 20) + 80,
+            avg: Math.floor(Math.random() * 30) + 100,
+            max: Math.floor(Math.random() * 40) + 130,
+          },
+        });
+      }
+      
+      // Generate speed/heart rate chart data (one point per second)
+      const chartData = [];
+      for (let t = 0; t <= duration; t += 1) {
+        chartData.push({
+          time: t * 1000,
+          speed: parseFloat((Math.random() * 5 + avgSpeed - 2.5).toFixed(2)),
+          hr: Math.floor(Math.random() * 40) + 100,
+        });
+      }
+      
+      // Speed zone distances
+      const speedZoneDistance = {
+        walk: Math.floor(Math.random() * 1000) + 500,
+        canter: Math.floor(Math.random() * 800) + 300,
+        pace: Math.floor(Math.random() * 600) + 200,
+        slowGallop: Math.floor(Math.random() * 700) + 250,
+        fastGallop: Math.floor(Math.random() * 600) + 200,
+        veryFastGallop: Math.floor(Math.random() * 300),
+      };
+      
+      const performanceData = {
+        speedHeartRate: {
+          speedHeartRateChart: chartData,
+          maxHR: Math.floor(Math.random() * 40) + 150,
+          hR13Point3: Math.floor(Math.random() * 30) + 120,
+          bpM200Speed: parseFloat((Math.random() * 10 + 30).toFixed(2)),
+          maxBPMSpeed: parseFloat((Math.random() * 10 + 40).toFixed(2)),
+          heartRateRecovery: {
+            perMinute: Array.from({ length: 10 }, () => Math.floor(Math.random() * 50)),
+            avG2T5: Math.floor(Math.random() * 30) + 10,
+            avG5T10: Math.floor(Math.random() * 20) + 5,
+            timeTo100BPM: Math.random() * 5 + 1,
+          },
+        },
+        intervals: {
+          stats: intervalStats,
+          speedZoneDistance,
+        },
+        preWorkTime: 0,
+        preWorkoutDistance: 0,
+        // Legacy fields for compatibility
+        heartRate: chartData.map(d => d.hr),
+        speed: chartData.map(d => d.speed),
+        distance,
+        duration,
+        temperature: Math.floor(Math.random() * 5) + 37,
+        avgHeartRate: Math.floor(chartData.reduce((sum, d) => sum + d.hr, 0) / chartData.length),
+        avgTemperature: Math.floor(Math.random() * 5) + 37,
+        avgSpeed: parseFloat(avgSpeed.toFixed(2)),
+        maxSpeed: parseFloat((avgSpeed + Math.random() * 10 + 5).toFixed(2)),
+        maxHeartRate: Math.floor(Math.random() * 40) + 150,
+        maxTemperature: Math.floor(Math.random() * 5) + 39,
+        gaitAnalysis: {
+          stride: Math.floor(Math.random() * 50) + 150,
+          symmetry: Math.floor(Math.random() * 20) + 80,
+        },
+      };
 
       const sessionId = await db.insert(schema.sessions).values({
         horseId,
         trackId,
         sessionDate,
-        performanceData: {
-          heartRate: heartRateData,
-          speed: speedData,
-          distance: Math.floor(Math.random() * 5000) + 1000,
-          duration: Math.floor(Math.random() * 1800) + 600,
-          temperature: Math.floor(Math.random() * 5) + 37,
-          gaitAnalysis: {
-            stride: Math.floor(Math.random() * 50) + 150,
-            symmetry: Math.floor(Math.random() * 20) + 80,
-          },
-        },
+        performanceData,
         injuryRisk,
         recoveryTarget: injuryRisk === "high" || injuryRisk === "critical" 
           ? new Date(sessionDate.getTime() + 7 * 24 * 60 * 60 * 1000)
