@@ -49,30 +49,33 @@ export default function SessionDetail() {
     // Get duration in seconds
     const duration = performanceData.duration || 0;
 
-    // Calculate average heart rate from chart data
+    // Calculate metrics from sectional stats
+    const stats = performanceData.intervals?.stats || [];
+    
+    // Average heart rate from sectional data
     let avgHeartRate = performanceData.avgHeartRate || 0;
-    if (performanceData.speedHeartRate?.speedHeartRateChart) {
-      const hrValues = performanceData.speedHeartRate.speedHeartRateChart
-        .map((d: any) => d.hr)
-        .filter((hr: number) => hr > 0);
+    if (stats.length > 0) {
+      const hrValues = stats.map((s: any) => s.hr.avg).filter((hr: number) => hr > 0);
       if (hrValues.length > 0) {
         avgHeartRate = Math.round(hrValues.reduce((a: number, b: number) => a + b, 0) / hrValues.length);
       }
     }
 
-    // Calculate max heart rate from chart data
+    // Max heart rate
     let maxHeartRate = performanceData.maxHeartRate || 0;
-    if (performanceData.speedHeartRate?.speedHeartRateChart) {
-      maxHeartRate = Math.max(...performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.hr));
+    if (stats.length > 0) {
+      const hrMaxValues = stats.map((s: any) => s.hr.max);
+      maxHeartRate = Math.max(...hrMaxValues);
     }
 
-    // Calculate average and max speed
+    // Average and max speed from sectional data
     let avgSpeed = performanceData.avgSpeed || 0;
     let maxSpeed = performanceData.maxSpeed || 0;
-    if (performanceData.speedHeartRate?.speedHeartRateChart) {
-      const speedValues = performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.speed);
+    if (stats.length > 0) {
+      const speedValues = stats.map((s: any) => s.speed.avg);
       avgSpeed = speedValues.reduce((a: number, b: number) => a + b, 0) / speedValues.length;
-      maxSpeed = Math.max(...speedValues);
+      const speedMaxValues = stats.map((s: any) => s.speed.max);
+      maxSpeed = Math.max(...speedMaxValues);
     }
 
     // Get distance and temperature
@@ -347,6 +350,7 @@ export default function SessionDetail() {
                     title: '',
                     autosize: true,
                     hovermode: 'x unified',
+                    legend: { orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', yanchor: 'top' },
                     xaxis: {
                       title: 'Time (seconds)',
                     },
@@ -407,6 +411,7 @@ export default function SessionDetail() {
                     title: '',
                     autosize: true,
                     hovermode: 'x unified',
+                    legend: { orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', yanchor: 'top' },
                     xaxis: {
                       title:  `Distance (${getDistanceUnit()})`,
                     },
@@ -468,6 +473,7 @@ export default function SessionDetail() {
                     },
                     yaxis: {
                       title: `Distance (${getDistanceUnit()})`,
+                    legend: { orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', yanchor: 'top' },
                     },
                     margin: { l: 60, r: 40, t: 40, b: 60 },
                   }}
@@ -506,6 +512,7 @@ export default function SessionDetail() {
                     title: '',
                     autosize: true,
                     hovermode: 'x unified',
+                    legend: { orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', yanchor: 'top' },
                     xaxis: {
                       title:  `Distance (${getDistanceUnit()})`,
                     },
@@ -555,6 +562,7 @@ export default function SessionDetail() {
                     title: '',
                     autosize: true,
                     hovermode: 'closest',
+                    legend: { orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', yanchor: 'top' },
                     xaxis: {
                       title: `Speed (${getSpeedUnit()})`,
                     },
@@ -584,7 +592,8 @@ export default function SessionDetail() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-2 px-3 font-semibold">Interval</th>
+                        <th className="text-left py-2 px-3 font-semibold">Sectional</th>
+                        <th className="text-left py-2 px-3 font-semibold">Distance ({isMetric ? "m" : "ft"})</th>
                         <th className="text-left py-2 px-3 font-semibold">Time (s)</th>
                         <th className="text-left py-2 px-3 font-semibold">Distance ({isMetric ? "m" : "ft"}) </th>
                         <th className="text-left py-2 px-3 font-semibold">Speed Min</th>
