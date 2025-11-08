@@ -1,4 +1,3 @@
-import { trpc } from "@/lib/trpc";
 import { MapPin, Globe, Edit2, Trash2, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,17 +5,24 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useDemoMode } from "@/contexts/DemoModeContext";
+import { trpc } from "@/lib/trpc";
 
 export default function Tracks() {
   const { selectedOrgId, selectedOrg } = useOrganization();
   const { user } = useAuth();
+  const { isDemoMode, currentRole } = useDemoMode();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  
+  // Determine effective user role (demo mode overrides actual role)
+  const effectiveRole = isDemoMode ? currentRole : (user?.role || 'user');
+  const isAdmin = effectiveRole === 'administrator';
   
   const deleteTrack = trpc.tracks.delete.useMutation({
     onSuccess: () => {
@@ -35,16 +41,33 @@ export default function Tracks() {
   };
   
   const { data: tracks, isLoading } = trpc.tracks.list.useQuery({});
+  const { data: organizations } = trpc.organizations.list.useQuery();
+  
+  // Create a map of organization IDs to names
+  const orgMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    if (organizations && Array.isArray(organizations)) {
+      organizations.forEach(org => {
+        if (org && org.id && org.name) {
+          map[org.id] = org.name;
+        }
+      });
+    }
+    return map;
+  }, [organizations]);
+  
+  // Debug: log the orgMap when it changes
+  console.log('Organization map:', orgMap, 'Organizations:', organizations);
 
   const globalTracks = tracks?.filter(t => t.scope === 'global') || [];
   const localTracks = tracks?.filter(t => t.scope === 'local') || [];
 
   return (
     <div className="p-6 space-y-6 bg-background">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Tracks for {selectedOrg?.name || 'Organization'}</h1>
+      <div className="page-header">
+        <h1 className="text-3xl font-bold tracking-tight">Tracks</h1>
         <p className="text-muted-foreground mt-1">
-          Browse racetracks and training facilities available to {selectedOrg?.name || 'this organization'}
+          {selectedOrg?.name || 'Organization'}
         </p>
       </div>
 
@@ -109,13 +132,20 @@ export default function Tracks() {
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {track.country && <Badge variant="outline">{track.country}</Badge>}
                           {track.type && <Badge variant="outline">{track.type}</Badge>}
                           <Badge variant="secondary">Global</Badge>
                         </div>
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Lock className="h-3 w-3" />
-                          <span>Read-only</span>
+                          {!isAdmin ? (
+                            <>
+                              <Lock className="h-3 w-3" />
+                              <span>Read-only</span>
+                            </>
+                          ) : (
+                            <span className="text-green-600">Editable</span>
+                          )}
                         </div>
                       </div>
 
@@ -168,30 +198,40 @@ export default function Tracks() {
                         )}
                       </div>
                       
+                      {/* Country and Organization ownership */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {track.country && <Badge variant="outline">{track.country}</Badge>}
                           {track.type && <Badge variant="outline">{track.type}</Badge>}
-                          <Badge variant="default">Organization</Badge>
+                          <Badge variant="secondary">Organization</Badge>
                         </div>
                         <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 w-7 p-0"
-                            onClick={() => toast.info("Edit track feature coming soon")}
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </Button>
+                          {isAdmin && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 w-7 p-0"
+                              onClick={() => toast.info("Edit track feature coming soon")}
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="ghost"
                             className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                             onClick={() => handleDeleteTrack(track.id, track.name)}
+                            disabled={!isAdmin && effectiveRole !== 'owner'}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
+                      {track.organizationId && (
+                        <div className="text-xs text-muted-foreground">
+                          Owned by: <span className="font-medium">{orgMap[track.organizationId] || `Organization ${track.organizationId}`}</span>
+                        </div>
+                      )}
 
                       {track.description && (
                         <div className="text-sm text-muted-foreground mt-2">

@@ -17,14 +17,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Horses() {
   const { selectedOrgId, selectedOrg } = useOrganization();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("latestSession");
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
+  const [showAddHorseDialog, setShowAddHorseDialog] = useState(false);
+  const [newHorseForm, setNewHorseForm] = useState({
+    name: '',
+    alias: '',
+    breed: '',
+  });
   const [editForm, setEditForm] = useState({
     name: "",
+    alias: "",
     breed: "",
     weight: "",
     owner: "",
@@ -58,6 +74,12 @@ export default function Horses() {
     utils.horses.list.invalidate();
   }, [selectedOrgId, utils]);
 
+  // Clear filters when Horses page mounts
+  useEffect(() => {
+    setSearch("");
+    setSortBy("latestSession");
+  }, []);
+
   const [, setLocation] = useLocation();
 
   const addFavorite = trpc.horses.addFavorite.useMutation({
@@ -82,26 +104,53 @@ export default function Horses() {
     },
   });
 
+  const createHorse = trpc.horses.create.useMutation({
+    onSuccess: () => {
+      utils.horses.list.invalidate();
+      utils.horses.getStats.invalidate();
+      setShowAddHorseDialog(false);
+      setNewHorseForm({ name: '', alias: '', breed: '' });
+    },
+  });
+
   // Get favorite IDs from horses data
   const favoriteHorses = horses?.filter(h => (h as any).isFavorite) || [];
   const nonFavoriteHorses = horses?.filter(h => !(h as any).isFavorite) || [];
   
+  // Check if user has profile data
+  const hasUserProfile = true; // Profile is now implemented
+  
   // Sort horses based on selected option
   const sortHorses = (horseList: any[]) => {
     const sorted = [...horseList];
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    
     switch (sortBy) {
       case "latestSession":
         return sorted.sort((a, b) => {
           const aDate = a.latestSession?.sessionDate ? new Date(a.latestSession.sessionDate).getTime() : 0;
           const bDate = b.latestSession?.sessionDate ? new Date(b.latestSession.sessionDate).getTime() : 0;
-          return bDate - aDate;
+          return (bDate - aDate) * multiplier;
         });
       case "name":
-        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+        return sorted.sort((a, b) => a.name.localeCompare(b.name) * multiplier);
+      case "duration":
+        return sorted.sort((a, b) => {
+          const aDuration = (a.latestSession?.performanceData as any)?.duration || 0;
+          const bDuration = (b.latestSession?.performanceData as any)?.duration || 0;
+          return (aDuration - bDuration) * multiplier;
+        });
+      case "risk":
+        return sorted.sort((a, b) => {
+          const riskOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1, null: 0 };
+          const aRisk = riskOrder[a.latestSession?.injuryRisk as keyof typeof riskOrder] || 0;
+          const bRisk = riskOrder[b.latestSession?.injuryRisk as keyof typeof riskOrder] || 0;
+          return (aRisk - bRisk) * multiplier;
+        });
       case "status":
-        return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || ''));
+        return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || '') * multiplier);
       case "breed":
-        return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || ''));
+        return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || '') * multiplier);
       default:
         return sorted;
     }
@@ -135,6 +184,7 @@ export default function Horses() {
     const healthRecords = horse.healthRecords || {};
     setEditForm({
       name: horse.name,
+      alias: horse.alias || "",
       breed: horse.breed || "",
       weight: healthRecords.weight?.toString() || "",
       owner: healthRecords.owner || "",
@@ -151,6 +201,7 @@ export default function Horses() {
       updateHorse.mutate({
         id: editingHorseId,
         name: editForm.name,
+        alias: editForm.alias || undefined,
         breed: editForm.breed || undefined,
         healthRecords: {
           weight: editForm.weight ? parseInt(editForm.weight) : undefined,
@@ -169,6 +220,17 @@ export default function Horses() {
     setEditingHorseId(null);
   };
 
+  const handleAddHorse = () => {
+    if (newHorseForm.name.trim()) {
+      createHorse.mutate({
+        organizationId: selectedOrgId!,
+        name: newHorseForm.name,
+        alias: newHorseForm.alias || undefined,
+        breed: newHorseForm.breed || undefined,
+      });
+    }
+  };
+
   const getRiskColor = (risk: string | null) => {
     switch (risk) {
       case "critical": return "destructive";
@@ -184,79 +246,21 @@ export default function Horses() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-green-900">Horse Registry for {selectedOrg?.name || 'Organization'}</h1>
+        <div className="page-header">
+          <h1 className="text-3xl font-bold tracking-tight">Horses</h1>
           <p className="text-muted-foreground mt-1">
-            Manage profiles for horses in {selectedOrg?.name || 'this organization'} ({totalHorses} total)
+            {selectedOrg?.name || 'Organization'}
           </p>
         </div>
-        <Button className="bg-orange-300 hover:bg-orange-400 text-gray-900">
+        <Button 
+          onClick={() => setShowAddHorseDialog(true)}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Add New Horse
         </Button>
-      </div>
-
-      {/* Statistics Cards */}
-      <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-5">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold">{activeHorses}</div>
-              <div className="text-xs text-muted-foreground mt-1">Active Horses</div>
-              {statsLoading ? (
-                <Skeleton className="h-3 w-12 mt-1 mx-auto" />
-              ) : (
-                <div className="text-xs text-green-600 mt-1">+{newHorses30Days} new (30d)</div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold">{trainingHorses}</div>
-              <div className="text-xs text-muted-foreground mt-1">Training Horses</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold">{retiredHorses}</div>
-              <div className="text-xs text-muted-foreground mt-1">Retired Horses</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold">{injuredHorses}</div>
-              <div className="text-xs text-muted-foreground mt-1">Injured Horses</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              {statsLoading ? (
-                <Skeleton className="h-8 w-12 mx-auto" />
-              ) : (
-                <div className="text-3xl font-bold">{recentChanges30Days}</div>
-              )}
-              <div className="text-xs text-muted-foreground mt-1">Recent Changes</div>
-              {statsLoading ? (
-                <Skeleton className="h-3 w-16 mt-1 mx-auto" />
-              ) : (
-                <>
-                  <div className="text-xs text-green-600 mt-1">Last 30 days</div>
-                  <div className="text-xs text-purple-600">{sessions30Days} sessions</div>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Search and Filter */}
@@ -282,32 +286,125 @@ export default function Horses() {
             <SelectItem value="breed">Breed</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline" size="icon">
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => {
+            setSearch("");
+            setSortBy("latestSession");
+            setSortOrder("desc");
+          }}
+        >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
         </Button>
       </div>
 
-      {/* Horses List */}
-      <div className="space-y-3">
-        {isLoading ? (
-          <>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-4 border-b">
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ))}
-          </>
-        ) : sortedHorses.length > 0 ? (
-          sortedHorses.map((horse, index) => {
-            const isFavorite = favoriteIds.has(horse.id);
-            const isEditing = editingHorseId === horse.id;
-            const latestSession = (horse as any).latestSession;
+      {/* Table - Desktop View */}
+      <div className="border rounded-lg overflow-x-auto hidden md:block">
+        <table className="w-full">
+          <thead className="bg-muted/50 border-b">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8"></th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'name') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('name');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Horse
+                  {sortBy === 'name' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'risk') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('risk');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Risk
+                  {sortBy === 'risk' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'latestSession') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('latestSession');
+                      setSortOrder('desc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Latest Session
+                  {sortBy === 'latestSession' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'track') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('track');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Track
+                  {sortBy === 'track' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8">Modify</th>
+            </tr>
+          </thead>
+          <tbody>
 
-            if (isEditing) {
-              return (
-                <div key={horse.id} className="p-6 border-b bg-white">
+      {/* Horses List */}
+      {isLoading ? (
+        <>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <tr key={i}>
+              <td colSpan={7} className="p-4 border-b">
+                <Skeleton className="h-12 w-full" />
+              </td>
+            </tr>
+          ))}
+        </>
+      ) : sortedHorses.length > 0 ? (
+        sortedHorses.map((horse, index) => {
+          const isFavorite = favoriteIds.has(horse.id);
+          const isEditing = editingHorseId === horse.id;
+          const latestSession = (horse as any).latestSession;
+
+          if (isEditing) {
+            return (
+              <tr key={horse.id}>
+                <td colSpan={7} className="p-6 border-b bg-card">
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -315,6 +412,14 @@ export default function Horses() {
                         <Input
                           value={editForm.name}
                           onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          className="h-9 mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Alias</Label>
+                        <Input
+                          value={editForm.alias}
+                          onChange={(e) => setEditForm({ ...editForm, alias: e.target.value })}
                           className="h-9 mt-1"
                         />
                       </div>
@@ -375,6 +480,8 @@ export default function Horses() {
                           className="h-9 mt-1"
                         />
                       </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
                         <Label className="text-xs text-muted-foreground">Gender</Label>
                         <Input
@@ -384,132 +491,256 @@ export default function Horses() {
                         />
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="default"
-                        onClick={handleSaveEdit}
-                        disabled={updateHorse.isPending}
-                      >
-                        Save Changes
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleCancelEdit}
-                      >
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" onClick={handleCancelEdit} className="h-9">
                         Cancel
                       </Button>
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <Card key={horse.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between gap-4">
-                    {/* Left side: Favorite + Horse Info */}
-                    <div className="flex items-center gap-2 flex-1">
-                      <button
-                        onClick={() => handleToggleFavorite(horse.id, isFavorite)}
-                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                      >
-                        <Heart
-                          className={`h-5 w-5 transition-colors ${
-                            isFavorite
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300 hover:text-yellow-400"
-                          }`}
-                        />
-                      </button>
-                      
-                      <div className="flex-1">
-                        <button
-                          onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
-                          className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                        >
-                          <h3 className="font-semibold text-base hover:text-primary transition-colors">
-                            {horse.name}
-                          </h3>
-                        </button>
-                        <p className="text-xs text-muted-foreground ml-3">{horse.breed || 'Unknown breed'}</p>
-                      </div>
-                    </div>
-
-                    {/* Right side: Session Info + Actions */}
-                    <div className="flex items-center gap-4">
-                      {/* Latest Session */}
-                      <div className="text-right min-w-[140px]">
-                        <p className="text-xs text-muted-foreground mb-0.5">Latest Session</p>
-                        {latestSession ? (
-                          <button
-                            onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                            className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-2"
-                          >
-                            <svg className="h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
-                            </svg>
-                            <span className="text-sm font-medium">
-                              {formatDateTimeShort(latestSession.sessionDate)}
-                            </span>
-                          </button>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">No sessions</span>
-                        )}
-                      </div>
-
-                      {/* Duration */}
-                      <div className="text-right min-w-[80px]">
-                        <p className="text-xs text-muted-foreground mb-0.5">Duration</p>
-                        {latestSession?.performanceData && (latestSession.performanceData as any).duration ? (
-                          <span className="text-sm font-medium">
-                            {formatDuration((latestSession.performanceData as any).duration)}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">—</span>
-                        )}
-                      </div>
-
-                      {/* Injury Risk */}
-                      <div className="text-right min-w-[120px]">
-                        <p className="text-xs text-muted-foreground mb-0.5">Injury Risk</p>
-                        {latestSession?.injuryRisk ? (
-                          <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
-                            {latestSession.injuryRisk}
-                          </Badge>
-                        ) : (
-                          <Badge variant={getRiskColor(null) as any}>no-data</Badge>
-                        )}
-                      </div>
-
-                      {/* Edit Button */}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleEditClick(horse)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit2 className="h-4 w-4" />
+                      <Button onClick={handleSaveEdit} className="h-9 bg-green-600 hover:bg-green-700">
+                        Save
                       </Button>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </td>
+              </tr>
             );
-          })
-        ) : (
-          <div className="p-12 text-center text-muted-foreground">
-            <Heart className="h-12 w-12 mx-auto mb-3 opacity-20" />
-            <p className="text-lg font-medium">No horses found</p>
-            <p className="text-sm mt-1">
-              {search ? "Try adjusting your search" : "Add your first horse to get started"}
-            </p>
-          </div>
-        )}
+          }
+
+          return (
+            <tr key={horse.id} className={`border-b hover:bg-muted/50 transition-colors ${
+              index % 2 === 0 ? 'even-row' : 'odd-row'
+            }`}>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => handleToggleFavorite(horse.id, isFavorite)}
+                  className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  <Heart
+                    className={`h-5 w-5 transition-colors ${
+                      isFavorite
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-muted-foreground hover:text-amber-400"
+                    }`}
+                  />
+                </button>
+              </td>
+              <td className="px-4 py-3">
+                <button
+                  onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
+                  className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                >
+                  <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                    {horse.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">{(horse as any).alias || 'No alias'}</p>
+                </button>
+              </td>
+              <td className="px-4 py-3">
+                {latestSession?.injuryRisk ? (
+                  <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
+                    {latestSession.injuryRisk}
+                  </Badge>
+                ) : (
+                  <Badge variant={getRiskColor(null) as any}>no-data</Badge>
+                )}
+              </td>
+              <td className="px-4 py-3 text-sm">
+                {latestSession ? (
+                  <button
+                    onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <Clock className="h-4 w-4 flex-shrink-0" />
+                    <div>
+                      <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(latestSession.sessionDate).toLocaleTimeString()}
+                        {latestSession?.performanceData && (latestSession.performanceData as any).duration && (
+                          <span> ({formatDuration((latestSession.performanceData as any).duration)})</span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ) : (
+                  <span className="text-muted-foreground">No sessions</span>
+                )}
+              </td>
+              <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
+                {latestSession?.trackName || (horse as any).trackName || '—'}
+              </td>
+              <td className="px-4 py-3 text-right">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleEditClick(horse)}
+                  className="h-7 w-7 p-0"
+                >
+                  <Edit2 className="h-3.5 w-3.5" />
+                </Button>
+              </td>
+            </tr>
+          );
+        })
+      ) : (
+        <tr>
+          <td colSpan={7} className="p-12 text-center text-muted-foreground">
+            No horses found. Try adjusting your search or filters.
+          </td>
+        </tr>
+      )}
+          </tbody>
+        </table>
       </div>
+
+      {/* Cards - Mobile View */}
+      <div className="md:hidden space-y-4">
+        {sortedHorses.map((horse) => {
+          const isFavorite = favoriteIds.has(horse.id);
+          const latestSession = (horse as any).latestSession;
+
+          return (
+            <div key={horse.id} className="border rounded-lg p-4 bg-card hover:bg-muted/50 transition-colors">
+              <div className="space-y-3">
+                {/* Header with favorite and edit buttons */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <button
+                      onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
+                      className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    >
+                      <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                        {horse.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">{(horse as any).alias || 'No alias'}</p>
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleToggleFavorite(horse.id, isFavorite)}
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    >
+                      <Heart
+                        className={`h-5 w-5 transition-colors ${
+                          isFavorite
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-muted-foreground hover:text-amber-400"
+                        }`}
+                      />
+                    </button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEditClick(horse)}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Risk Badge */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Risk:</span>
+                  {latestSession?.injuryRisk ? (
+                    <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
+                      {latestSession.injuryRisk}
+                    </Badge>
+                  ) : (
+                    <Badge variant={getRiskColor(null) as any}>no-data</Badge>
+                  )}
+                </div>
+
+                {/* Latest Session */}
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground font-medium">Latest Session:</span>
+                  {latestSession ? (
+                    <button
+                      onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                      className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors block text-sm"
+                    >
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 flex-shrink-0" />
+                        <div>
+                          <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(latestSession.sessionDate).toLocaleTimeString()}
+                            {latestSession?.performanceData && (latestSession.performanceData as any).duration && (
+                              <span> ({formatDuration((latestSession.performanceData as any).duration)})</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">No sessions</span>
+                  )}
+                </div>
+
+                {/* Track */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Track:</span>
+                  <span className="text-sm">{latestSession?.trackName || (horse as any).trackName || '—'}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Add Horse Dialog */}
+      <Dialog open={showAddHorseDialog} onOpenChange={setShowAddHorseDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Horse</DialogTitle>
+            <DialogDescription>
+              Create a new horse profile for {selectedOrg?.name || 'your organization'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="horse-name">Horse Name *</Label>
+              <Input
+                id="horse-name"
+                value={newHorseForm.name}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, name: e.target.value })}
+                placeholder="e.g., Golden Star"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-alias">Alias (Friendly Name)</Label>
+              <Input
+                id="horse-alias"
+                value={newHorseForm.alias}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, alias: e.target.value })}
+                placeholder="e.g., Goldie"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-breed">Breed</Label>
+              <Input
+                id="horse-breed"
+                value={newHorseForm.breed}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, breed: e.target.value })}
+                placeholder="e.g., Thoroughbred"
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddHorseDialog(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAddHorse}
+              disabled={!newHorseForm.name.trim() || createHorse.isPending}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {createHorse.isPending ? 'Creating...' : 'Create Horse'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { OrganizationProvider } from "./contexts/OrganizationContext";
 import { LocaleProvider } from "./contexts/LocaleContext";
+import { DemoModeProvider } from "./contexts/DemoModeContext";
 import "@/lib/i18n"; // Initialize i18n
 import Dashboard from "./pages/Dashboard";
 import Horses from "./pages/Horses";
@@ -69,16 +70,18 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
-        <LocaleProvider>
-          <OrganizationProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
-          </OrganizationProvider>
-        </LocaleProvider>
-      </ThemeProvider>
+      <DemoModeProvider>
+        <ThemeProvider defaultTheme="light" switchable={true}>
+          <LocaleProvider>
+            <OrganizationProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </OrganizationProvider>
+          </LocaleProvider>
+        </ThemeProvider>
+      </DemoModeProvider>
     </ErrorBoundary>
   );
 }

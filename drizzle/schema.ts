@@ -97,6 +97,7 @@ export type InsertDevice = typeof devices.$inferInsert;
 export const horses = mysqlTable("horses", {
   id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }).notNull(),
+  alias: varchar("alias", { length: 255 }),
   breed: varchar("breed", { length: 100 }),
   status: mysqlEnum("status", ["active", "injured", "retired", "inactive"])
     .default("active")
@@ -138,6 +139,7 @@ export const tracks = mysqlTable("tracks", {
   name: varchar("name", { length: 255 }).notNull(),
   type: varchar("type", { length: 50 }),
   scope: mysqlEnum("scope", ["global", "local"]).default("local").notNull(),
+  country: varchar("country", { length: 100 }).default("Australia"),
   organizationId: int("organizationId"),
   description: text("description"),
   createdAt: timestamp("createdAt").defaultNow(),

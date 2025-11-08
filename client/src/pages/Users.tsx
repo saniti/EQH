@@ -170,10 +170,10 @@ export function Users() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+          <div className="page-header">
+            <h1 className="text-3xl font-bold tracking-tight">Users</h1>
             <p className="text-muted-foreground mt-1">
-              Manage user accounts, roles, and organization assignments
+              User Management
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -184,26 +184,27 @@ export function Users() {
         </div>
 
         {/* Users Table */}
-        <div className="rounded-lg border bg-card">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b bg-muted/50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">User</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Role</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Type</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Last Sign In</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold">Organizations</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {users.map((user) => {
-                  const userOrgCount = userOrganizations.length;
-                  return (
-                    <tr key={user.id} className="hover:bg-muted/50 transition-colors">
-                      <td className="px-6 py-4">
+        <div className="rounded-lg border bg-card overflow-x-auto">
+          <table className="whitespace-nowrap">
+            <thead className="border-b bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold">User</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Role</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Type</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Last Sign In</th>
+                <th className="px-4 py-3 text-left text-sm font-semibold">Organizations</th>
+                <th className="px-4 py-3 text-right text-sm font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {users.map((user, index) => {
+                const userOrgCount = userOrganizations.length;
+                return (
+                  <tr key={user.id} className={`hover:bg-muted/50 transition-colors ${
+                    index % 2 === 0 ? 'even-row' : 'odd-row'
+                  }`}>
+                    <td className="px-4 py-3">
                         <div>
                           <div className="font-medium">{user.name || "Unnamed User"}</div>
                           <div className="text-sm text-muted-foreground">{user.email}</div>
@@ -211,14 +212,14 @@ export function Users() {
                             ID: {user.id}
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">{getRoleBadge(user.role)}</td>
-                      <td className="px-6 py-4">{getUserTypeBadge(user.userType)}</td>
-                      <td className="px-6 py-4">{getStatusBadge(user.status)}</td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                    </td>
+                    <td className="px-4 py-3">{getRoleBadge(user.role)}</td>
+                    <td className="px-4 py-3">{getUserTypeBadge(user.userType)}</td>
+                    <td className="px-4 py-3">{getStatusBadge(user.status)}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                         {user.lastSignedIn ? formatDateShort(new Date(user.lastSignedIn)) : "Never"}
                       </td>
-                      <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                         <Button
                           variant="outline"
                           size="sm"
@@ -229,7 +230,7 @@ export function Users() {
                           Manage Organizations
                         </Button>
                       </td>
-                      <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-2">
                           <Button
                             variant="ghost"
@@ -251,16 +252,15 @@ export function Users() {
                     </tr>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-
-          {users.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground">
-              No users found
-            </div>
-          )}
+            </tbody>
+          </table>
         </div>
+
+        {users.length === 0 && (
+          <div className="py-12 text-center text-muted-foreground">
+            No users found
+          </div>
+        )}
       </div>
 
       {/* Edit User Dialog */}

@@ -211,6 +211,7 @@ async function seed() {
         name: track.name,
         type: track.type,
         scope: "global",
+        country: "Australia",
         description: `${track.description} - Located in ${track.location}`,
       });
     }
@@ -222,18 +223,25 @@ async function seed() {
         name: track.name,
         type: track.type,
         scope: "global",
+        country: "USA",
         description: `${track.description} - Located in ${track.location}`,
       });
     }
 
     // 4. Create training tracks (local to each organization)
     console.log("Creating training facilities...");
-    for (const orgId of orgIds) {
+    const orgNames = ["Melbourne Racing Stables", "Sydney Equestrian Center", "Kentucky Derby Training Facility"];
+    const orgCountries = ["Australia", "Australia", "USA"];
+    for (let i = 0; i < orgIds.length; i++) {
+      const orgId = orgIds[i];
+      const orgName = orgNames[i];
+      const country = orgCountries[i];
       for (const track of trainingTracks) {
         await db.insert(schema.tracks).values({
-          name: `${track.name} - Org ${orgId}`,
+          name: `${track.name} - ${orgName}`,
           type: track.type,
           scope: "local",
+          country: country,
           organizationId: orgId,
           description: track.description,
         });
@@ -258,10 +266,23 @@ async function seed() {
     // 6. Create horses
     console.log("Creating horses...");
     const horseIds: number[] = [];
+    const horseAliases = [
+      "Standardbred",
+      "Swift Runner",
+      "Golden Champion",
+      "Night Rider",
+      "Storm Chaser",
+      "Gentle Giant",
+      "Speed Demon",
+      "Star Performer",
+      "Brave Heart",
+      "Swift Wing",
+    ];
     for (let i = 0; i < 30; i++) {
       const orgId = orgIds[i % orgIds.length];
       const breed = horseBreeds[i % horseBreeds.length];
       const name = horseNames[i % horseNames.length];
+      const alias = horseAliases[i % horseAliases.length];
       const deviceId = deviceIds[i] || null;
       
       const statuses = ["active", "active", "active", "injured", "retired"];
@@ -269,6 +290,7 @@ async function seed() {
 
       const horseId = await db.insert(schema.horses).values({
         name,
+        alias,
         breed,
         status,
         organizationId: orgId,
@@ -325,29 +347,149 @@ async function seed() {
       const injuryRisks = ["low", "low", "low", "medium", "medium", "high", "critical"];
       const injuryRisk = injuryRisks[i % injuryRisks.length] as any;
 
-      // Generate realistic performance data
-      const heartRateData = Array.from({ length: 20 }, () => 
-        Math.floor(Math.random() * 40) + 100
-      );
-      const speedData = Array.from({ length: 20 }, () => 
-        Math.floor(Math.random() * 20) + 30
-      );
+      // Generate sectional-based performance data (200m intervals)
+      const totalDistance = 4800; // 4.8 km
+      const sectionalDistance = 200; // 200m per sectional
+      const duration = 1602; // 26:42 in seconds
+      
+      // Generate sectional statistics
+      const sectionals = [];
+      for (let j = 1; j <= totalDistance / sectionalDistance; j++) {
+        const distance = j * sectionalDistance;
+        
+        // Simulate realistic performance patterns
+        let avgSpeed, maxSpeed, strideLength, strideFreq;
+        
+        if (j <= 5) {
+          // Warm-up phase (0-1000m)
+          avgSpeed = 0.75 + Math.random() * 2.5;
+          maxSpeed = avgSpeed + 1 + Math.random() * 2;
+          strideLength = 0.3 + Math.random() * 0.8;
+          strideFreq = 2.5 + Math.random() * 0.5;
+        } else if (j <= 20) {
+          // Main training phase (1000-4000m)
+          avgSpeed = 7 + Math.random() * 3;
+          maxSpeed = avgSpeed + 1 + Math.random() * 2;
+          strideLength = 3.5 + Math.random() * 1.3;
+          strideFreq = 1.9 + Math.random() * 0.3;
+        } else {
+          // Cool-down phase (4000-4800m)
+          avgSpeed = 1.5 + Math.random() * 0.5;
+          maxSpeed = avgSpeed + 0.5 + Math.random() * 0.8;
+          strideLength = 0.6 + Math.random() * 0.3;
+          strideFreq = 2.2 + Math.random() * 0.5;
+        }
+        
+        // Determine gait based on speed
+        let gait = "Walk/Trot";
+        if (avgSpeed > 4) gait = "Trot/Canter";
+        if (avgSpeed > 8) gait = "Pace";
+        
+        sectionals.push({
+          sectional: j,
+          distance,
+          avgSpeed: parseFloat(avgSpeed.toFixed(2)),
+          maxSpeed: parseFloat(maxSpeed.toFixed(2)),
+          strideLength: parseFloat(strideLength.toFixed(2)),
+          strideFreq: parseFloat(strideFreq.toFixed(2)),
+          gait,
+        });
+      }
+      
+      // Calculate overall metrics
+      const avgSpeed = sectionals.reduce((sum, s) => sum + s.avgSpeed, 0) / sectionals.length;
+      const maxSpeed = Math.max(...sectionals.map(s => s.maxSpeed));
+      
+      // Generate speed/heart rate chart data (one point per second)
+      const chartData = sectionals.flatMap((s, idx) => {
+        const points = [];
+        for (let j = 0; j < 10; j++) {
+          const timeInSectional = (j / 10) * 200; // 200m per sectional
+          points.push({
+            time: (idx * 200 + timeInSectional) * 1000, // in milliseconds
+            speed: s.avgSpeed + (Math.random() - 0.5) * 2,
+            hr: 80 + Math.floor(Math.random() * 40),
+          });
+        }
+        return points;
+      });
+      
+      // Speed zone distances
+      const speedZoneDistance = {
+        walk: sectionals.filter(s => s.avgSpeed < 2).reduce((sum, s) => sum + 200, 0),
+        canter: sectionals.filter(s => s.avgSpeed >= 2 && s.avgSpeed < 4).reduce((sum, s) => sum + 200, 0),
+        pace: sectionals.filter(s => s.avgSpeed >= 4 && s.avgSpeed < 8).reduce((sum, s) => sum + 200, 0),
+        slowGallop: sectionals.filter(s => s.avgSpeed >= 8 && s.avgSpeed < 9).reduce((sum, s) => sum + 200, 0),
+        fastGallop: sectionals.filter(s => s.avgSpeed >= 9 && s.avgSpeed < 10).reduce((sum, s) => sum + 200, 0),
+        veryFastGallop: sectionals.filter(s => s.avgSpeed >= 10).reduce((sum, s) => sum + 200, 0),
+      };
+      
+      // Create interval stats from sectionals
+      const intervalStats = sectionals.map(s => ({
+        sectional: s.sectional,
+        distance: s.distance,
+        timeSplit: 200000 / s.avgSpeed, // Approximate time for 200m
+        travel: 200, // 200m per sectional
+        speed: {
+          min: s.avgSpeed - 1,
+          avg: s.avgSpeed,
+          max: s.maxSpeed,
+        },
+        stride: {
+          frequency: s.strideFreq,
+          length: s.strideLength,
+        },
+        hr: {
+          min: 70 + Math.floor(Math.random() * 20),
+          avg: 85 + Math.floor(Math.random() * 30),
+          max: 150 + Math.floor(Math.random() * 20),
+        },
+      }));
+      
+      // Create performanceData object
+      const performanceData = {
+        duration,
+        distance: totalDistance,
+        avgSpeed: parseFloat(avgSpeed.toFixed(2)),
+        maxSpeed: parseFloat(maxSpeed.toFixed(2)),
+        avgHeartRate: 85 + Math.floor(Math.random() * 30),
+        maxHeartRate: 150 + Math.floor(Math.random() * 20),
+        avgTemperature: 36.8 + Math.random() * 1.5,
+        maxTemperature: 37.5 + Math.random() * 1.5,
+        speedHeartRate: {
+          speedHeartRateChart: chartData,
+          maxHR: Math.floor(Math.random() * 40) + 150,
+          hR13Point3: Math.floor(Math.random() * 30) + 120,
+          bpM200Speed: parseFloat((Math.random() * 10 + 30).toFixed(2)),
+          maxBPMSpeed: parseFloat((Math.random() * 10 + 40).toFixed(2)),
+          heartRateRecovery: {
+            perMinute: Array.from({ length: 10 }, () => Math.floor(Math.random() * 50)),
+            avG2T5: Math.floor(Math.random() * 30) + 10,
+            avG5T10: Math.floor(Math.random() * 20) + 5,
+            timeTo100BPM: Math.random() * 5 + 1,
+          },
+        },
+        intervals: {
+          stats: intervalStats,
+          speedZoneDistance,
+        },
+        preWorkTime: 0,
+        preWorkoutDistance: 0,
+        // Legacy fields for compatibility
+        heartRate: chartData.map(d => d.hr),
+        speed: chartData.map(d => d.speed),
+        temperature: Math.floor(Math.random() * 5) + 37,
+        gaitAnalysis: {
+          stride: Math.floor(Math.random() * 50) + 150,
+          symmetry: Math.floor(Math.random() * 20) + 80,
+        },
+      };
 
       const sessionId = await db.insert(schema.sessions).values({
         horseId,
         trackId,
         sessionDate,
-        performanceData: {
-          heartRate: heartRateData,
-          speed: speedData,
-          distance: Math.floor(Math.random() * 5000) + 1000,
-          duration: Math.floor(Math.random() * 1800) + 600,
-          temperature: Math.floor(Math.random() * 5) + 37,
-          gaitAnalysis: {
-            stride: Math.floor(Math.random() * 50) + 150,
-            symmetry: Math.floor(Math.random() * 20) + 80,
-          },
-        },
+        performanceData,
         injuryRisk,
         recoveryTarget: injuryRisk === "high" || injuryRisk === "critical" 
           ? new Date(sessionDate.getTime() + 7 * 24 * 60 * 60 * 1000)

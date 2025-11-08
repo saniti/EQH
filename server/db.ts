@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, isNull, like, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, gte, inArray, isNull, like, lte, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   apiSettings,
@@ -301,10 +301,14 @@ export async function getOrganizationHorses(
   // Enrich with latest session and favorite status
   const enriched = await Promise.all(
     horsesList.map(async (horse) => {
-      // Get latest session
+      // Get latest session with track info
       const latestSessionResult = await db
-        .select()
+        .select({
+          ...getTableColumns(sessions),
+          trackName: tracks.name,
+        })
         .from(sessions)
+        .leftJoin(tracks, eq(sessions.trackId, tracks.id))
         .where(eq(sessions.horseId, horse.id))
         .orderBy(desc(sessions.sessionDate))
         .limit(1);
@@ -538,9 +542,12 @@ export async function getOrganizationSessions(
   }
 
   // Build where conditions
-  // Only include sessions assigned to horses in this organization
+  // Include sessions assigned to horses in this organization OR unassigned sessions
   const conditions: any[] = [
-    inArray(sessions.horseId, horseIds)
+    or(
+      inArray(sessions.horseId, horseIds),
+      isNull(sessions.horseId)
+    )
   ];
   
   if (filters?.horseId) {

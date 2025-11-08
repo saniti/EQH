@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { DemoModeRoleSwitcher } from "@/components/DemoModeRoleSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -20,7 +21,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
@@ -232,10 +233,10 @@ function DashboardLayoutContent({
           <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 pl-2 group-data-[collapsible=icon]:px-0 transition-all w-full">
               {isCollapsed ? (
-                <div className="relative h-8 w-8 shrink-0 group">
+                <div className="relative h-12 w-12 shrink-0 group flex items-center justify-center">
                   <img
-                    src={APP_LOGO}
-                    className="h-8 w-8 rounded-md object-cover ring-1 ring-border"
+                    src={APP_LOGO_SVG}
+                    className="h-10 w-10 text-blue-600"
                     alt="Logo"
                   />
                   <button
@@ -249,8 +250,8 @@ function DashboardLayoutContent({
                 <>
                   <div className="flex items-center gap-3 min-w-0">
                     <img
-                      src={APP_LOGO}
-                      className="h-8 w-8 rounded-md object-cover ring-1 ring-border shrink-0"
+                      src={APP_LOGO_SVG}
+                      className="h-10 w-10 shrink-0 text-blue-600"
                       alt="Logo"
                     />
                     <span className="font-semibold tracking-tight truncate">
@@ -321,11 +322,13 @@ function DashboardLayoutContent({
             )}
           </SidebarContent>
 
-          <SidebarFooter className="p-3">
-            <div className="flex items-center justify-center mb-2">
+          <SidebarFooter className="p-0">
+            <div className="flex items-center justify-center mb-2 p-3">
               <ThemeSelector />
             </div>
-            <DropdownMenu>
+            <DemoModeRoleSwitcher />
+            <div className="px-3 py-3 border-t">
+              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Avatar className="h-9 w-9 border shrink-0">
@@ -360,6 +363,7 @@ function DashboardLayoutContent({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           </SidebarFooter>
         </Sidebar>
         <div

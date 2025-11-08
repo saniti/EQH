@@ -104,6 +104,39 @@ export default function Profile() {
               />
             </div>
           </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <Label>User ID</Label>
+              <Input
+                value={user?.id || ""}
+                disabled
+              />
+            </div>
+            <div>
+              <Label>Account Created</Label>
+              <Input
+                value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ""}
+                disabled
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Profile Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Status</CardTitle>
+          <CardDescription>
+            Your profile information is complete and active
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-3">
+            <div className="h-3 w-3 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium">Profile Active</span>
+          </div>
         </CardContent>
       </Card>
 

@@ -12,13 +12,18 @@ export default function Dashboard() {
   const utils = trpc.useUtils();
   
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.getStats.useQuery(
-    undefined,
+    { organizationId: selectedOrgId },
     { enabled: !!selectedOrgId }
   );
   const { data: favoriteHorses, isLoading: favoritesLoading } = trpc.dashboard.getFavoriteHorses.useQuery(
-    undefined,
+    { organizationId: selectedOrgId },
     { enabled: !!selectedOrgId }
   );
+  const { data: sessions, isLoading: sessionsLoading } = trpc.sessions.list.useQuery(
+    { organizationId: selectedOrgId!, limit: 1000, offset: 0 },
+    { enabled: !!selectedOrgId }
+  );
+  const unassignedSessionsCount = sessions?.filter(s => !s.horseId).length || 0;
 
   // Invalidate and refetch data when organization changes
   useEffect(() => {
@@ -28,10 +33,10 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard - {selectedOrg?.name || 'Organization'}</h1>
+      <div className="page-header">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Overview of your horse health monitoring system for {selectedOrg?.name || 'this organization'}
+          {selectedOrg?.name || 'Organization'}
         </p>
       </div>
 
@@ -104,6 +109,82 @@ export default function Dashboard() {
             <p className="text-xs text-muted-foreground mt-1">
               High/critical risk
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Sessions Needing Assignment</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {sessionsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="text-2xl font-bold text-amber-600">
+                  {unassignedSessionsCount}
+                </div>
+                <Badge variant="destructive">Assignment Needed</Badge>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Awaiting horse assignment
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Horse Statistics */}
+      <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-5">
+        <Card className="border-0 shadow-none bg-muted/50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.activeHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Active Horses</div>
+              {statsLoading ? (
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
+              ) : (
+                <div className="text-xs text-green-600 mt-0.5">+{stats?.newHorses30Days || 0} new (30d)</div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-muted/50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.trainingHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Training Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-muted/50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.retiredHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Retired Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-muted/50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.injuredHorses || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Injured Horses</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-none bg-muted/50">
+          <CardContent className="py-2 px-3">
+            <div className="text-center">
+              <div className="text-2xl font-bold leading-none">{stats?.recentChanges30Days || 0}</div>
+              <div className="text-xs text-muted-foreground mt-1">Recent Changes</div>
+              {statsLoading ? (
+                <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
+              ) : (
+                <div className="text-xs text-primary mt-0.5">{stats?.sessions30Days || 0} sessions</div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

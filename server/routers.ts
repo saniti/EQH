@@ -100,6 +100,7 @@ export const appRouter = router({
       .input(
         z.object({
           name: z.string(),
+          alias: z.string().optional(),
           breed: z.string().optional(),
           status: z.enum(["active", "injured", "retired", "inactive"]).default("active"),
           organizationId: z.number(),
@@ -122,6 +123,7 @@ export const appRouter = router({
         z.object({
           id: z.number(),
           name: z.string().optional(),
+          alias: z.string().optional(),
           breed: z.string().optional(),
           status: z.enum(["active", "injured", "retired", "inactive"]).optional(),
           deviceId: z.number().optional(),
