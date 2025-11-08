@@ -399,8 +399,8 @@ export default function Sessions() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="border rounded-lg overflow-x-auto">
+      {/* Table - Desktop View */}
+      <div className="border rounded-lg overflow-x-auto hidden md:block">
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
@@ -500,6 +500,79 @@ export default function Sessions() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Cards - Mobile View */}
+      <div className="md:hidden space-y-4">
+        {sortedFilteredSessions.map((session) => {
+          const displayName = session.horseId ? session.horseName : 'new session';
+          return (
+            <div key={session.id} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}`)}>
+              <div className="space-y-3">
+                {/* Header with checkbox and delete */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-3 flex-1">
+                    <input
+                      type="checkbox"
+                      checked={selectedSessions.includes(session.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        if (e.target.checked) {
+                          setSelectedSessions([...selectedSessions, session.id]);
+                        } else {
+                          setSelectedSessions(selectedSessions.filter(id => id !== session.id));
+                        }
+                      }}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-sm capitalize">{displayName}</h3>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSession(session.id);
+                    }}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Risk Badge */}
+                {session.injuryRisk && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-medium">Risk:</span>
+                    <Badge variant={getRiskColor(session.injuryRisk) as any}>
+                      {session.injuryRisk}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Date and Time */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Date:</span>
+                  <span className="text-sm">{formatDateShort(session.sessionDate)}</span>
+                </div>
+
+                {/* Duration */}
+                {session.performanceData && (session.performanceData as any).duration && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-medium">Duration:</span>
+                    <span className="text-sm">{Math.round((session.performanceData as any).duration / 60)} min</span>
+                  </div>
+                )}
+
+                {/* Track */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Track:</span>
+                  <span className="text-sm">{session.trackName || '—'}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Pagination */}

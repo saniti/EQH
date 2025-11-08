@@ -301,8 +301,8 @@ export default function Horses() {
         </Button>
       </div>
 
-      {/* Table Header */}
-      <div className="border rounded-lg overflow-x-auto">
+      {/* Table - Desktop View */}
+      <div className="border rounded-lg overflow-x-auto hidden md:block">
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
@@ -587,6 +587,101 @@ export default function Horses() {
       )}
           </tbody>
         </table>
+      </div>
+
+      {/* Cards - Mobile View */}
+      <div className="md:hidden space-y-4">
+        {sortedFilteredHorses.map((horse) => {
+          const isFavorite = favorites.includes(horse.id);
+          const latestSession = (horse as any).latestSession;
+
+          return (
+            <div key={horse.id} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
+              <div className="space-y-3">
+                {/* Header with favorite and edit buttons */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <button
+                      onClick={() => setLocation(`/sessions?horseId=${horse.id}`)}
+                      className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    >
+                      <h3 className="font-semibold text-sm hover:text-primary transition-colors">
+                        {horse.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">{(horse as any).alias || 'No alias'}</p>
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleToggleFavorite(horse.id, isFavorite)}
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    >
+                      <Heart
+                        className={`h-5 w-5 transition-colors ${
+                          isFavorite
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300 hover:text-yellow-400"
+                        }`}
+                      />
+                    </button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleEditClick(horse)}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Risk Badge */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Risk:</span>
+                  {latestSession?.injuryRisk ? (
+                    <Badge variant={getRiskColor(latestSession.injuryRisk) as any}>
+                      {latestSession.injuryRisk}
+                    </Badge>
+                  ) : (
+                    <Badge variant={getRiskColor(null) as any}>no-data</Badge>
+                  )}
+                </div>
+
+                {/* Latest Session */}
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground font-medium">Latest Session:</span>
+                  {latestSession ? (
+                    <button
+                      onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
+                      className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors block text-sm"
+                    >
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 flex-shrink-0" />
+                        <div>
+                          <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(latestSession.sessionDate).toLocaleTimeString()}
+                            {latestSession?.performanceData && (latestSession.performanceData as any).duration && (
+                              <span> ({formatDuration((latestSession.performanceData as any).duration)})</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">No sessions</span>
+                  )}
+                </div>
+
+                {/* Track */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Track:</span>
+                  <span className="text-sm">{latestSession?.trackName || (horse as any).trackName || '—'}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Add Horse Dialog */}
