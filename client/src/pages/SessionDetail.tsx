@@ -32,13 +32,63 @@ export default function SessionDetail() {
     }
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     if (hours > 0) {
       return `${hours}h ${mins}m`;
     }
     return `${mins}m`;
+  };
+
+  // Calculate summary metrics from performance data
+  const calculateMetrics = () => {
+    if (!performanceData) return null;
+
+    // Get duration in seconds
+    const duration = performanceData.duration || 0;
+
+    // Calculate average heart rate from chart data
+    let avgHeartRate = performanceData.avgHeartRate || 0;
+    if (performanceData.speedHeartRate?.speedHeartRateChart) {
+      const hrValues = performanceData.speedHeartRate.speedHeartRateChart
+        .map((d: any) => d.hr)
+        .filter((hr: number) => hr > 0);
+      if (hrValues.length > 0) {
+        avgHeartRate = Math.round(hrValues.reduce((a: number, b: number) => a + b, 0) / hrValues.length);
+      }
+    }
+
+    // Calculate max heart rate from chart data
+    let maxHeartRate = performanceData.maxHeartRate || 0;
+    if (performanceData.speedHeartRate?.speedHeartRateChart) {
+      maxHeartRate = Math.max(...performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.hr));
+    }
+
+    // Calculate average and max speed
+    let avgSpeed = performanceData.avgSpeed || 0;
+    let maxSpeed = performanceData.maxSpeed || 0;
+    if (performanceData.speedHeartRate?.speedHeartRateChart) {
+      const speedValues = performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.speed);
+      avgSpeed = speedValues.reduce((a: number, b: number) => a + b, 0) / speedValues.length;
+      maxSpeed = Math.max(...speedValues);
+    }
+
+    // Get distance and temperature
+    const distance = performanceData.distance || 0;
+    const avgTemperature = performanceData.avgTemperature || 0;
+    const maxTemperature = performanceData.maxTemperature || 0;
+
+    return {
+      duration,
+      avgHeartRate,
+      maxHeartRate,
+      avgSpeed: parseFloat(avgSpeed.toFixed(2)),
+      maxSpeed: parseFloat(maxSpeed.toFixed(2)),
+      distance,
+      avgTemperature,
+      maxTemperature,
+    };
   };
 
   const handleBack = () => {
@@ -52,63 +102,39 @@ export default function SessionDetail() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-10 w-64" />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-4 w-24" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-32" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-96" />
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="space-y-6">
-        <Button variant="ghost" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Sessions
-        </Button>
-        <Card>
-          <CardContent className="p-12">
-            <div className="text-center text-muted-foreground">
-              <Activity className="h-12 w-12 mx-auto mb-3 opacity-20" />
-              <p className="text-lg font-medium">Session not found</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Session not found</p>
+        <Button onClick={handleBack} className="mt-4">Back</Button>
       </div>
     );
   }
 
-  const performanceData = session.performanceData as any || {};
-  const horseName = (session as any).horseName || "Unknown Horse";
-  const trackName = (session as any).trackName || "Unknown Track";
+  const performanceData = (session as any).performanceData || {};
+  const metrics = calculateMetrics();
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+        <Button variant="ghost" size="icon" onClick={handleBack}>
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Session Details</h1>
-          <p className="text-muted-foreground mt-1">
-            {horseName} • {new Date(session.sessionDate).toLocaleDateString()}
+          <h1 className="text-3xl font-bold">Session Details</h1>
+          <p className="text-muted-foreground">
+            {(session as any).horse?.name} • {new Date((session as any).sessionDate).toLocaleDateString()}
           </p>
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="graphs">Graphs</TabsTrigger>
@@ -127,7 +153,7 @@ export default function SessionDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {performanceData.duration ? formatDuration(performanceData.duration) : "—"}
+                  {metrics ? formatDuration(metrics.duration) : "—"}
                 </div>
               </CardContent>
             </Card>
@@ -139,8 +165,8 @@ export default function SessionDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {performanceData.avgHeartRate || "—"}
-                  {performanceData.avgHeartRate && <span className="text-sm font-normal text-muted-foreground ml-1">bpm</span>}
+                  {metrics?.avgHeartRate || "—"}
+                  {metrics?.avgHeartRate && <span className="text-sm font-normal text-muted-foreground ml-1">bpm</span>}
                 </div>
               </CardContent>
             </Card>
@@ -152,8 +178,8 @@ export default function SessionDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {performanceData.avgTemperature || "—"}
-                  {performanceData.avgTemperature && <span className="text-sm font-normal text-muted-foreground ml-1">°C</span>}
+                  {metrics?.avgTemperature || "—"}
+                  {metrics?.avgTemperature && <span className="text-sm font-normal text-muted-foreground ml-1">°C</span>}
                 </div>
               </CardContent>
             </Card>
@@ -185,26 +211,17 @@ export default function SessionDetail() {
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">Date & Time</p>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(session.sessionDate).toLocaleString()}
+                    <p className="text-sm text-muted-foreground">Date & Time</p>
+                    <p className="font-medium">
+                      {new Date((session as any).sessionDate).toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium">Track</p>
-                    <p className="text-sm text-muted-foreground">{trackName}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Activity className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium">Session Type</p>
-                    <p className="text-sm text-muted-foreground">
-                      {(session as any).sessionType || "Training"}
-                    </p>
+                    <p className="text-sm text-muted-foreground">Track</p>
+                    <p className="font-medium">{(session as any).track?.name || "—"}</p>
                   </div>
                 </div>
               </CardContent>
@@ -218,31 +235,31 @@ export default function SessionDetail() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Average Speed</span>
                   <span className="text-sm font-medium">
-                    {performanceData.avgSpeed ? `${performanceData.avgSpeed} km/h` : "—"}
+                    {metrics?.avgSpeed ? `${metrics.avgSpeed} km/h` : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Max Speed</span>
                   <span className="text-sm font-medium">
-                    {performanceData.maxSpeed ? `${performanceData.maxSpeed} km/h` : "—"}
+                    {metrics?.maxSpeed ? `${metrics.maxSpeed} km/h` : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Distance Covered</span>
                   <span className="text-sm font-medium">
-                    {performanceData.distance ? `${performanceData.distance} km` : "—"}
+                    {metrics?.distance ? `${(metrics.distance / 1000).toFixed(2)} km` : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Max Heart Rate</span>
                   <span className="text-sm font-medium">
-                    {performanceData.maxHeartRate ? `${performanceData.maxHeartRate} bpm` : "—"}
+                    {metrics?.maxHeartRate ? `${metrics.maxHeartRate} bpm` : "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">Max Temperature</span>
                   <span className="text-sm font-medium">
-                    {performanceData.maxTemperature ? `${performanceData.maxTemperature}°C` : "—"}
+                    {metrics?.maxTemperature ? `${metrics.maxTemperature}°C` : "—"}
                   </span>
                 </div>
               </CardContent>
@@ -463,66 +480,52 @@ export default function SessionDetail() {
 
         {/* Data Tab */}
         <TabsContent value="data" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Raw Data</CardTitle>
-              <CardDescription>Detailed session data points</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Duration</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.duration ? formatDuration(performanceData.duration) : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Average Heart Rate</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.avgHeartRate ? `${performanceData.avgHeartRate} bpm` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Max Heart Rate</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.maxHeartRate ? `${performanceData.maxHeartRate} bpm` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Average Temperature</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.avgTemperature ? `${performanceData.avgTemperature}°C` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Max Temperature</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.maxTemperature ? `${performanceData.maxTemperature}°C` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Average Speed</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.avgSpeed ? `${performanceData.avgSpeed} km/h` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Max Speed</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.maxSpeed ? `${performanceData.maxSpeed} km/h` : "—"}
-                    </p>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Distance Covered</p>
-                    <p className="text-lg font-semibold">
-                      {performanceData.distance ? `${performanceData.distance} km` : "—"}
-                    </p>
-                  </div>
+          {performanceData.intervals?.stats && performanceData.intervals.stats.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Interval Statistics</CardTitle>
+                <CardDescription>Detailed performance data for each session interval</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 px-3 font-semibold">Interval</th>
+                        <th className="text-left py-2 px-3 font-semibold">Time (s)</th>
+                        <th className="text-left py-2 px-3 font-semibold">Distance (m)</th>
+                        <th className="text-left py-2 px-3 font-semibold">Speed Min</th>
+                        <th className="text-left py-2 px-3 font-semibold">Speed Avg</th>
+                        <th className="text-left py-2 px-3 font-semibold">Speed Max</th>
+                        <th className="text-left py-2 px-3 font-semibold">Stride Freq</th>
+                        <th className="text-left py-2 px-3 font-semibold">Stride Len</th>
+                        <th className="text-left py-2 px-3 font-semibold">HR Min</th>
+                        <th className="text-left py-2 px-3 font-semibold">HR Avg</th>
+                        <th className="text-left py-2 px-3 font-semibold">HR Max</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {performanceData.intervals.stats.map((stat: any, idx: number) => (
+                        <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50/40' : 'bg-blue-100/30'}>
+                          <td className="py-2 px-3">{idx + 1}</td>
+                          <td className="py-2 px-3">{(stat.timeSplit / 1000).toFixed(1)}</td>
+                          <td className="py-2 px-3">{stat.travel.toFixed(0)}</td>
+                          <td className="py-2 px-3">{stat.speed.min.toFixed(2)}</td>
+                          <td className="py-2 px-3">{stat.speed.avg.toFixed(2)}</td>
+                          <td className="py-2 px-3">{stat.speed.max.toFixed(2)}</td>
+                          <td className="py-2 px-3">{stat.stride.frequency.toFixed(2)}</td>
+                          <td className="py-2 px-3">{stat.stride.length.toFixed(2)}</td>
+                          <td className="py-2 px-3">{stat.hr.min}</td>
+                          <td className="py-2 px-3">{stat.hr.avg}</td>
+                          <td className="py-2 px-3">{stat.hr.max}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Insights Tab */}
