@@ -114,19 +114,22 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unassigned Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium">Sessions Needing Assignment</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             {sessionsLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
-              <div className="text-2xl font-bold text-amber-600">
-                {unassignedSessionsCount}
+              <div className="flex items-center gap-3">
+                <div className="text-2xl font-bold text-amber-600">
+                  {unassignedSessionsCount}
+                </div>
+                <Badge variant="destructive">Assignment Needed</Badge>
               </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-              Awaiting assignment
+              Awaiting horse assignment
             </p>
           </CardContent>
         </Card>

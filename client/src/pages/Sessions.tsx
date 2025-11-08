@@ -246,7 +246,7 @@ export default function Sessions() {
     }
     
     // Filter by search
-    const displayName = session.horseId ? session.horseName : 'new session';
+    const displayName = session.horseId ? session.horseName : 'Assignment Needed';
     if (search && !displayName?.toLowerCase().includes(search.toLowerCase())) {
       return false;
     }
@@ -448,7 +448,7 @@ export default function Sessions() {
                   </td>
                   <td className="px-4 py-3 text-sm">
                     <div>
-                      <div className="font-medium">{session.horseId ? session.horseName : 'new session'}</div>
+                      <div className="font-medium">{session.horseId ? session.horseName : <Badge variant="destructive">Assignment Needed</Badge>}</div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm">
@@ -505,7 +505,7 @@ export default function Sessions() {
       {/* Cards - Mobile View */}
       <div className="md:hidden space-y-4">
         {sortedFilteredSessions.map((session) => {
-          const displayName = session.horseId ? session.horseName : 'new session';
+          const displayName = session.horseId ? session.horseName : 'Assignment Needed';
           return (
             <div key={session.id} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}`)}>
               <div className="space-y-3">
@@ -526,7 +526,9 @@ export default function Sessions() {
                       className="mt-1"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-sm capitalize">{displayName}</h3>
+                      <h3 className="font-semibold text-sm capitalize">
+                        {session.horseId ? displayName : <Badge variant="destructive">Assignment Needed</Badge>}
+                      </h3>
                     </div>
                   </div>
                   <button
