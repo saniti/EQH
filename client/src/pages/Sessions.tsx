@@ -144,28 +144,56 @@ export default function Sessions() {
     }
   };
 
-  const handleAssignToTrack = () => {
+  const handleAssignToTrack = async () => {
     if (!selectedTrackId) {
       toast.error("Please select a track");
       return;
     }
 
-    updateSessionTrack.mutate({
-      sessionIds: selectedSessions,
-      trackId: selectedTrackId,
-    });
+    try {
+      await Promise.all(
+        selectedSessions.map(sessionId =>
+          updateSessionTrack.mutateAsync({
+            sessionId,
+            trackId: selectedTrackId,
+          })
+        )
+      );
+      utils.sessions.list.invalidate();
+      setSelectedSessions([]);
+      setShowAssignDialog(false);
+      setSelectedTrackId(undefined);
+      setCountryFilter("");
+      setTrackTypeFilter("");
+      toast.success(`${selectedSessions.length} session(s) assigned to track`);
+    } catch (error: any) {
+      toast.error("Failed to assign sessions: " + error.message);
+    }
   };
 
-  const handleAssignToHorse = () => {
-    if (!selectedHorseId) {
+  const handleAssignToHorse = async () => {
+    if (selectedHorseId === undefined) {
       toast.error("Please select a horse");
       return;
     }
 
-    assignToHorse.mutate({
-      sessionIds: selectedSessions,
-      horseId: selectedHorseId === 0 ? null : selectedHorseId,
-    });
+    try {
+      await Promise.all(
+        selectedSessions.map(sessionId =>
+          assignToHorse.mutateAsync({
+            sessionId,
+            horseId: selectedHorseId === 0 ? null : selectedHorseId,
+          })
+        )
+      );
+      utils.sessions.list.invalidate();
+      setSelectedSessions([]);
+      setShowAssignHorseDialog(false);
+      setSelectedHorseId(undefined);
+      toast.success("Sessions assigned to horse successfully");
+    } catch (error: any) {
+      toast.error(`Failed to assign sessions: ${error.message}`);
+    }
   };
 
   const getDateRange = () => {

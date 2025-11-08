@@ -19,6 +19,11 @@ export default function Dashboard() {
     { organizationId: selectedOrgId },
     { enabled: !!selectedOrgId }
   );
+  const { data: sessions, isLoading: sessionsLoading } = trpc.sessions.list.useQuery(
+    { organizationId: selectedOrgId!, limit: 1000, offset: 0 },
+    { enabled: !!selectedOrgId }
+  );
+  const unassignedSessionsCount = sessions?.filter(s => !s.horseId).length || 0;
 
   // Invalidate and refetch data when organization changes
   useEffect(() => {
@@ -103,6 +108,25 @@ export default function Dashboard() {
             )}
             <p className="text-xs text-muted-foreground mt-1">
               High/critical risk
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Unassigned Sessions</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {sessionsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold text-amber-600">
+                {unassignedSessionsCount}
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Awaiting assignment
             </p>
           </CardContent>
         </Card>
