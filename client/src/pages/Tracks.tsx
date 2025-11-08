@@ -64,7 +64,7 @@ export default function Tracks() {
 
   return (
     <div className="p-6 space-y-6 bg-background">
-      <div>
+      <div className="page-header">
         <h1 className="text-3xl font-bold tracking-tight">Tracks</h1>
         <p className="text-muted-foreground mt-1">
           {selectedOrg?.name || 'Organization'}

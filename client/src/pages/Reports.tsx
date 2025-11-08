@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function Reports() {
   return (
     <div className="p-6 space-y-6 bg-background">
-      <div>
+      <div className="page-header">
         <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
         <p className="text-muted-foreground mt-1">
           Health & Performance

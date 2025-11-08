@@ -170,7 +170,7 @@ export function Users() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
+          <div className="page-header">
             <h1 className="text-3xl font-bold tracking-tight">Users</h1>
             <p className="text-muted-foreground mt-1">
               User Management

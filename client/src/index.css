@@ -43,7 +43,7 @@
   --secondary-foreground: 0 0% 100%;
   --muted: 220 14% 96%;
   --muted-foreground: 220 9% 46%;
-  --accent: 24 95% 53%;
+  --accent: 220 13% 91%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
@@ -96,13 +96,13 @@
 }
 
 @layer components {
-  /* Table row alternating colors */
+  /* Table row alternating colors - very subtle */
   .even-row {
-    @apply bg-blue-50;
+    @apply bg-blue-50/40;
   }
   
   .odd-row {
-    @apply bg-blue-100;
+    @apply bg-blue-100/30;
   }
   
   /* Dark mode table row colors */
@@ -112,6 +112,11 @@
   
   .dark .odd-row {
     @apply bg-slate-800;
+  }
+  
+  /* Page header styling with colored accent */
+  .page-header {
+    @apply border-l-4 border-primary pl-4;
   }
   
   .container {
