@@ -542,9 +542,12 @@ export async function getOrganizationSessions(
   }
 
   // Build where conditions
-  // Only include sessions assigned to horses in this organization
+  // Include sessions assigned to horses in this organization OR unassigned sessions
   const conditions: any[] = [
-    inArray(sessions.horseId, horseIds)
+    or(
+      inArray(sessions.horseId, horseIds),
+      isNull(sessions.horseId)
+    )
   ];
   
   if (filters?.horseId) {
