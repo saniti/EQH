@@ -136,63 +136,63 @@ export default function SessionDetail() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Distance</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Distance</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{displayDistance}</div>
-                <p className="text-xs text-green-100">{distanceUnit}</p>
+                <p className="text-xs text-muted-foreground">{distanceUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Session Duration</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Session Duration</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{durationMinutes}:{durationSeconds.toString().padStart(2, '0')}</div>
-                <p className="text-xs text-green-100">minutes</p>
+                <p className="text-xs text-muted-foreground">minutes</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Max Velocity</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Max Velocity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{displayMaxVel}</div>
-                <p className="text-xs text-green-100">{velUnit}</p>
+                <p className="text-xs text-muted-foreground">{velUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Avg Velocity</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Avg Velocity</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{displayAvgVel}</div>
-                <p className="text-xs text-green-100">{velUnit}</p>
+                <p className="text-xs text-muted-foreground">{velUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Max Stride Length</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Max Stride Length</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{displayMaxStrideLen}</div>
-                <p className="text-xs text-green-100">{strideLenUnit}</p>
+                <p className="text-xs text-muted-foreground">{strideLenUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-green-600 text-white">
+            <Card className="border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Max Stride Freq</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Max Stride Freq</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">{maxStrideFreq.toFixed(2)}</div>
-                <p className="text-xs text-green-100">strides/sec</p>
+                <p className="text-xs text-muted-foreground">strides/sec</p>
               </CardContent>
             </Card>
           </div>
@@ -212,7 +212,7 @@ export default function SessionDetail() {
         <TabsContent value="data" className="space-y-6">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-green-600 text-white">
+              <thead className="border">
                 <tr>
                   <th className="px-4 py-2 text-left">Sectional</th>
                   <th className="px-4 py-2 text-left">Distance (m)</th>
