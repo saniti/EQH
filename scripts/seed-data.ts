@@ -446,6 +446,44 @@ async function seed() {
         },
       }));
       
+      // Create performanceData object
+      const performanceData = {
+        duration,
+        distance: totalDistance,
+        avgSpeed: parseFloat(avgSpeed.toFixed(2)),
+        maxSpeed: parseFloat(maxSpeed.toFixed(2)),
+        avgHeartRate: 85 + Math.floor(Math.random() * 30),
+        maxHeartRate: 150 + Math.floor(Math.random() * 20),
+        avgTemperature: 36.8 + Math.random() * 1.5,
+        maxTemperature: 37.5 + Math.random() * 1.5,
+        speedHeartRate: {
+          speedHeartRateChart: chartData,
+          maxHR: Math.floor(Math.random() * 40) + 150,
+          hR13Point3: Math.floor(Math.random() * 30) + 120,
+          bpM200Speed: parseFloat((Math.random() * 10 + 30).toFixed(2)),
+          maxBPMSpeed: parseFloat((Math.random() * 10 + 40).toFixed(2)),
+          heartRateRecovery: {
+            perMinute: Array.from({ length: 10 }, () => Math.floor(Math.random() * 50)),
+            avG2T5: Math.floor(Math.random() * 30) + 10,
+            avG5T10: Math.floor(Math.random() * 20) + 5,
+            timeTo100BPM: Math.random() * 5 + 1,
+          },
+        },
+        intervals: {
+          stats: intervalStats,
+          speedZoneDistance,
+        },
+        preWorkTime: 0,
+        preWorkoutDistance: 0,
+        // Legacy fields for compatibility
+        heartRate: chartData.map(d => d.hr),
+        speed: chartData.map(d => d.speed),
+        temperature: Math.floor(Math.random() * 5) + 37,
+        gaitAnalysis: {
+          stride: Math.floor(Math.random() * 50) + 150,
+          symmetry: Math.floor(Math.random() * 20) + 80,
+        },
+      };
 
       const sessionId = await db.insert(schema.sessions).values({
         horseId,
