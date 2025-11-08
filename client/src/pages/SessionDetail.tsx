@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation, useParams, useSearch } from "wouter";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import Plot from 'react-plotly.js';
 
 export default function SessionDetail() {
   const params = useParams();
@@ -265,18 +266,199 @@ export default function SessionDetail() {
 
         {/* Graphs Tab */}
         <TabsContent value="graphs" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance Graphs</CardTitle>
-              <CardDescription>Visual representation of session data</CardDescription>
-            </CardHeader>
-            <CardContent className="h-96 flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <Activity className="h-12 w-12 mx-auto mb-3 opacity-20" />
-                <p>Graph visualizations coming soon</p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Speed and Heart Rate Chart */}
+          {performanceData.speedHeartRate?.speedHeartRateChart && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Speed & Heart Rate Over Time</CardTitle>
+                <CardDescription>Real-time performance metrics during the session</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Plot
+                  data={[
+                    {
+                      x: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.time / 1000),
+                      y: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.speed),
+                      name: 'Speed (km/h)',
+                      type: 'scatter',
+                      mode: 'lines',
+                      line: { color: '#3b82f6', width: 2 },
+                      yaxis: 'y1',
+                    },
+                    {
+                      x: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.time / 1000),
+                      y: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.hr),
+                      name: 'Heart Rate (bpm)',
+                      type: 'scatter',
+                      mode: 'lines',
+                      line: { color: '#ef4444', width: 2 },
+                      yaxis: 'y2',
+                    },
+                  ]}
+                  layout={{
+                    title: '',
+                    height: 400,
+                    hovermode: 'x unified',
+                    xaxis: {
+                      title: 'Time (seconds)',
+                    },
+                    yaxis: {
+                      title: 'Speed (km/h)',
+                      titlefont: { color: '#3b82f6' },
+                      tickfont: { color: '#3b82f6' },
+                    },
+                    yaxis2: {
+                      title: 'Heart Rate (bpm)',
+                      titlefont: { color: '#ef4444' },
+                      tickfont: { color: '#ef4444' },
+                      overlaying: 'y',
+                      side: 'right',
+                    },
+                    margin: { l: 60, r: 60, t: 40, b: 40 },
+                  }}
+                  config={{ responsive: true }}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Stride Frequency and Length Chart */}
+          {performanceData.intervals?.stats && performanceData.intervals.stats.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Stride Analysis</CardTitle>
+                <CardDescription>Stride frequency and length throughout the session</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Plot
+                  data={[
+                    {
+                      x: performanceData.intervals.stats.map((d: any, i: number) => i),
+                      y: performanceData.intervals.stats.map((d: any) => d.stride.frequency),
+                      name: 'Stride Frequency (Hz)',
+                      type: 'scatter',
+                      mode: 'lines+markers',
+                      line: { color: '#8b5cf6', width: 2 },
+                      yaxis: 'y1',
+                    },
+                    {
+                      x: performanceData.intervals.stats.map((d: any, i: number) => i),
+                      y: performanceData.intervals.stats.map((d: any) => d.stride.length),
+                      name: 'Stride Length (m)',
+                      type: 'scatter',
+                      mode: 'lines+markers',
+                      line: { color: '#06b6d4', width: 2 },
+                      yaxis: 'y2',
+                    },
+                  ]}
+                  layout={{
+                    title: '',
+                    height: 400,
+                    hovermode: 'x unified',
+                    xaxis: {
+                      title: 'Interval Number',
+                    },
+                    yaxis: {
+                      title: 'Stride Frequency (Hz)',
+                      titlefont: { color: '#8b5cf6' },
+                      tickfont: { color: '#8b5cf6' },
+                    },
+                    yaxis2: {
+                      title: 'Stride Length (m)',
+                      titlefont: { color: '#06b6d4' },
+                      tickfont: { color: '#06b6d4' },
+                      overlaying: 'y',
+                      side: 'right',
+                    },
+                    margin: { l: 60, r: 60, t: 40, b: 40 },
+                  }}
+                  config={{ responsive: true }}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Speed Zones Distribution */}
+          {performanceData.intervals?.speedZoneDistance && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Speed Zone Distribution</CardTitle>
+                <CardDescription>Distance covered in each gait zone</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Plot
+                  data={[
+                    {
+                      x: ['Walk', 'Canter', 'Pace', 'Slow Gallop', 'Fast Gallop', 'Very Fast Gallop'],
+                      y: [
+                        performanceData.intervals.speedZoneDistance.walk,
+                        performanceData.intervals.speedZoneDistance.canter,
+                        performanceData.intervals.speedZoneDistance.pace,
+                        performanceData.intervals.speedZoneDistance.slowGallop,
+                        performanceData.intervals.speedZoneDistance.fastGallop,
+                        performanceData.intervals.speedZoneDistance.veryFastGallop,
+                      ],
+                      type: 'bar',
+                      marker: {
+                        color: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
+                      },
+                    },
+                  ]}
+                  layout={{
+                    title: '',
+                    height: 400,
+                    xaxis: {
+                      title: 'Gait Zone',
+                    },
+                    yaxis: {
+                      title: 'Distance (m)',
+                    },
+                    margin: { l: 60, r: 40, t: 40, b: 60 },
+                  }}
+                  config={{ responsive: true }}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Interval Speed Progression */}
+          {performanceData.intervals?.stats && performanceData.intervals.stats.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Speed Progression by Interval</CardTitle>
+                <CardDescription>Average speed throughout the session intervals</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Plot
+                  data={[
+                    {
+                      x: performanceData.intervals.stats.map((d: any, i: number) => i),
+                      y: performanceData.intervals.stats.map((d: any) => d.speed.avg),
+                      name: 'Average Speed',
+                      type: 'scatter',
+                      mode: 'lines+markers',
+                      line: { color: '#3b82f6', width: 2 },
+                      fill: 'tozeroy',
+                      fillcolor: 'rgba(59, 130, 246, 0.1)',
+                    },
+                  ]}
+                  layout={{
+                    title: '',
+                    height: 400,
+                    hovermode: 'x unified',
+                    xaxis: {
+                      title: 'Interval Number',
+                    },
+                    yaxis: {
+                      title: 'Average Speed (km/h)',
+                    },
+                    margin: { l: 60, r: 40, t: 40, b: 40 },
+                  }}
+                  config={{ responsive: true }}
+                />
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Data Tab */}
