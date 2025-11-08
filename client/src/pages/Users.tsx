@@ -198,10 +198,12 @@ export function Users() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {users.map((user) => {
+              {users.map((user, index) => {
                 const userOrgCount = userOrganizations.length;
                 return (
-                  <tr key={user.id} className="hover:bg-muted/50 transition-colors">
+                  <tr key={user.id} className={`hover:bg-muted/50 transition-colors ${
+                    index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+                  }`}>
                     <td className="px-4 py-3">
                         <div>
                           <div className="font-medium">{user.name || "Unnamed User"}</div>

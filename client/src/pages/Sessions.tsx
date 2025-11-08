@@ -432,11 +432,13 @@ export default function Sessions() {
                 ))}
               </>
             ) : sortedFilteredSessions.length > 0 ? (
-              sortedFilteredSessions.map((session) => (
+              sortedFilteredSessions.map((session, index) => (
                 <tr
                   key={session.id}
                   onClick={() => setLocation(`/sessions/${session.id}`)}
-                  className="border-b hover:bg-muted/50 cursor-pointer"
+                  className={`border-b hover:bg-muted/50 cursor-pointer ${
+                    index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+                  }`}
                 >
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <input

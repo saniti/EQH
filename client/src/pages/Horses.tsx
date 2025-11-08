@@ -506,7 +506,9 @@ export default function Horses() {
           }
 
           return (
-            <tr key={horse.id} className="border-b hover:bg-muted/50 transition-colors">
+            <tr key={horse.id} className={`border-b hover:bg-muted/50 transition-colors ${
+              index % 2 === 0 ? 'bg-secondary/5' : 'bg-accent/5'
+            }`}>
               <td className="px-4 py-3">
                 <button
                   onClick={() => handleToggleFavorite(horse.id, isFavorite)}
