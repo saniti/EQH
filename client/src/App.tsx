@@ -71,7 +71,7 @@ function App() {
   return (
     <ErrorBoundary>
       <DemoModeProvider>
-        <ThemeProvider defaultTheme="light">
+        <ThemeProvider defaultTheme="light" switchable={true}>
           <LocaleProvider>
             <OrganizationProvider>
               <TooltipProvider>

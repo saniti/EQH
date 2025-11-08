@@ -402,7 +402,7 @@ export default function Sessions() {
       {/* Table - Desktop View */}
       <div className="border rounded-lg overflow-x-auto hidden md:block">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-muted/50 border-b">
             <tr>
               <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8">
                 <input
@@ -436,7 +436,7 @@ export default function Sessions() {
                 <tr
                   key={session.id}
                   onClick={() => setLocation(`/sessions/${session.id}`)}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
+                  className="border-b hover:bg-muted/50 cursor-pointer"
                 >
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <input
@@ -507,7 +507,7 @@ export default function Sessions() {
         {sortedFilteredSessions.map((session) => {
           const displayName = session.horseId ? session.horseName : 'Assignment Needed';
           return (
-            <div key={session.id} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}`)}>
+            <div key={session.id} className="border rounded-lg p-4 bg-card hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}`)}>
               <div className="space-y-3">
                 {/* Header with checkbox and delete */}
                 <div className="flex items-start justify-between gap-2">

@@ -256,7 +256,7 @@ export default function Horses() {
         </div>
         <Button 
           onClick={() => setShowAddHorseDialog(true)}
-          className="bg-orange-300 hover:bg-orange-400 text-gray-900"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add New Horse
@@ -304,7 +304,7 @@ export default function Horses() {
       {/* Table - Desktop View */}
       <div className="border rounded-lg overflow-x-auto hidden md:block">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-muted/50 border-b">
             <tr>
               <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground w-8"></th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
@@ -404,7 +404,7 @@ export default function Horses() {
           if (isEditing) {
             return (
               <tr key={horse.id}>
-                <td colSpan={7} className="p-6 border-b bg-white">
+                <td colSpan={7} className="p-6 border-b bg-card">
                   <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -506,7 +506,7 @@ export default function Horses() {
           }
 
           return (
-            <tr key={horse.id} className="border-b hover:bg-gray-50 transition-colors">
+            <tr key={horse.id} className="border-b hover:bg-muted/50 transition-colors">
               <td className="px-4 py-3">
                 <button
                   onClick={() => handleToggleFavorite(horse.id, isFavorite)}
@@ -516,7 +516,7 @@ export default function Horses() {
                     className={`h-5 w-5 transition-colors ${
                       isFavorite
                         ? "fill-yellow-400 text-yellow-400"
-                        : "text-gray-300 hover:text-yellow-400"
+                        : "text-muted-foreground hover:text-amber-400"
                     }`}
                   />
                 </button>
@@ -596,7 +596,7 @@ export default function Horses() {
           const latestSession = (horse as any).latestSession;
 
           return (
-            <div key={horse.id} className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
+            <div key={horse.id} className="border rounded-lg p-4 bg-card hover:bg-muted/50 transition-colors">
               <div className="space-y-3">
                 {/* Header with favorite and edit buttons */}
                 <div className="flex items-start justify-between gap-2">
@@ -620,7 +620,7 @@ export default function Horses() {
                         className={`h-5 w-5 transition-colors ${
                           isFavorite
                             ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300 hover:text-yellow-400"
+                            : "text-muted-foreground hover:text-amber-400"
                         }`}
                       />
                     </button>

@@ -137,7 +137,7 @@ export default function Dashboard() {
 
       {/* Horse Statistics */}
       <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-5">
-        <Card className="border-0 shadow-none bg-gray-50">
+        <Card className="border-0 shadow-none bg-muted/50">
           <CardContent className="py-2 px-3">
             <div className="text-center">
               <div className="text-2xl font-bold leading-none">{stats?.activeHorses || 0}</div>
@@ -150,7 +150,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-none bg-gray-50">
+        <Card className="border-0 shadow-none bg-muted/50">
           <CardContent className="py-2 px-3">
             <div className="text-center">
               <div className="text-2xl font-bold leading-none">{stats?.trainingHorses || 0}</div>
@@ -158,7 +158,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-none bg-gray-50">
+        <Card className="border-0 shadow-none bg-muted/50">
           <CardContent className="py-2 px-3">
             <div className="text-center">
               <div className="text-2xl font-bold leading-none">{stats?.retiredHorses || 0}</div>
@@ -166,7 +166,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-none bg-gray-50">
+        <Card className="border-0 shadow-none bg-muted/50">
           <CardContent className="py-2 px-3">
             <div className="text-center">
               <div className="text-2xl font-bold leading-none">{stats?.injuredHorses || 0}</div>
@@ -174,7 +174,7 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-0 shadow-none bg-gray-50">
+        <Card className="border-0 shadow-none bg-muted/50">
           <CardContent className="py-2 px-3">
             <div className="text-center">
               <div className="text-2xl font-bold leading-none">{stats?.recentChanges30Days || 0}</div>
@@ -182,7 +182,7 @@ export default function Dashboard() {
               {statsLoading ? (
                 <Skeleton className="h-2 w-10 mt-0.5 mx-auto" />
               ) : (
-                <div className="text-xs text-blue-600 mt-0.5">{stats?.sessions30Days || 0} sessions</div>
+                <div className="text-xs text-primary mt-0.5">{stats?.sessions30Days || 0} sessions</div>
               )}
             </div>
           </CardContent>

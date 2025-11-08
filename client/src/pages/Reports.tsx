@@ -60,8 +60,8 @@ export default function Reports() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Activity className="h-6 w-6 text-blue-500" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Activity className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <CardTitle>Health Summary</CardTitle>
