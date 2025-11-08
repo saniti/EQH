@@ -178,6 +178,7 @@ export default function Sessions() {
     }
 
     try {
+      const isUnassigning = selectedHorseId === 0;
       await Promise.all(
         selectedSessions.map(sessionId =>
           assignToHorse.mutateAsync({
@@ -190,7 +191,10 @@ export default function Sessions() {
       setSelectedSessions([]);
       setShowAssignHorseDialog(false);
       setSelectedHorseId(undefined);
-      toast.success("Sessions assigned to horse successfully");
+      const message = isUnassigning 
+        ? `${selectedSessions.length} session(s) unassigned from horse`
+        : `${selectedSessions.length} session(s) assigned to horse`;
+      toast.success(message);
     } catch (error: any) {
       toast.error(`Failed to assign sessions: ${error.message}`);
     }
