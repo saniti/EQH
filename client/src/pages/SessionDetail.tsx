@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import Plot from "react-plotly.js";
 
 export default function SessionDetail() {
   const { sessionId } = useParams<{ sessionId: string }>();
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const [isMetric, setIsMetric] = useState(true);
 
   const { data: session, isLoading, error } = trpc.sessions.get.useQuery(
@@ -100,7 +100,7 @@ export default function SessionDetail() {
     <div className="p-6">
       <Button
         variant="ghost"
-        onClick={() => navigate(-1)}
+        onClick={() => setLocation('/sessions')}
         className="mb-4"
       >
         <ArrowLeft className="w-4 h-4 mr-2" />
