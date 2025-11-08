@@ -16,6 +16,7 @@ export default function SessionDetail() {
   const searchParams = useSearch();
   const horseIdFromUrl = new URLSearchParams(searchParams).get('horseId');
   const [activeTab, setActiveTab] = useState("summary");
+  const [isMetric, setIsMetric] = useState(true);
 
   const { data: session, isLoading } = trpc.sessions.get.useQuery(
     { id: sessionId! },
@@ -97,6 +98,21 @@ export default function SessionDetail() {
     } else {
       setLocation('/sessions');
     }
+  };
+
+  const convertDistance = (meters: number) => {
+    return isMetric ? meters : meters * 3.28084;
+  };
+
+  const convertSpeed = (kmh: number) => {
+    return isMetric ? kmh : kmh * 0.621371;
+  };
+
+  const getDistanceUnit = () => isMetric ? 'm' : 'ft';
+  const getSpeedUnit = () => isMetric ? 'km/h' : 'mph';
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (isLoading) {
@@ -283,11 +299,56 @@ export default function SessionDetail() {
 
         {/* Graphs Tab */}
         <TabsContent value="graphs" className="space-y-6">
-          {/* Speed and Heart Rate Chart */}
+                  {/* Unit Toggle */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Units:</span>
+              <Button
+                variant={isMetric ? "default" : "outline"}
+                size="sm"
+                onClick={() => setIsMetric(true)}
+              >
+                Metric
+              </Button>
+              <Button
+                variant={!isMetric ? "default" : "outline"}
+                size="sm"
+                onClick={() => setIsMetric(false)}
+              >
+                Imperial
+              </Button>
+            </div>
+          </div>
+
+                    {/* Unit Toggle */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Units:</span>
+              <Button
+                variant={isMetric ? "default" : "outline"}
+                size="sm"
+                onClick={() => setIsMetric(true)}
+              >
+                Metric
+              </Button>
+              <Button
+                variant={!isMetric ? "default" : "outline"}
+                size="sm"
+                onClick={() => setIsMetric(false)}
+              >
+                Imperial
+              </Button>
+            </div>
+          </div>
+
+                    {/* Speed and Heart Rate Chart */}
           {performanceData.speedHeartRate?.speedHeartRateChart && (
             <Card>
               <CardHeader>
-                <CardTitle>Speed & Heart Rate Over Time</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Speed & Heart Rate Over Time</span>
+                  <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="text-xs text-primary hover:underline">↑ Top</a>
+                </CardTitle>
                 <CardDescription>Real-time performance metrics during the session</CardDescription>
               </CardHeader>
               <CardContent>
@@ -295,8 +356,8 @@ export default function SessionDetail() {
                   data={[
                     {
                       x: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.time / 1000),
-                      y: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.speed),
-                      name: 'Speed (km/h)',
+                      y: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => convertSpeed(d.speed)),
+                      name: `Speed (${getSpeedUnit()})`,
                       type: 'scatter',
                       mode: 'lines',
                       line: { color: '#3b82f6', width: 2 },
@@ -320,7 +381,7 @@ export default function SessionDetail() {
                       title: 'Time (seconds)',
                     },
                     yaxis: {
-                      title: 'Speed (km/h)',
+                      title: `Speed (${getSpeedUnit()})`,
                       titlefont: { color: '#3b82f6' },
                       tickfont: { color: '#3b82f6' },
                     },
@@ -344,7 +405,10 @@ export default function SessionDetail() {
           {performanceData.intervals?.stats && performanceData.intervals.stats.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Stride Analysis</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Stride Analysis</span>
+                  <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="text-xs text-primary hover:underline">↑ Top</a>
+                </CardTitle>
                 <CardDescription>Stride frequency and length throughout the session</CardDescription>
               </CardHeader>
               <CardContent>
@@ -360,8 +424,8 @@ export default function SessionDetail() {
                       yaxis: 'y1',
                     },
                     {
-                      x: performanceData.intervals.stats.map((d: any, i: number) => i),
-                      y: performanceData.intervals.stats.map((d: any) => d.stride.length),
+                      x: performanceData.intervals.stats.map((d: any) => convertDistance(d.travel)),
+                      y: performanceData.intervals.stats.map((d: any) => convertDistance(d.stride.length)),
                       name: 'Stride Length (m)',
                       type: 'scatter',
                       mode: 'lines+markers',
@@ -374,7 +438,7 @@ export default function SessionDetail() {
                     autosize: true,
                     hovermode: 'x unified',
                     xaxis: {
-                      title: 'Interval Number',
+                      title:  `Distance (${getDistanceUnit()})`,
                     },
                     yaxis: {
                       title: 'Stride Frequency (Hz)',
@@ -382,7 +446,7 @@ export default function SessionDetail() {
                       tickfont: { color: '#8b5cf6' },
                     },
                     yaxis2: {
-                      title: 'Stride Length (m)',
+                      title: `Stride Length (${getDistanceUnit()})`,
                       titlefont: { color: '#06b6d4' },
                       tickfont: { color: '#06b6d4' },
                       overlaying: 'y',
@@ -401,7 +465,10 @@ export default function SessionDetail() {
           {performanceData.intervals?.speedZoneDistance && (
             <Card>
               <CardHeader>
-                <CardTitle>Speed Zone Distribution</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Speed Zone Distribution</span>
+                  <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="text-xs text-primary hover:underline">↑ Top</a>
+                </CardTitle>
                 <CardDescription>Distance covered in each gait zone</CardDescription>
               </CardHeader>
               <CardContent>
@@ -410,12 +477,12 @@ export default function SessionDetail() {
                     {
                       x: ['Walk', 'Canter', 'Pace', 'Slow Gallop', 'Fast Gallop', 'Very Fast Gallop'],
                       y: [
-                        performanceData.intervals.speedZoneDistance.walk,
-                        performanceData.intervals.speedZoneDistance.canter,
-                        performanceData.intervals.speedZoneDistance.pace,
-                        performanceData.intervals.speedZoneDistance.slowGallop,
-                        performanceData.intervals.speedZoneDistance.fastGallop,
-                        performanceData.intervals.speedZoneDistance.veryFastGallop,
+                        convertDistance(performanceData.intervals.speedZoneDistance.walk),
+                        convertDistance(performanceData.intervals.speedZoneDistance.canter),
+                        convertDistance(performanceData.intervals.speedZoneDistance.pace),
+                        convertDistance(performanceData.intervals.speedZoneDistance.slowGallop),
+                        convertDistance(performanceData.intervals.speedZoneDistance.fastGallop),
+                        convertDistance(performanceData.intervals.speedZoneDistance.veryFastGallop),
                       ],
                       type: 'bar',
                       marker: {
@@ -430,7 +497,7 @@ export default function SessionDetail() {
                       title: 'Gait Zone',
                     },
                     yaxis: {
-                      title: 'Distance (m)',
+                      title: `Distance (${getDistanceUnit()})`,
                     },
                     margin: { l: 60, r: 40, t: 40, b: 60 },
                   }}
@@ -445,15 +512,18 @@ export default function SessionDetail() {
           {performanceData.intervals?.stats && performanceData.intervals.stats.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>Speed Progression by Interval</CardTitle>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Speed Progression by Interval</span>
+                  <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="text-xs text-primary hover:underline">↑ Top</a>
+                </CardTitle>
                 <CardDescription>Average speed throughout the session intervals</CardDescription>
               </CardHeader>
               <CardContent>
                 <Plot
                   data={[
                     {
-                      x: performanceData.intervals.stats.map((d: any, i: number) => i),
-                      y: performanceData.intervals.stats.map((d: any) => d.speed.avg),
+                      x:  performanceData.intervals.stats.map((d: any) => convertDistance(d.travel)),
+                      y: performanceData.intervals.stats.map((d: any) => convertSpeed(d.speed.avg)),
                       name: 'Average Speed',
                       type: 'scatter',
                       mode: 'lines+markers',
@@ -467,14 +537,63 @@ export default function SessionDetail() {
                     autosize: true,
                     hovermode: 'x unified',
                     xaxis: {
-                      title: 'Interval Number',
+                      title:  `Distance (${getDistanceUnit()})`,
                     },
                     yaxis: {
-                      title: 'Average Speed (km/h)',
+                      title: `Average Speed (${getSpeedUnit()})`,
                     },
                     margin: { l: 60, r: 40, t: 40, b: 40 },
                   }}
                   style={{ width: '100%', height: '500px' }}
+                  config={{ responsive: true }}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+
+          {/* Heart Rate vs Velocity Chart */}
+          {performanceData.speedHeartRate?.speedHeartRateChart && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Heart Rate vs Velocity</span>
+                  <a href="#" onClick={(e) => { e.preventDefault(); scrollToTop(); }} className="text-xs text-primary hover:underline">↑ Top</a>
+                </CardTitle>
+                <CardDescription>Relationship between speed and heart rate during the session</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Plot
+                  data={[
+                    {
+                      x: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => convertSpeed(d.speed)),
+                      y: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.hr),
+                      mode: 'markers',
+                      type: 'scatter',
+                      marker: {
+                        color: performanceData.speedHeartRate.speedHeartRateChart.map((d: any) => d.time / 1000),
+                        colorscale: 'Viridis',
+                        size: 5,
+                        colorbar: {
+                          title: 'Time (s)',
+                        },
+                      },
+                      name: 'HR vs Speed',
+                    },
+                  ]}
+                  layout={{
+                    title: '',
+                    autosize: true,
+                    hovermode: 'closest',
+                    xaxis: {
+                      title: `Speed (${getSpeedUnit()})`,
+                    },
+                    yaxis: {
+                      title: 'Heart Rate (bpm)',
+                    },
+                    margin: { l: 60, r: 60, t: 40, b: 40 },
+                  }}
+                  style={{ width: '100%', height: '600px' }}
                   config={{ responsive: true }}
                 />
               </CardContent>
