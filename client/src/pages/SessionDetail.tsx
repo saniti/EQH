@@ -136,62 +136,62 @@ export default function SessionDetail() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="border">
+            <Card className="data-card data-card-distance">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Distance</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{displayDistance}</div>
+                <div className="text-3xl font-bold data-card-accent">{displayDistance}</div>
                 <p className="text-xs text-muted-foreground">{distanceUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="border">
+            <Card className="data-card data-card-duration">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Session Duration</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{durationMinutes}:{durationSeconds.toString().padStart(2, '0')}</div>
+                <div className="text-3xl font-bold data-card-accent">{durationMinutes}:{durationSeconds.toString().padStart(2, '0')}</div>
                 <p className="text-xs text-muted-foreground">minutes</p>
               </CardContent>
             </Card>
 
-            <Card className="border">
+            <Card className="data-card data-card-velocity">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Max Velocity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{displayMaxVel}</div>
+                <div className="text-3xl font-bold data-card-accent">{displayMaxVel}</div>
                 <p className="text-xs text-muted-foreground">{velUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="border">
+            <Card className="data-card data-card-velocity">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Avg Velocity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{displayAvgVel}</div>
+                <div className="text-3xl font-bold data-card-accent">{displayAvgVel}</div>
                 <p className="text-xs text-muted-foreground">{velUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="border">
+            <Card className="data-card data-card-stride">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Max Stride Length</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{displayMaxStrideLen}</div>
+                <div className="text-3xl font-bold data-card-accent">{displayMaxStrideLen}</div>
                 <p className="text-xs text-muted-foreground">{strideLenUnit}</p>
               </CardContent>
             </Card>
 
-            <Card className="border">
+            <Card className="data-card data-card-stride">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Max Stride Freq</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{maxStrideFreq.toFixed(2)}</div>
+                <div className="text-3xl font-bold data-card-accent">{maxStrideFreq.toFixed(2)}</div>
                 <p className="text-xs text-muted-foreground">strides/sec</p>
               </CardContent>
             </Card>
