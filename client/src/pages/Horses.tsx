@@ -37,6 +37,13 @@ export default function Horses() {
     name: '',
     alias: '',
     breed: '',
+    weight: '',
+    owner: '',
+    rider: '',
+    birthPlace: '',
+    location: '',
+    color: '',
+    gender: '',
   });
   const [editForm, setEditForm] = useState({
     name: "",
@@ -109,7 +116,7 @@ export default function Horses() {
       utils.horses.list.invalidate();
       utils.horses.getStats.invalidate();
       setShowAddHorseDialog(false);
-      setNewHorseForm({ name: '', alias: '', breed: '' });
+      setNewHorseForm({ name: '', alias: '', breed: '', weight: '', owner: '', rider: '', birthPlace: '', location: '', color: '', gender: '' });
     },
   });
 
@@ -151,6 +158,12 @@ export default function Horses() {
         return sorted.sort((a, b) => (a.status || '').localeCompare(b.status || '') * multiplier);
       case "breed":
         return sorted.sort((a, b) => (a.breed || '').localeCompare(b.breed || '') * multiplier);
+      case "track":
+        return sorted.sort((a, b) => {
+          const aTrack = a.latestSession?.trackName || a.trackName || '';
+          const bTrack = b.latestSession?.trackName || b.trackName || '';
+          return aTrack.localeCompare(bTrack) * multiplier;
+        });
       default:
         return sorted;
     }
@@ -227,6 +240,15 @@ export default function Horses() {
         name: newHorseForm.name,
         alias: newHorseForm.alias || undefined,
         breed: newHorseForm.breed || undefined,
+        healthRecords: {
+          weight: newHorseForm.weight ? parseInt(newHorseForm.weight) : undefined,
+          owner: newHorseForm.owner || undefined,
+          rider: newHorseForm.rider || undefined,
+          birthPlace: newHorseForm.birthPlace || undefined,
+          location: newHorseForm.location || undefined,
+          color: newHorseForm.color || undefined,
+          gender: newHorseForm.gender || undefined,
+        },
       });
     }
   };
@@ -723,6 +745,77 @@ export default function Horses() {
                 value={newHorseForm.breed}
                 onChange={(e) => setNewHorseForm({ ...newHorseForm, breed: e.target.value })}
                 placeholder="e.g., Thoroughbred"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-weight">Weight (kg)</Label>
+              <Input
+                id="horse-weight"
+                type="number"
+                value={newHorseForm.weight}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, weight: e.target.value })}
+                placeholder="e.g., 500"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-owner">Owner</Label>
+              <Input
+                id="horse-owner"
+                value={newHorseForm.owner}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, owner: e.target.value })}
+                placeholder="e.g., John Smith"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-rider">Rider</Label>
+              <Input
+                id="horse-rider"
+                value={newHorseForm.rider}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, rider: e.target.value })}
+                placeholder="e.g., Jane Doe"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-birthplace">Birth Place</Label>
+              <Input
+                id="horse-birthplace"
+                value={newHorseForm.birthPlace}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, birthPlace: e.target.value })}
+                placeholder="e.g., Kentucky, USA"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-location">Location</Label>
+              <Input
+                id="horse-location"
+                value={newHorseForm.location}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, location: e.target.value })}
+                placeholder="e.g., Stable A"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-color">Color</Label>
+              <Input
+                id="horse-color"
+                value={newHorseForm.color}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, color: e.target.value })}
+                placeholder="e.g., Bay"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="horse-gender">Gender</Label>
+              <Input
+                id="horse-gender"
+                value={newHorseForm.gender}
+                onChange={(e) => setNewHorseForm({ ...newHorseForm, gender: e.target.value })}
+                placeholder="e.g., Mare"
                 className="mt-1"
               />
             </div>

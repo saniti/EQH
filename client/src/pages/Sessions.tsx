@@ -265,14 +265,30 @@ export default function Sessions() {
     return true;
   }) || [];
 
-  // Sort unassigned sessions to top, then by date
+  // Sort sessions based on selected column
   const sortedFilteredSessions = [...filteredSessions].sort((a, b) => {
     // Unassigned sessions always come first
     if (!a.horseId && b.horseId) return -1;
     if (a.horseId && !b.horseId) return 1;
     
-    // Then sort by date (newest first)
-    return new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime();
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+    
+    switch (sortBy) {
+      case 'horse':
+        return (a.horseName || 'Assignment Needed').localeCompare(b.horseName || 'Assignment Needed') * multiplier;
+      case 'risk':
+        const riskOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1, null: 0 };
+        const aRisk = riskOrder[a.injuryRisk as keyof typeof riskOrder] || 0;
+        const bRisk = riskOrder[b.injuryRisk as keyof typeof riskOrder] || 0;
+        return (aRisk - bRisk) * multiplier;
+      case 'duration':
+        const aDuration = (a.performanceData as any)?.duration || 0;
+        const bDuration = (b.performanceData as any)?.duration || 0;
+        return (aDuration - bDuration) * multiplier;
+      case 'date':
+      default:
+        return (new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime()) * multiplier;
+    }
   });
 
   const globalTracks = tracks?.filter(t => t.scope === "global") || [];
@@ -412,10 +428,78 @@ export default function Sessions() {
                   className="rounded"
                 />
               </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Horse</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Risk</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Date ↓</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Duration</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'horse') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('horse');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Horse
+                  {sortBy === 'horse' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'risk') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('risk');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Risk
+                  {sortBy === 'risk' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'date') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('date');
+                      setSortOrder('desc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Date
+                  {sortBy === 'date' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-muted-foreground">
+                <button
+                  onClick={() => {
+                    if (sortBy === 'duration') {
+                      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortBy('duration');
+                      setSortOrder('asc');
+                    }
+                  }}
+                  className="hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  Duration
+                  {sortBy === 'duration' && (
+                    <span className="text-xs">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                  )}
+                </button>
+              </th>
               <th className="hidden md:table-cell px-4 py-3 text-left text-sm font-semibold text-muted-foreground">Track</th>
               <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8"></th>
             </tr>
