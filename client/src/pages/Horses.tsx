@@ -74,6 +74,12 @@ export default function Horses() {
     utils.horses.list.invalidate();
   }, [selectedOrgId, utils]);
 
+  // Clear filters when Horses page mounts
+  useEffect(() => {
+    setSearch("");
+    setSortBy("latestSession");
+  }, []);
+
   const [, setLocation] = useLocation();
 
   const addFavorite = trpc.horses.addFavorite.useMutation({
@@ -549,10 +555,15 @@ export default function Horses() {
                 {latestSession ? (
                   <button
                     onClick={() => setLocation(`/sessions/${latestSession.id}?horseId=${horse.id}`)}
-                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors flex items-center gap-1"
+                    className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded hover:text-primary transition-colors"
                   >
-                    <Clock className="h-4 w-4 flex-shrink-0" />
-                    <span>{formatDateTimeShort(latestSession.sessionDate)}</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      <div>
+                        <div>{formatDateTimeShort(latestSession.sessionDate)}</div>
+                        <div className="text-xs text-muted-foreground">{new Date(latestSession.sessionDate).toLocaleTimeString()}</div>
+                      </div>
+                    </div>
                   </button>
                 ) : (
                   <span className="text-muted-foreground">No sessions</span>

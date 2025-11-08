@@ -162,7 +162,7 @@ export default function Sessions() {
     selectedSessions.forEach(sessionId => {
       assignToHorse.mutate({
         sessionId,
-        horseId: selectedHorseId || null,
+        horseId: selectedHorseId && selectedHorseId > 0 ? selectedHorseId : null,
       });
     });
   };
@@ -443,8 +443,8 @@ export default function Sessions() {
                 return 0;
             }
           }).map((session) => (
-            <tr key={session.id} className="border-b hover:bg-muted/50 transition-colors">
-              <td className="px-4 py-3">
+            <tr key={session.id} className="border-b hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setLocation(`/sessions/${session.id}?horseId=${session.horseId}`)}>
+              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => toggleSessionSelection(session.id)}
                   className="flex items-center gap-2"
@@ -477,7 +477,7 @@ export default function Sessions() {
               <td className="px-4 py-3 text-sm hidden md:table-cell">
                 {session.trackName || '-'}
               </td>
-              <td className="px-4 py-3 text-right">
+              <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => deleteSession.mutate(session.id)}
                   className="hover:text-destructive transition-colors"
@@ -625,12 +625,12 @@ export default function Sessions() {
           <div className="space-y-4 py-4">
             <div>
               <Label>Horse</Label>
-              <Select value={selectedHorseId?.toString()} onValueChange={(v) => setSelectedHorseId(v ? parseInt(v) : undefined)}>
+              <Select value={selectedHorseId?.toString() || ""} onValueChange={(v) => setSelectedHorseId(v ? parseInt(v) : undefined)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a horse or leave empty to unassign" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Unassign from horse</SelectItem>
+                  <SelectItem value="unassign">Unassign from horse</SelectItem>
                   {horses?.map(horse => (
                     <SelectItem key={horse.id} value={horse.id.toString()}>
                       {horse.name} {horse.alias ? `(${horse.alias})` : ''}
