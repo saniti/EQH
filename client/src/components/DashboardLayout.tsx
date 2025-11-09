@@ -232,8 +232,8 @@ function DashboardLayoutContent({
           className="border-r-0"
           disableTransition={isResizing}
         >
-          <SidebarHeader className="h-auto justify-center py-4">
-            <div className="flex flex-col items-center gap-2 w-full">
+          <SidebarHeader className="h-auto justify-center py-2 px-2">
+            <div className="flex flex-col items-center gap-0 w-full">
               {isCollapsed ? (
                 <div className="relative h-12 w-12 shrink-0 group flex items-center justify-center">
                   <img
@@ -250,7 +250,7 @@ function DashboardLayoutContent({
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-col items-center gap-4 w-full">
+                  <div className="flex flex-col items-center gap-1 w-full">
                     <img
                       src={APP_LOGO_SVG}
                       className="h-32 w-32 shrink-0 text-blue-600"
@@ -264,7 +264,7 @@ function DashboardLayoutContent({
                   </div>
                   <button
                     onClick={toggleSidebar}
-                    className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 mt-4"
+                    className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 mt-2"
                   >
                     <PanelLeft className="h-4 w-4 text-muted-foreground" />
                   </button>
