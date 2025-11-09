@@ -94,9 +94,9 @@ export default function SessionDetail() {
       title: "Distance (m)",
       dtick: 200,
     },
-    yaxis: { title: "Velocity (m/s)", titlefont: { color: "#1f77b4" } },
-    yaxis2: { title: "Stride Length (m)", titlefont: { color: "#ff7f0e" }, overlaying: "y", side: "left" },
-    yaxis3: { title: "Stride Freq (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right" },
+    yaxis: { title: "Velocity (m/s)", titlefont: { color: "#1f77b4" }, zeroline: false },
+    yaxis2: { title: "Stride Length (m)", titlefont: { color: "#ff7f0e" }, overlaying: "y", side: "left", zeroline: false },
+    yaxis3: { title: "Stride Freq (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right", zeroline: false },
     hovermode: "x unified",
     legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
     autosize: true,
@@ -133,8 +133,8 @@ export default function SessionDetail() {
       title: "Distance (m)",
       dtick: 200,
     },
-    yaxis: { title: `Stride Length (${strideLenUnit})`, titlefont: { color: "#ff7f0e" } },
-    yaxis2: { title: "Stride Frequency (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right" },
+    yaxis: { title: `Stride Length (${strideLenUnit})`, titlefont: { color: "#ff7f0e" }, zeroline: false },
+    yaxis2: { title: "Stride Frequency (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right", zeroline: false },
     hovermode: "x unified",
     legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
     autosize: true,
@@ -174,12 +174,22 @@ export default function SessionDetail() {
       font: { size: 18 },
     },
     xaxis: { title: "Time (minutes)" },
-    yaxis: { title: "Heart Rate (bpm)", titlefont: { color: "#d62728" } },
-    yaxis2: { title: `Velocity (${velUnit})`, titlefont: { color: "#1f77b4" }, overlaying: "y", side: "right" },
+    yaxis: { 
+      title: "Heart Rate (bpm)", 
+      titlefont: { color: "#d62728" },
+      zeroline: false,
+      rangemode: "nonnegative"
+    },
+    yaxis2: { title: `Velocity (${velUnit})`, titlefont: { color: "#1f77b4" }, overlaying: "y", side: "right", zeroline: false },
     hovermode: "x unified",
     legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
     autosize: true,
     margin: { b: 100, t: 80 },
+    shapes: [
+      { type: "line", x0: 0, x1: 1, xref: "paper", y0: 60, y1: 60, yref: "y", line: { color: "#ccc", width: 1, dash: "dash" } },
+      { type: "line", x0: 0, x1: 1, xref: "paper", y0: 100, y1: 100, yref: "y", line: { color: "#ccc", width: 1, dash: "dash" } },
+      { type: "line", x0: 0, x1: 1, xref: "paper", y0: 140, y1: 140, yref: "y", line: { color: "#ccc", width: 1, dash: "dash" } },
+    ],
   };
 
   return (
@@ -274,7 +284,7 @@ export default function SessionDetail() {
         </TabsContent>
 
         <TabsContent value="graphs" className="space-y-6">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-start mb-4">
             <MeasurementToggle />
           </div>
           

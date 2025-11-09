@@ -1,10 +1,10 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateTimeShort } from "@/lib/dateFormat";
-import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar, Eye, X, Upload, Gauge } from "lucide-react";
+import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar, Eye, X, Upload } from "lucide-react";
 
 import { useState, useEffect } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
-import { useMeasurement } from "@/contexts/MeasurementContext";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -344,16 +344,13 @@ export default function Horses() {
             {selectedOrg?.name || 'Organization'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <MeasurementToggle />
-          <Button 
-            onClick={() => setShowAddHorseDialog(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Horse
-          </Button>
-        </div>
+        <Button 
+          onClick={() => setShowAddHorseDialog(true)}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Horse
+        </Button>
       </div>
 
       {/* Search and Filter */}
@@ -1032,21 +1029,6 @@ export default function Horses() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
-
-function MeasurementToggle() {
-  const { isMetric, setIsMetric } = useMeasurement();
-  
-  return (
-    <button
-      onClick={() => setIsMetric(!isMetric)}
-      className="h-10 px-4 flex items-center gap-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium border border-input"
-      title={isMetric ? "Switch to Imperial" : "Switch to Metric"}
-    >
-      <Gauge className="h-4 w-4" />
-      <span>{isMetric ? "Metric" : "Imperial"}</span>
-    </button>
   );
 }
 
