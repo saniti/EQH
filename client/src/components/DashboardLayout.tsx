@@ -23,7 +23,10 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, Zap, Footprints } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown } from "lucide-react";
+import { HorseHeadIcon } from "./icons/HorseHeadIcon";
+import { RunningHorseIcon } from "./icons/RunningHorseIcon";
+import { StableIcon } from "./icons/StableIcon";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -34,12 +37,12 @@ import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
-  { icon: Heart, label: "Horses", path: "/horses" },
-  { icon: Zap, label: "Sessions", path: "/sessions" },
-  { icon: Footprints, label: "Tracks", path: "/tracks" },
+  { icon: HorseHeadIcon, label: "Horses", path: "/horses" },
+  { icon: RunningHorseIcon, label: "Sessions", path: "/sessions" },
+  { icon: Map, label: "Tracks", path: "/tracks" },
   { icon: AlertTriangle, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
-  { icon: Building2, label: "Organizations", path: "/organizations" },
+  { icon: StableIcon, label: "Organizations", path: "/organizations" },
   { icon: Wifi, label: "Devices", path: "/devices" },
 ];
 
