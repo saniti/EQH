@@ -24,7 +24,7 @@ import {
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, BriefcaseMedical, Waypoints, Warehouse } from "lucide-react";
-import { ChessKnightIcon } from "./icons/ChessKnightIcon";
+
 
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
@@ -36,12 +36,12 @@ import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
-  { icon: ChessKnightIcon, label: "Horses", path: "/horses" },
+  { icon: Heart, label: "Horses", path: "/horses" },
   { icon: Waypoints, label: "Sessions", path: "/sessions" },
   { icon: Map, label: "Tracks", path: "/tracks" },
   { icon: BriefcaseMedical, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
-  { icon: Warehouse, label: "Organizations", path: "/organizations" },
+  { icon: Warehouse, label: "Stables", path: "/organizations" },
   { icon: Wifi, label: "Devices", path: "/devices" },
 ];
 
@@ -70,7 +70,7 @@ function OrganizationSelector() {
     return (
       <div className="px-2 py-2 border-b">
         <div className="flex items-center justify-center h-10">
-          <Building2 className="h-4 w-4 text-muted-foreground" />
+          <Warehouse className="h-4 w-4 text-muted-foreground" />
         </div>
       </div>
     );
@@ -84,8 +84,8 @@ function OrganizationSelector() {
       >
         <SelectTrigger className="h-10 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
           <div className="flex items-center gap-2 w-full">
-            <Building2 className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
-            <SelectValue placeholder="Select organization" />
+            <Warehouse className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <SelectValue placeholder="Select stable" />
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -250,14 +250,14 @@ function DashboardLayoutContent({
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-col items-center gap-1 w-full">
+                  <div className="flex flex-col items-center gap-2 w-full">
                     <img
                       src={APP_LOGO_SVG}
-                      className="h-16 w-16 shrink-0 text-blue-600"
+                      className="h-20 w-20 shrink-0 text-blue-600"
                       alt="Logo"
                     />
                     <div className="text-center">
-                      <span className="font-bold text-base tracking-tight">
+                      <span className="font-bold text-sm tracking-tight leading-tight">
                         {APP_TITLE}
                       </span>
                     </div>
