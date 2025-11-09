@@ -2,11 +2,43 @@ export function FontAwesomeHorseIcon({ className = "w-6 h-6" }: { className?: st
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
+      viewBox="0 0 64 64"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
     >
-      <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1M2.352 13.214c-.354-2.298-.53-3.446-.096-4.465s1.398-1.715 3.325-3.108L7.021 4.6C9.418 2.867 10.617 2 12.001 2c1.382 0 2.58.867 4.978 2.6l1.44 1.041c1.927 1.393 2.89 2.09 3.325 3.108c.434 1.019.258 2.167-.095 4.464l-.301 1.96c-.5 3.256-.751 4.884-1.919 5.856S16.554 22 13.14 22h-2.28c-3.415 0-5.122 0-6.29-.971c-1.168-.972-1.418-2.6-1.918-5.857z" />
+      {/* Horse body - full side view */}
+      {/* Head */}
+      <path d="M 48 12 Q 56 12 56 20 Q 56 28 48 28 L 32 28" />
+      
+      {/* Ear */}
+      <path d="M 44 8 Q 48 4 52 8" />
+      
+      {/* Eye */}
+      <circle cx="52" cy="18" r="2" fill="currentColor" />
+      
+      {/* Neck */}
+      <path d="M 32 28 L 24 36" />
+      
+      {/* Body */}
+      <path d="M 24 36 Q 20 40 16 40 L 8 40" />
+      
+      {/* Front legs */}
+      <path d="M 20 40 L 20 56" />
+      <path d="M 16 40 L 16 56" />
+      
+      {/* Back legs */}
+      <path d="M 12 40 L 12 56" />
+      <path d="M 8 40 L 8 56" />
+      
+      {/* Tail */}
+      <path d="M 8 40 Q 4 44 4 52" />
+      
+      {/* Mane */}
+      <path d="M 28 24 Q 32 18 36 24" />
     </svg>
   );
 }
