@@ -298,7 +298,7 @@ async function seed() {
         status,
         organizationId: orgId,
         deviceId,
-        pictureUrl: null,
+        pictureData: null,
         healthRecords: {
           weight: 450 + Math.floor(Math.random() * 100),
           owner: `Owner ${i + 1}`,

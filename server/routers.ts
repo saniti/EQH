@@ -4,7 +4,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
-import { storagePut } from "./storage";
+
 import * as db from "./db";
 
 // Admin-only procedure
@@ -106,7 +106,7 @@ export const appRouter = router({
           status: z.enum(["active", "injured", "retired", "inactive"]).default("active"),
           organizationId: z.number(),
           deviceId: z.number().optional(),
-          pictureUrl: z.string().optional(),
+          pictureData: z.string().optional(),
           healthRecords: z.any().optional(),
         })
       )
@@ -129,7 +129,7 @@ export const appRouter = router({
           breed: z.string().optional(),
           status: z.enum(["active", "injured", "retired", "inactive"]).optional(),
           deviceId: z.number().optional(),
-          pictureUrl: z.string().optional(),
+          pictureData: z.string().optional(),
           healthRecords: z.any().optional(),
         })
       )
@@ -178,17 +178,13 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          const buffer = Buffer.from(input.fileData, "base64");
-          const timestamp = Date.now();
-          const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-          const key = `horses/${timestamp}-${sanitizedFileName}`;
-          const result = await storagePut(key, buffer, input.contentType);
-          return { success: true, url: result.url, key: result.key };
+          const base64Data = `data:${input.contentType};base64,${input.fileData}`;
+          return { success: true, pictureData: base64Data };
         } catch (error) {
           console.error('Upload error:', error);
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            message: `Failed to process image: ${error instanceof Error ? error.message : 'Unknown error'}`,
           });
         }
       }),

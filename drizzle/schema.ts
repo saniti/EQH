@@ -104,7 +104,7 @@ export const horses = mysqlTable("horses", {
     .notNull(),
   organizationId: int("organizationId").notNull(),
   deviceId: int("deviceId"),
-  pictureUrl: text("pictureUrl"),
+  pictureData: text("pictureData"),
   healthRecords: json("healthRecords").$type<{
     vaccinations?: Array<{ date: string; type: string; notes?: string }>;
     medications?: Array<{ date: string; name: string; dosage?: string }>;

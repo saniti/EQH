@@ -46,7 +46,7 @@ export default function Horses() {
     location: '',
     color: '',
     gender: '',
-    pictureUrl: '',
+    pictureData: '';
   });
   const [picturePreview, setPicturePreview] = useState<string>('');
   const [editForm, setEditForm] = useState({
@@ -60,7 +60,7 @@ export default function Horses() {
     location: "",
     color: "",
     gender: "",
-    pictureUrl: "",
+    pictureData: "",
   });
   const [viewingHorse, setViewingHorse] = useState<any>(null);
 
@@ -122,7 +122,7 @@ export default function Horses() {
       utils.horses.list.invalidate();
       utils.horses.getStats.invalidate();
       setShowAddHorseDialog(false);
-      setNewHorseForm({ name: '', alias: '', breed: '', weight: '', owner: '', rider: '', birthPlace: '', location: '', color: '', gender: '', pictureUrl: '' });
+      setNewHorseForm({ name: '', alias: '', breed: '', weight: '', owner: '', rider: '', birthPlace: '', location: '', color: '', gender: '', pictureData: '' });
       setEditingHorseId(null);
       setPicturePreview('');
     },
@@ -214,9 +214,9 @@ export default function Horses() {
       location: healthRecords.location || "",
       color: healthRecords.color || "",
       gender: healthRecords.gender || "",
-      pictureUrl: horse.pictureUrl || "",
+      pictureData: horse.pictureData || "",
     });
-    setPicturePreview(horse.pictureUrl || '');
+    setPicturePreview(horse.pictureData || '');
   };
 
   const handleViewClick = (horse: any) => {
@@ -270,7 +270,7 @@ export default function Horses() {
         name: editForm.name,
         alias: editForm.alias || undefined,
         breed: editForm.breed || undefined,
-        pictureUrl: editForm.pictureUrl || undefined,
+        pictureData: editForm.pictureData || undefined,
         healthRecords: {
           weight: editForm.weight ? parseInt(editForm.weight) : undefined,
           owner: editForm.owner || undefined,
@@ -297,7 +297,7 @@ export default function Horses() {
         name: newHorseForm.name,
         alias: newHorseForm.alias || undefined,
         breed: newHorseForm.breed || undefined,
-        pictureUrl: newHorseForm.pictureUrl || undefined,
+        pictureData: newHorseForm.pictureData || undefined,
         healthRecords: {
           weight: newHorseForm.weight ? parseInt(newHorseForm.weight) : undefined,
           owner: newHorseForm.owner || undefined,
@@ -591,7 +591,7 @@ export default function Horses() {
                           />
                           <button
                             onClick={() => {
-                              setEditForm({ ...editForm, pictureUrl: '' });
+                              setEditForm({ ...editForm, pictureData: '' });
                               setPicturePreview('');
                             }}
                             className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
@@ -935,7 +935,7 @@ export default function Horses() {
                   />
                   <button
                     onClick={() => {
-                      setNewHorseForm({ ...newHorseForm, pictureUrl: '' });
+                       setNewHorseForm({ ...newHorseForm, pictureData: '' });
                       setPicturePreview('');
                     }}
                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
@@ -972,16 +972,16 @@ export default function Horses() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            {viewingHorse?.pictureUrl && (
+            {viewingHorse?.pictureData && (
               <div className="w-full h-64 bg-muted rounded-lg overflow-hidden">
                 <img
-                  src={viewingHorse.pictureUrl}
+                  src={viewingHorse.pictureData}
                   alt={viewingHorse.name}
                   className="w-full h-full object-cover"
                 />
               </div>
             )}
-            {!viewingHorse?.pictureUrl && (
+            {!viewingHorse?.pictureData && (
               <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
                 <span className="text-muted-foreground">No picture available</span>
               </div>
