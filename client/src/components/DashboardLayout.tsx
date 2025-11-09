@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, Zap, Footprints } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,8 +35,8 @@ import { Button } from "./ui/button";
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
   { icon: Heart, label: "Horses", path: "/horses" },
-  { icon: Activity, label: "Sessions", path: "/sessions" },
-  { icon: Map, label: "Tracks", path: "/tracks" },
+  { icon: Zap, label: "Sessions", path: "/sessions" },
+  { icon: Footprints, label: "Tracks", path: "/tracks" },
   { icon: AlertTriangle, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
   { icon: Building2, label: "Organizations", path: "/organizations" },
@@ -75,14 +75,14 @@ function OrganizationSelector() {
   }
 
   return (
-    <div className="px-3 py-3 border-b">
+    <div className="px-3 py-3 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
       <Select
         value={selectedOrgId?.toString() || ""}
         onValueChange={(value) => setSelectedOrgId(parseInt(value))}
       >
-        <SelectTrigger className="h-10">
+        <SelectTrigger className="h-10 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
           <div className="flex items-center gap-2 w-full">
-            <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+            <Building2 className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <SelectValue placeholder="Select organization" />
           </div>
         </SelectTrigger>
