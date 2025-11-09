@@ -103,6 +103,69 @@ export default function SessionDetail() {
     margin: { b: 100, t: 80 },
   };
 
+  // Stride Length vs Stride Frequency graph
+  const strideLengthVsFreqTrace = {
+    x: graphData.map(d => d.strideFreq),
+    y: graphData.map(d => isMetric ? d.strideLength : d.strideLength * 3.28084),
+    name: "Stride Length vs Frequency",
+    type: "scatter",
+    mode: "lines+markers",
+    line: { color: "#9467bd", width: 2 },
+  };
+
+  const strideLengthVsFreqLayout = {
+    title: {
+      text: "Stride Length vs. Stride Frequency",
+      font: { size: 18 },
+    },
+    xaxis: { title: "Stride Frequency (strides/s)" },
+    yaxis: { title: `Stride Length (${strideLenUnit})`, titlefont: { color: "#9467bd" } },
+    hovermode: "x unified",
+    autosize: true,
+    margin: { b: 100, t: 80 },
+  };
+
+  // Time vs Velocity and Heart Rate graph
+  const timeData = graphData.map((d, i) => ({
+    time: (i * (duration / graphData.length)) / 60,
+    velocity: d.velocity,
+    heartRate: (session.performanceData?.intervals?.stats?.[i]?.heartRate?.avg || 0),
+  }));
+
+  const velocityTimeTrace = {
+    x: timeData.map(d => d.time),
+    y: timeData.map(d => isMetric ? d.velocity : d.velocity * 3.6),
+    name: `Velocity (${velUnit})`,
+    type: "scatter",
+    mode: "lines+markers",
+    line: { color: "#1f77b4", width: 2 },
+    yaxis: "y2",
+  };
+
+  const heartRateTimeTrace = {
+    x: timeData.map(d => d.time),
+    y: timeData.map(d => d.heartRate),
+    name: "Heart Rate (bpm)",
+    type: "scatter",
+    mode: "lines+markers",
+    line: { color: "#d62728", width: 2 },
+    yaxis: "y",
+  };
+
+  const timeVsMetricsLayout = {
+    title: {
+      text: "Velocity and Heart Rate over Time",
+      font: { size: 18 },
+    },
+    xaxis: { title: "Time (minutes)" },
+    yaxis: { title: "Heart Rate (bpm)", titlefont: { color: "#d62728" } },
+    yaxis2: { title: `Velocity (${velUnit})`, titlefont: { color: "#1f77b4" }, overlaying: "y", side: "right" },
+    hovermode: "x unified",
+    legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
+    autosize: true,
+    margin: { b: 100, t: 80 },
+  };
+
   return (
     <div className="p-6">
       <Button
@@ -198,10 +261,29 @@ export default function SessionDetail() {
           <div className="flex justify-end mb-4">
             <MeasurementToggle />
           </div>
+          
           <div style={{ width: "100%", height: "600px" }}>
             <Plot
               data={[velocityTrace, strideLengthTrace, strideFreqTrace]}
               layout={layout}
+              style={{ width: "100%", height: "100%" }}
+              config={{ responsive: true }}
+            />
+          </div>
+
+          <div style={{ width: "100%", height: "600px" }}>
+            <Plot
+              data={[strideLengthVsFreqTrace]}
+              layout={strideLengthVsFreqLayout}
+              style={{ width: "100%", height: "100%" }}
+              config={{ responsive: true }}
+            />
+          </div>
+
+          <div style={{ width: "100%", height: "600px" }}>
+            <Plot
+              data={[heartRateTimeTrace, velocityTimeTrace]}
+              layout={timeVsMetricsLayout}
               style={{ width: "100%", height: "100%" }}
               config={{ responsive: true }}
             />
