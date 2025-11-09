@@ -86,7 +86,10 @@ export default function SessionDetail() {
   };
 
   const layout = {
-    title: "Performance Metrics by Distance",
+    title: {
+      text: "Performance Metrics by Distance",
+      font: { size: 18 },
+    },
     xaxis: { 
       title: "Distance (m)",
       dtick: 200,
@@ -97,7 +100,7 @@ export default function SessionDetail() {
     hovermode: "x unified",
     legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
     autosize: true,
-    margin: { b: 100 },
+    margin: { b: 100, t: 80 },
   };
 
   return (
@@ -192,6 +195,9 @@ export default function SessionDetail() {
         </TabsContent>
 
         <TabsContent value="graphs" className="space-y-6">
+          <div className="flex justify-end mb-4">
+            <MeasurementToggle />
+          </div>
           <div style={{ width: "100%", height: "600px" }}>
             <Plot
               data={[velocityTrace, strideLengthTrace, strideFreqTrace]}
@@ -245,5 +251,19 @@ export default function SessionDetail() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function MeasurementToggle() {
+  const { isMetric, setIsMetric } = useMeasurement();
+  
+  return (
+    <button
+      onClick={() => setIsMetric(!isMetric)}
+      className="h-10 px-4 flex items-center gap-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium border border-input"
+      title={isMetric ? "Switch to Imperial" : "Switch to Metric"}
+    >
+      <span>{isMetric ? "Metric" : "Imperial"}</span>
+    </button>
   );
 }
