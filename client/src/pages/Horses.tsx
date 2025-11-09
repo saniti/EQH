@@ -46,7 +46,7 @@ export default function Horses() {
     location: '',
     color: '',
     gender: '',
-    pictureData: '';
+    pictureData: '',
   });
   const [picturePreview, setPicturePreview] = useState<string>('');
   const [editForm, setEditForm] = useState({
