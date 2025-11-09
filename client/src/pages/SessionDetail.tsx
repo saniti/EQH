@@ -103,24 +103,40 @@ export default function SessionDetail() {
     margin: { b: 100, t: 80 },
   };
 
-  // Stride Length vs Stride Frequency graph
-  const strideLengthVsFreqTrace = {
-    x: graphData.map(d => d.strideFreq),
+  // Stride Length and Frequency by Distance
+  const strideLengthDistTrace = {
+    x: graphData.map(d => d.distance),
     y: graphData.map(d => isMetric ? d.strideLength : d.strideLength * 3.28084),
-    name: "Stride Length vs Frequency",
+    name: `Stride Length (${strideLenUnit})`,
     type: "scatter",
     mode: "lines+markers",
-    line: { color: "#9467bd", width: 2 },
+    line: { color: "#ff7f0e", width: 2 },
+    yaxis: "y",
+  };
+
+  const strideFreqDistTrace = {
+    x: graphData.map(d => d.distance),
+    y: graphData.map(d => d.strideFreq),
+    name: "Stride Frequency (strides/s)",
+    type: "scatter",
+    mode: "lines+markers",
+    line: { color: "#2ca02c", width: 2 },
+    yaxis: "y2",
   };
 
   const strideLengthVsFreqLayout = {
     title: {
-      text: "Stride Length vs. Stride Frequency",
+      text: "Stride Length and Frequency by Distance",
       font: { size: 18 },
     },
-    xaxis: { title: "Stride Frequency (strides/s)" },
-    yaxis: { title: `Stride Length (${strideLenUnit})`, titlefont: { color: "#9467bd" } },
+    xaxis: { 
+      title: "Distance (m)",
+      dtick: 200,
+    },
+    yaxis: { title: `Stride Length (${strideLenUnit})`, titlefont: { color: "#ff7f0e" } },
+    yaxis2: { title: "Stride Frequency (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right" },
     hovermode: "x unified",
+    legend: { x: 0.5, y: -0.15, xanchor: "center", yanchor: "top", orientation: "h" },
     autosize: true,
     margin: { b: 100, t: 80 },
   };
@@ -207,7 +223,7 @@ export default function SessionDetail() {
 
             <Card className="data-card data-card-duration">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Session Duration</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Duration</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold data-card-accent">{durationMinutes}:{durationSeconds.toString().padStart(2, '0')}</div>
@@ -273,7 +289,7 @@ export default function SessionDetail() {
 
           <div style={{ width: "100%", height: "600px" }}>
             <Plot
-              data={[strideLengthVsFreqTrace]}
+              data={[strideLengthDistTrace, strideFreqDistTrace]}
               layout={strideLengthVsFreqLayout}
               style={{ width: "100%", height: "100%" }}
               config={{ responsive: true }}
@@ -305,15 +321,17 @@ export default function SessionDetail() {
                 </tr>
               </thead>
               <tbody>
-                {sectionals.map((s: any, idx: number) => (
-                  <tr key={idx} className={idx % 2 === 0 ? "bg-blue-50/40" : "bg-blue-100/30"}>
-                    <td className="px-4 py-2">{s.sectional}</td>
+                {sectionals.map((s: any, i: number) => (
+                  <tr key={i} className="border-t hover:bg-accent/50">
+                    <td className="px-4 py-2">{i + 1}</td>
                     <td className="px-4 py-2">{s.distance}</td>
                     <td className="px-4 py-2">{isMetric ? s.speed?.avg?.toFixed(2) : (s.speed?.avg * 3.6)?.toFixed(2)}</td>
                     <td className="px-4 py-2">{isMetric ? s.speed?.max?.toFixed(2) : (s.speed?.max * 3.6)?.toFixed(2)}</td>
                     <td className="px-4 py-2">{isMetric ? s.stride?.length?.toFixed(2) : (s.stride?.length * 3.28084)?.toFixed(2)}</td>
                     <td className="px-4 py-2">{s.stride?.frequency?.toFixed(2)}</td>
-                    <td className="px-4 py-2">{s.gait || "N/A"}</td>
+                    <td className="px-4 py-2">
+                      <Badge variant="outline">{s.gait || "Unknown"}</Badge>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -349,3 +367,4 @@ function MeasurementToggle() {
     </button>
   );
 }
+
