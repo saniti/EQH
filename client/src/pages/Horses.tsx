@@ -224,6 +224,42 @@ export default function Horses() {
     setShowViewDialog(true);
   };
 
+  const handlePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>, formType: 'add' | 'edit') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      alert('Please upload a PNG, JPG, or SVG image');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const dataUrl = event.target?.result as string;
+      setPicturePreview(dataUrl);
+
+      try {
+        const base64Data = dataUrl.split(',')[1];
+        const result = await trpc.horses.uploadPicture.mutate({
+          fileName: file.name,
+          fileData: base64Data,
+          contentType: file.type,
+        });
+
+        if (formType === 'add') {
+          setNewHorseForm({ ...newHorseForm, pictureUrl: result.url });
+        } else {
+          setEditForm({ ...editForm, pictureUrl: result.url });
+        }
+      } catch (error) {
+        console.error('Upload failed:', error);
+        alert('Failed to upload image');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSaveEdit = () => {
     if (editingHorseId) {
       updateHorse.mutate({
@@ -534,24 +570,31 @@ export default function Horses() {
                       </div>
                     </div>
                     <div>
-                      <Label className="text-xs text-muted-foreground">Picture URL</Label>
-                      <Input
-                        value={editForm.pictureUrl}
-                        onChange={(e) => {
-                          setEditForm({ ...editForm, pictureUrl: e.target.value });
-                          setPicturePreview(e.target.value);
-                        }}
-                        placeholder="https://example.com/horse-picture.jpg"
-                        className="h-9 mt-1"
-                      />
+                      <Label className="text-xs text-muted-foreground">Picture (PNG, JPG, SVG)</Label>
+                      <div className="relative">
+                        <Input
+                          type="file"
+                          accept="image/png,image/jpeg,image/svg+xml"
+                          onChange={(e) => handlePictureUpload(e, 'edit')}
+                          className="h-9 mt-1"
+                        />
+                      </div>
                       {picturePreview && (
-                        <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden">
+                        <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden relative">
                           <img
                             src={picturePreview}
                             alt="Preview"
                             className="w-full h-full object-cover"
-                            onError={() => setPicturePreview('')}
                           />
+                          <button
+                            onClick={() => {
+                              setEditForm({ ...editForm, pictureUrl: '' });
+                              setPicturePreview('');
+                            }}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </div>
                       )}
                     </div>
@@ -872,25 +915,30 @@ export default function Horses() {
               />
             </div>
             <div>
-              <Label htmlFor="horse-picture">Picture URL</Label>
+              <Label htmlFor="horse-picture">Picture (PNG, JPG, SVG)</Label>
               <Input
                 id="horse-picture"
-                value={newHorseForm.pictureUrl}
-                onChange={(e) => {
-                  setNewHorseForm({ ...newHorseForm, pictureUrl: e.target.value });
-                  setPicturePreview(e.target.value);
-                }}
-                placeholder="https://example.com/horse-picture.jpg"
+                type="file"
+                accept="image/png,image/jpeg,image/svg+xml"
+                onChange={(e) => handlePictureUpload(e, 'add')}
                 className="mt-1"
               />
               {picturePreview && (
-                <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden">
+                <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden relative">
                   <img
                     src={picturePreview}
                     alt="Preview"
                     className="w-full h-full object-cover"
-                    onError={() => setPicturePreview('')}
                   />
+                  <button
+                    onClick={() => {
+                      setNewHorseForm({ ...newHorseForm, pictureUrl: '' });
+                      setPicturePreview('');
+                    }}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 </div>
               )}
             </div>

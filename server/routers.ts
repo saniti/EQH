@@ -105,6 +105,7 @@ export const appRouter = router({
           status: z.enum(["active", "injured", "retired", "inactive"]).default("active"),
           organizationId: z.number(),
           deviceId: z.number().optional(),
+          pictureUrl: z.string().optional(),
           healthRecords: z.any().optional(),
         })
       )
@@ -127,6 +128,7 @@ export const appRouter = router({
           breed: z.string().optional(),
           status: z.enum(["active", "injured", "retired", "inactive"]).optional(),
           deviceId: z.number().optional(),
+          pictureUrl: z.string().optional(),
           healthRecords: z.any().optional(),
         })
       )
@@ -164,6 +166,22 @@ export const appRouter = router({
         }
 
         return await db.getHorseStats(input.organizationId);
+      }),
+    uploadPicture: protectedProcedure
+      .input(
+        z.object({
+          fileName: z.string(),
+          fileData: z.string(),
+          contentType: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { storagePut } = await import("./storage");
+        const buffer = Buffer.from(input.fileData, "base64");
+        const timestamp = Date.now();
+        const key = `horses/${timestamp}-${input.fileName}`;
+        const result = await storagePut(key, buffer, input.contentType);
+        return result;
       }),
   }),
 

@@ -288,10 +288,8 @@ async function seed() {
       const statuses = ["active", "active", "active", "injured", "retired"];
       const status = statuses[i % statuses.length] as any;
 
-      // Generate picture URLs for horses
       const horseColors = ["bay", "chestnut", "black", "gray", "palomino", "roan", "dappled", "sorrel"];
       const horseColor = horseColors[i % horseColors.length];
-      const pictureUrl = `https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop&q=80`;
 
       const horseId = await db.insert(schema.horses).values({
         name,
@@ -300,7 +298,7 @@ async function seed() {
         status,
         organizationId: orgId,
         deviceId,
-        pictureUrl,
+        pictureUrl: null,
         healthRecords: {
           weight: 450 + Math.floor(Math.random() * 100),
           owner: `Owner ${i + 1}`,

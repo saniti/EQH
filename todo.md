@@ -18,3 +18,10 @@
 - [x] Add picture upload functionality to edit form
 - [x] Update seed data with horse pictures
 
+
+
+- [x] Set up S3 storage for horse images
+- [x] Create server-side image upload endpoint
+- [x] Update Horses page with file upload input
+- [x] Generate and seed horse images
+
