@@ -337,8 +337,7 @@ export default function Horses() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
-        <div className="page-header flex items-center gap-3">
-          <Heart className="h-8 w-8 text-blue-600" />
+        <div className="page-header">
           <h1 className="text-3xl font-bold tracking-tight">Horses</h1>
           <p className="text-muted-foreground mt-1">
             {selectedOrg?.name || 'Organization'}

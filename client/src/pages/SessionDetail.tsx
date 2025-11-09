@@ -109,7 +109,7 @@ export default function SessionDetail() {
 
       <div className="page-header mb-6">
         <h1 className="text-3xl font-bold">Session Details</h1>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground mt-1">
           {session.horse?.name} • {new Date(session.sessionDate).toLocaleDateString()}
         </p>
       </div>

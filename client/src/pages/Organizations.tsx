@@ -73,8 +73,7 @@ export default function Organizations() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
-        <div className="page-header flex items-center gap-3">
-          <Warehouse className="h-8 w-8 text-blue-600" />
+        <div className="page-header">
           <h1 className="text-3xl font-bold tracking-tight">Stables</h1>
           <p className="text-muted-foreground mt-1">
             Manage Profiles
