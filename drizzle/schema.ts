@@ -3,6 +3,7 @@ import {
   datetime,
   int,
   json,
+  longtext,
   mysqlEnum,
   mysqlTable,
   text,
@@ -104,7 +105,7 @@ export const horses = mysqlTable("horses", {
     .notNull(),
   organizationId: int("organizationId").notNull(),
   deviceId: int("deviceId"),
-  pictureData: text("pictureData"),
+  pictureData: longtext("pictureData"),
   healthRecords: json("healthRecords").$type<{
     vaccinations?: Array<{ date: string; type: string; notes?: string }>;
     medications?: Array<{ date: string; name: string; dosage?: string }>;
