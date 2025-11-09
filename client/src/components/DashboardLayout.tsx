@@ -230,8 +230,8 @@ function DashboardLayoutContent({
           className="border-r-0"
           disableTransition={isResizing}
         >
-          <SidebarHeader className="h-16 justify-center">
-            <div className="flex items-center gap-3 pl-2 group-data-[collapsible=icon]:px-0 transition-all w-full">
+          <SidebarHeader className="h-auto justify-center py-4">
+            <div className="flex flex-col items-center gap-2 w-full">
               {isCollapsed ? (
                 <div className="relative h-12 w-12 shrink-0 group flex items-center justify-center">
                   <img
@@ -248,19 +248,21 @@ function DashboardLayoutContent({
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex flex-col items-center gap-3 w-full">
                     <img
                       src={APP_LOGO_SVG}
-                      className="h-10 w-10 shrink-0 text-blue-600"
+                      className="h-16 w-16 shrink-0 text-blue-600"
                       alt="Logo"
                     />
-                    <span className="font-semibold tracking-tight truncate">
-                      {APP_TITLE}
-                    </span>
+                    <div className="text-center">
+                      <span className="font-bold text-lg tracking-tight">
+                        {APP_TITLE}
+                      </span>
+                    </div>
                   </div>
                   <button
                     onClick={toggleSidebar}
-                    className="ml-auto h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
+                    className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 mt-2"
                   >
                     <PanelLeft className="h-4 w-4 text-muted-foreground" />
                   </button>
