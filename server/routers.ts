@@ -4,6 +4,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { storagePut } from "./storage";
 import * as db from "./db";
 
 // Admin-only procedure
@@ -177,7 +178,6 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         try {
-          const { storagePut } = await import("./storage");
           const buffer = Buffer.from(input.fileData, "base64");
           const timestamp = Date.now();
           const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
@@ -186,7 +186,10 @@ export const appRouter = router({
           return { success: true, url: result.url, key: result.key };
         } catch (error) {
           console.error('Upload error:', error);
-          throw new Error(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          });
         }
       }),
   }),
