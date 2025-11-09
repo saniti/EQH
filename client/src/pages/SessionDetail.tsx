@@ -8,8 +8,7 @@ import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import { useMeasurement } from "@/contexts/MeasurementContext";
-import { useParams } from "wouter";
-import { useLocation } from "wouter";
+import { useParams, useLocation } from "wouter";
 
 export default function SessionDetail() {
   const { id } = useParams<{ id: string }>();
