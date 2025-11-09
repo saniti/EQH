@@ -1,29 +1,34 @@
-export function StableIcon(props: React.SVGProps<SVGSVGElement>) {
+export function StableIcon({ className = "w-6 h-6" }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 34 32"
+      fill="currentColor"
+      className={className}
     >
-      {/* Barn roof */}
-      <path d="M4 10l8-6 8 6" />
-      {/* Main barn structure */}
-      <rect x="4" y="10" width="16" height="10" />
-      {/* Door */}
-      <rect x="9" y="12" width="6" height="8" />
-      {/* Door handle */}
-      <circle cx="14.5" cy="16" r="0.3" fill="currentColor" />
-      {/* Windows */}
-      <rect x="5" y="12" width="2.5" height="2.5" />
-      <rect x="16.5" y="12" width="2.5" height="2.5" />
-      {/* Roof peak detail */}
-      <path d="M12 4v6" />
-      {/* Stalls divider */}
-      <line x1="12" y1="10" x2="12" y2="20" />
+      {/* Barn/Stable structure - dark navy blue */}
+      <g fill="currentColor">
+        {/* Roof - triangular */}
+        <path d="M17 2 L2 14 L32 14 Z" />
+        
+        {/* Main building body */}
+        <rect x="2" y="14" width="30" height="16" />
+        
+        {/* Left door opening */}
+        <rect x="4" y="16" width="7" height="12" fill="white" opacity="0.15" />
+        
+        {/* Right door opening */}
+        <rect x="23" y="16" width="7" height="12" fill="white" opacity="0.15" />
+        
+        {/* Left window */}
+        <circle cx="12" cy="20" r="2" fill="white" opacity="0.25" />
+        
+        {/* Right window */}
+        <circle cx="22" cy="20" r="2" fill="white" opacity="0.25" />
+        
+        {/* Door divider line */}
+        <line x1="17" y1="16" x2="17" y2="28" stroke="white" strokeWidth="0.8" opacity="0.3" />
+      </g>
     </svg>
   );
 }
