@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, ChessKnight, BriefcaseMedical, Waypoints, Warehouse } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, BriefcaseMedical, Waypoints, Warehouse } from "lucide-react";
 
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
@@ -35,7 +35,7 @@ import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
-  { icon: ChessKnight, label: "Horses", path: "/horses" },
+  { icon: Heart, label: "Horses", path: "/horses" },
   { icon: Waypoints, label: "Sessions", path: "/sessions" },
   { icon: Map, label: "Tracks", path: "/tracks" },
   { icon: BriefcaseMedical, label: "Injury Records", path: "/injuries" },
