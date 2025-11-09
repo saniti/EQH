@@ -248,14 +248,14 @@ function DashboardLayoutContent({
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-col items-center gap-3 w-full">
+                  <div className="flex flex-col items-center gap-1 w-full">
                     <img
                       src={APP_LOGO_SVG}
                       className="h-16 w-16 shrink-0 text-blue-600"
                       alt="Logo"
                     />
                     <div className="text-center">
-                      <span className="font-bold text-lg tracking-tight">
+                      <span className="font-bold text-base tracking-tight">
                         {APP_TITLE}
                       </span>
                     </div>
