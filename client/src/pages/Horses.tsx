@@ -49,6 +49,7 @@ export default function Horses() {
     pictureData: '',
   });
   const [picturePreview, setPicturePreview] = useState<string>('');
+  const [uploadingFormType, setUploadingFormType] = useState<'add' | 'edit' | null>(null);
   const [editForm, setEditForm] = useState({
     name: "",
     alias: "",
@@ -128,7 +129,24 @@ export default function Horses() {
     },
   });
 
-  const uploadPictureMutation = trpc.horses.uploadPicture.useMutation();
+  const uploadPictureMutation = trpc.horses.uploadPicture.useMutation({
+    onSuccess: (result) => {
+      if (result.success && result.pictureData && uploadingFormType) {
+        if (uploadingFormType === 'add') {
+          setNewHorseForm(prev => ({ ...prev, pictureData: result.pictureData }));
+        } else {
+          setEditForm(prev => ({ ...prev, pictureData: result.pictureData }));
+        }
+      }
+      setUploadingFormType(null);
+    },
+    onError: (error) => {
+      console.error('Upload failed:', error);
+      alert('Failed to upload image: ' + error.message);
+      setPicturePreview('');
+      setUploadingFormType(null);
+    },
+  });
 
   // Get favorite IDs from horses data
   const favoriteHorses = horses?.filter(h => (h as any).isFavorite) || [];
@@ -226,7 +244,7 @@ export default function Horses() {
     setShowViewDialog(true);
   };
 
-  const handlePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>, formType: 'add' | 'edit') => {
+  const handlePictureUpload = (e: React.ChangeEvent<HTMLInputElement>, formType: 'add' | 'edit') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -237,30 +255,17 @@ export default function Horses() {
     }
 
     const reader = new FileReader();
-    reader.onload = async (event) => {
+    reader.onload = (event) => {
       const dataUrl = event.target?.result as string;
       setPicturePreview(dataUrl);
 
-      try {
-        const base64Data = dataUrl.split(',')[1];
-        const result = await trpc.horses.uploadPicture.mutate({
-          fileName: file.name,
-          fileData: base64Data,
-          contentType: file.type,
-        });
-
-        if (result.success && result.url) {
-          if (formType === 'add') {
-            setNewHorseForm({ ...newHorseForm, pictureUrl: result.url });
-          } else {
-            setEditForm({ ...editForm, pictureUrl: result.url });
-          }
-        }
-      } catch (error) {
-        console.error('Upload failed:', error);
-        alert('Failed to upload image: ' + (error instanceof Error ? error.message : 'Unknown error'));
-        setPicturePreview('');
-      }
+      const base64Data = dataUrl.split(',')[1];
+      setUploadingFormType(formType);
+      uploadPictureMutation.mutate({
+        fileName: file.name,
+        fileData: base64Data,
+        contentType: file.type,
+      });
     };
     reader.readAsDataURL(file);
   };
