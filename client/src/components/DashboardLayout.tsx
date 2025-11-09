@@ -23,9 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown } from "lucide-react";
-import { FontAwesomeHorseHeadIcon } from "./icons/FontAwesomeHorseHeadIcon";
-import { FontAwesomeHorseIcon } from "./icons/FontAwesomeHorseIcon";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, HorseSilhouette } from "lucide-react";
 import { StableIcon } from "./icons/StableIcon";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
@@ -37,8 +35,8 @@ import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
-  { icon: FontAwesomeHorseHeadIcon, label: "Horses", path: "/horses" },
-  { icon: FontAwesomeHorseIcon, label: "Sessions", path: "/sessions" },
+  { icon: HorseSilhouette, label: "Horses", path: "/horses" },
+  { icon: Activity, label: "Sessions", path: "/sessions" },
   { icon: Map, label: "Tracks", path: "/tracks" },
   { icon: AlertTriangle, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
