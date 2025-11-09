@@ -247,14 +247,17 @@ export default function Horses() {
           contentType: file.type,
         });
 
-        if (formType === 'add') {
-          setNewHorseForm({ ...newHorseForm, pictureUrl: result.url });
-        } else {
-          setEditForm({ ...editForm, pictureUrl: result.url });
+        if (result.success && result.url) {
+          if (formType === 'add') {
+            setNewHorseForm({ ...newHorseForm, pictureUrl: result.url });
+          } else {
+            setEditForm({ ...editForm, pictureUrl: result.url });
+          }
         }
       } catch (error) {
         console.error('Upload failed:', error);
-        alert('Failed to upload image');
+        alert('Failed to upload image: ' + (error instanceof Error ? error.message : 'Unknown error'));
+        setPicturePreview('');
       }
     };
     reader.readAsDataURL(file);
@@ -572,12 +575,12 @@ export default function Horses() {
                     <div>
                       <Label className="text-xs text-muted-foreground">Picture (PNG, JPG, SVG)</Label>
                       <div className="relative">
-                        <Input
-                          type="file"
-                          accept="image/png,image/jpeg,image/svg+xml"
-                          onChange={(e) => handlePictureUpload(e, 'edit')}
-                          className="h-9 mt-1"
-                        />
+                      <Input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.svg"
+                        onChange={(e) => handlePictureUpload(e, 'edit')}
+                        className="h-9 mt-1"
+                      />
                       </div>
                       {picturePreview && (
                         <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden relative">
@@ -919,7 +922,7 @@ export default function Horses() {
               <Input
                 id="horse-picture"
                 type="file"
-                accept="image/png,image/jpeg,image/svg+xml"
+                accept=".png,.jpg,.jpeg,.svg"
                 onChange={(e) => handlePictureUpload(e, 'add')}
                 className="mt-1"
               />

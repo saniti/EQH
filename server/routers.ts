@@ -176,12 +176,18 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        const { storagePut } = await import("./storage");
-        const buffer = Buffer.from(input.fileData, "base64");
-        const timestamp = Date.now();
-        const key = `horses/${timestamp}-${input.fileName}`;
-        const result = await storagePut(key, buffer, input.contentType);
-        return result;
+        try {
+          const { storagePut } = await import("./storage");
+          const buffer = Buffer.from(input.fileData, "base64");
+          const timestamp = Date.now();
+          const sanitizedFileName = input.fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+          const key = `horses/${timestamp}-${sanitizedFileName}`;
+          const result = await storagePut(key, buffer, input.contentType);
+          return { success: true, url: result.url, key: result.key };
+        } catch (error) {
+          console.error('Upload error:', error);
+          throw new Error(`Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
       }),
   }),
 
