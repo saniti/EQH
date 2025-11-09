@@ -1,7 +1,8 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateShort } from "@/lib/dateFormat";
-import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2, Search, Waypoints } from "lucide-react";
+import { Activity, Calendar, Heart, MapPin, Thermometer, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2, Search, Waypoints, Gauge } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { useMeasurement } from "@/contexts/MeasurementContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -302,11 +303,14 @@ export default function Sessions() {
 
   return (
     <div className="p-6 space-y-6 bg-background">
-      <div className="page-header">
-        <h1 className="text-3xl font-bold tracking-tight">Sessions</h1>
-        <p className="text-muted-foreground mt-1">
-          {selectedOrg?.name || 'Organization'}
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="page-header">
+          <h1 className="text-3xl font-bold tracking-tight">Sessions</h1>
+          <p className="text-muted-foreground mt-1">
+            {selectedOrg?.name || 'Organization'}
+          </p>
+        </div>
+        <MeasurementToggle />
       </div>
 
       {/* Filters */}
@@ -807,6 +811,21 @@ export default function Sessions() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function MeasurementToggle() {
+  const { isMetric, setIsMetric } = useMeasurement();
+  
+  return (
+    <button
+      onClick={() => setIsMetric(!isMetric)}
+      className="h-10 px-4 flex items-center gap-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium border border-input"
+      title={isMetric ? "Switch to Imperial" : "Switch to Metric"}
+    >
+      <Gauge className="h-4 w-4" />
+      <span>{isMetric ? "Metric" : "Imperial"}</span>
+    </button>
   );
 }
 

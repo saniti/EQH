@@ -23,10 +23,11 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, BriefcaseMedical, Waypoints, Warehouse } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, BriefcaseMedical, Waypoints, Warehouse, Gauge } from "lucide-react";
 
 
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { MeasurementProvider } from "@/contexts/MeasurementContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -155,17 +156,47 @@ export default function DashboardLayout({
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
+    <MeasurementProvider>
+      <SidebarProvider
+        style=
+        {{
           "--sidebar-width": `${sidebarWidth}px`,
         } as CSSProperties
-      }
-    >
-      <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
-        {children}
-      </DashboardLayoutContent>
-    </SidebarProvider>
+        }
+      >
+        <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
+          {children}
+        </DashboardLayoutContent>
+      </SidebarProvider>
+    </MeasurementProvider>
+  );
+}
+
+function MobileHeader({ activeMenuItem }: { activeMenuItem: any }) {
+  const { isMetric, setIsMetric } = useMeasurement();
+  
+  return (
+    <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
+      <div className="flex items-center gap-2">
+        <ThemeSelector />
+        <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-1">
+            <span className="tracking-tight text-foreground">
+              {activeMenuItem?.label ?? APP_TITLE}
+            </span>
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={() => setIsMetric(!isMetric)}
+        className="h-9 px-3 flex items-center gap-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium"
+        title={isMetric ? "Switch to Imperial" : "Switch to Metric"}
+      >
+        <Gauge className="h-4 w-4" />
+        <span>{isMetric ? "Metric" : "Imperial"}</span>
+      </button>
+    </div>
   );
 }
 
@@ -382,19 +413,7 @@ function DashboardLayoutContent({
 
       <SidebarInset>
         {isMobile && (
-          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
-            <div className="flex items-center gap-2">
-              <ThemeSelector />
-              <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? APP_TITLE}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MobileHeader activeMenuItem={activeMenuItem} />
         )}
         <main className="flex-1 p-4">{children}</main>
       </SidebarInset>

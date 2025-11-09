@@ -7,11 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { useState } from "react";
 import Plot from "react-plotly.js";
+import { useMeasurement } from "@/contexts/MeasurementContext";
+import { useParams } from "wouter";
+import { useLocation } from "wouter";
 
 export default function SessionDetail() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
-  const [isMetric, setIsMetric] = useState(true);
+  const { isMetric } = useMeasurement();
 
   const { data: session, isLoading, error } = trpc.sessions.get.useQuery(
     { id: Number(id) },
@@ -86,7 +89,10 @@ export default function SessionDetail() {
 
   const layout = {
     title: "Performance Metrics by Distance",
-    xaxis: { title: "Distance (m)" },
+    xaxis: { 
+      title: "Distance (m)",
+      dtick: 200,
+    },
     yaxis: { title: "Velocity (m/s)", titlefont: { color: "#1f77b4" } },
     yaxis2: { title: "Stride Length (m)", titlefont: { color: "#ff7f0e" }, overlaying: "y", side: "left" },
     yaxis3: { title: "Stride Freq (strides/s)", titlefont: { color: "#2ca02c" }, overlaying: "y", side: "right" },
@@ -123,17 +129,6 @@ export default function SessionDetail() {
         </TabsList>
 
         <TabsContent value="summary" className="space-y-6">
-          <div className="flex justify-end mb-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsMetric(!isMetric)}
-              className="gap-2"
-            >
-              {isMetric ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-              {isMetric ? "📏 Metric" : "📏 Imperial"}
-            </Button>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Card className="data-card data-card-distance">

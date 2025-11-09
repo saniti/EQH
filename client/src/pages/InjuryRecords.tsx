@@ -1,7 +1,8 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateShort } from "@/lib/dateFormat";
-import { AlertTriangle, Edit2, Trash2, Plus, X, BriefcaseMedical } from "lucide-react";
+import { AlertTriangle, Edit2, Trash2, Plus, X, BriefcaseMedical, Gauge } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { useMeasurement } from "@/contexts/MeasurementContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -163,10 +164,13 @@ export default function InjuryRecords() {
             {selectedOrg?.name || 'Organization'}
           </p>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Injury Record
-        </Button>
+        <div className="flex items-center gap-3">
+          <MeasurementToggle />
+          <Button onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Injury Record
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -457,6 +461,21 @@ export default function InjuryRecords() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function MeasurementToggle() {
+  const { isMetric, setIsMetric } = useMeasurement();
+  
+  return (
+    <button
+      onClick={() => setIsMetric(!isMetric)}
+      className="h-10 px-4 flex items-center gap-2 rounded-lg hover:bg-accent/50 transition-colors text-sm font-medium border border-input"
+      title={isMetric ? "Switch to Imperial" : "Switch to Metric"}
+    >
+      <Gauge className="h-4 w-4" />
+      <span>{isMetric ? "Metric" : "Imperial"}</span>
+    </button>
   );
 }
 
