@@ -10,3 +10,11 @@
 - [x] Improve SessionDetail data cards with better visual hierarchy and accents
 - [x] Add subtle shadows and borders for better card depth perception
 
+
+
+- [x] Update database schema to support horse pictures
+- [x] Rename Modify column to Actions and add View/Edit buttons
+- [x] Create horse details modal with picture display
+- [x] Add picture upload functionality to edit form
+- [x] Update seed data with horse pictures
+

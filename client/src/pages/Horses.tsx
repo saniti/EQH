@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateTimeShort } from "@/lib/dateFormat";
-import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar } from "lucide-react";
+import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar, Eye, X, Upload } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,9 @@ export default function Horses() {
   const [sortBy, setSortBy] = useState("latestSession");
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [editingHorseId, setEditingHorseId] = useState<number | null>(null);
+  const [viewingHorseId, setViewingHorseId] = useState<number | null>(null);
   const [showAddHorseDialog, setShowAddHorseDialog] = useState(false);
+  const [showViewDialog, setShowViewDialog] = useState(false);
   const [newHorseForm, setNewHorseForm] = useState({
     name: '',
     alias: '',
@@ -44,7 +46,9 @@ export default function Horses() {
     location: '',
     color: '',
     gender: '',
+    pictureUrl: '',
   });
+  const [picturePreview, setPicturePreview] = useState<string>('');
   const [editForm, setEditForm] = useState({
     name: "",
     alias: "",
@@ -56,7 +60,9 @@ export default function Horses() {
     location: "",
     color: "",
     gender: "",
+    pictureUrl: "",
   });
+  const [viewingHorse, setViewingHorse] = useState<any>(null);
 
   const { data: horses, isLoading } = trpc.horses.list.useQuery(
     {
@@ -116,7 +122,9 @@ export default function Horses() {
       utils.horses.list.invalidate();
       utils.horses.getStats.invalidate();
       setShowAddHorseDialog(false);
-      setNewHorseForm({ name: '', alias: '', breed: '', weight: '', owner: '', rider: '', birthPlace: '', location: '', color: '', gender: '' });
+      setNewHorseForm({ name: '', alias: '', breed: '', weight: '', owner: '', rider: '', birthPlace: '', location: '', color: '', gender: '', pictureUrl: '' });
+      setEditingHorseId(null);
+      setPicturePreview('');
     },
   });
 
@@ -206,7 +214,14 @@ export default function Horses() {
       location: healthRecords.location || "",
       color: healthRecords.color || "",
       gender: healthRecords.gender || "",
+      pictureUrl: horse.pictureUrl || "",
     });
+    setPicturePreview(horse.pictureUrl || '');
+  };
+
+  const handleViewClick = (horse: any) => {
+    setViewingHorse(horse);
+    setShowViewDialog(true);
   };
 
   const handleSaveEdit = () => {
@@ -216,6 +231,7 @@ export default function Horses() {
         name: editForm.name,
         alias: editForm.alias || undefined,
         breed: editForm.breed || undefined,
+        pictureUrl: editForm.pictureUrl || undefined,
         healthRecords: {
           weight: editForm.weight ? parseInt(editForm.weight) : undefined,
           owner: editForm.owner || undefined,
@@ -226,11 +242,13 @@ export default function Horses() {
           gender: editForm.gender || undefined,
         },
       });
+      setPicturePreview('');
     }
   };
 
   const handleCancelEdit = () => {
     setEditingHorseId(null);
+    setPicturePreview('');
   };
 
   const handleAddHorse = () => {
@@ -240,6 +258,7 @@ export default function Horses() {
         name: newHorseForm.name,
         alias: newHorseForm.alias || undefined,
         breed: newHorseForm.breed || undefined,
+        pictureUrl: newHorseForm.pictureUrl || undefined,
         healthRecords: {
           weight: newHorseForm.weight ? parseInt(newHorseForm.weight) : undefined,
           owner: newHorseForm.owner || undefined,
@@ -250,6 +269,7 @@ export default function Horses() {
           gender: newHorseForm.gender || undefined,
         },
       });
+      setPicturePreview('');
     }
   };
 
@@ -401,7 +421,7 @@ export default function Horses() {
                   )}
                 </button>
               </th>
-              <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground w-8">Modify</th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-muted-foreground">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -513,6 +533,28 @@ export default function Horses() {
                         />
                       </div>
                     </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Picture URL</Label>
+                      <Input
+                        value={editForm.pictureUrl}
+                        onChange={(e) => {
+                          setEditForm({ ...editForm, pictureUrl: e.target.value });
+                          setPicturePreview(e.target.value);
+                        }}
+                        placeholder="https://example.com/horse-picture.jpg"
+                        className="h-9 mt-1"
+                      />
+                      {picturePreview && (
+                        <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden">
+                          <img
+                            src={picturePreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            onError={() => setPicturePreview('')}
+                          />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" onClick={handleCancelEdit} className="h-9">
                         Cancel
@@ -589,12 +631,22 @@ export default function Horses() {
               <td className="hidden md:table-cell px-4 py-3 text-sm text-muted-foreground">
                 {latestSession?.trackName || (horse as any).trackName || '—'}
               </td>
-              <td className="px-4 py-3 text-right">
+              <td className="px-4 py-3 text-right flex gap-2 justify-end">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleViewClick(horse)}
+                  className="h-7 w-7 p-0"
+                  title="View details"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => handleEditClick(horse)}
                   className="h-7 w-7 p-0"
+                  title="Edit horse"
                 >
                   <Edit2 className="h-3.5 w-3.5" />
                 </Button>
@@ -819,6 +871,29 @@ export default function Horses() {
                 className="mt-1"
               />
             </div>
+            <div>
+              <Label htmlFor="horse-picture">Picture URL</Label>
+              <Input
+                id="horse-picture"
+                value={newHorseForm.pictureUrl}
+                onChange={(e) => {
+                  setNewHorseForm({ ...newHorseForm, pictureUrl: e.target.value });
+                  setPicturePreview(e.target.value);
+                }}
+                placeholder="https://example.com/horse-picture.jpg"
+                className="mt-1"
+              />
+              {picturePreview && (
+                <div className="mt-2 w-32 h-32 bg-muted rounded-lg overflow-hidden">
+                  <img
+                    src={picturePreview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={() => setPicturePreview('')}
+                  />
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddHorseDialog(false)}>
@@ -830,6 +905,65 @@ export default function Horses() {
               className="bg-green-600 hover:bg-green-700"
             >
               {createHorse.isPending ? 'Creating...' : 'Create Horse'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Horse Dialog */}
+      <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{viewingHorse?.name}</DialogTitle>
+            <DialogDescription>
+              {viewingHorse?.alias && `${viewingHorse.alias} • `}
+              {viewingHorse?.breed || 'No breed information'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {viewingHorse?.pictureUrl && (
+              <div className="w-full h-64 bg-muted rounded-lg overflow-hidden">
+                <img
+                  src={viewingHorse.pictureUrl}
+                  alt={viewingHorse.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            {!viewingHorse?.pictureUrl && (
+              <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-muted-foreground">No picture available</span>
+              </div>
+            )}
+            {viewingHorse?.healthRecords && (
+              <div className="space-y-2 text-sm">
+                {viewingHorse.healthRecords.owner && (
+                  <div><span className="font-medium">Owner:</span> {viewingHorse.healthRecords.owner}</div>
+                )}
+                {viewingHorse.healthRecords.rider && (
+                  <div><span className="font-medium">Rider:</span> {viewingHorse.healthRecords.rider}</div>
+                )}
+                {viewingHorse.healthRecords.weight && (
+                  <div><span className="font-medium">Weight:</span> {viewingHorse.healthRecords.weight} kg</div>
+                )}
+                {viewingHorse.healthRecords.color && (
+                  <div><span className="font-medium">Color:</span> {viewingHorse.healthRecords.color}</div>
+                )}
+                {viewingHorse.healthRecords.gender && (
+                  <div><span className="font-medium">Gender:</span> {viewingHorse.healthRecords.gender}</div>
+                )}
+                {viewingHorse.healthRecords.birthPlace && (
+                  <div><span className="font-medium">Birth Place:</span> {viewingHorse.healthRecords.birthPlace}</div>
+                )}
+                {viewingHorse.healthRecords.location && (
+                  <div><span className="font-medium">Location:</span> {viewingHorse.healthRecords.location}</div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowViewDialog(false)}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
