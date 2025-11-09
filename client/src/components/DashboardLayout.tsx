@@ -250,21 +250,21 @@ function DashboardLayoutContent({
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-col items-center gap-2 w-full">
+                  <div className="flex flex-col items-center gap-4 w-full">
                     <img
                       src={APP_LOGO_SVG}
-                      className="h-20 w-20 shrink-0 text-blue-600"
+                      className="h-32 w-32 shrink-0 text-blue-600"
                       alt="Logo"
                     />
                     <div className="text-center">
-                      <span className="font-bold text-sm tracking-tight leading-tight">
-                        {APP_TITLE}
+                      <span className="font-bold text-base tracking-tight leading-tight">
+                        Alerte Equine Science
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={toggleSidebar}
-                    className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 mt-2"
+                    className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0 mt-4"
                   >
                     <PanelLeft className="h-4 w-4 text-muted-foreground" />
                   </button>
