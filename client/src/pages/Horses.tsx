@@ -1,6 +1,7 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateTimeShort } from "@/lib/dateFormat";
-import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar, Eye, X, Upload, ChessKnight } from "lucide-react";
+import { Heart, Plus, Search, Edit2, ArrowUpDown, Clock, Activity, TrendingUp, Users, AlertTriangle, Calendar, Eye, X, Upload } from "lucide-react";
+import { ChessKnightIcon } from "@/components/icons/ChessKnightIcon";
 import { useState, useEffect } from "react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
@@ -337,7 +338,7 @@ export default function Horses() {
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
         <div className="page-header flex items-center gap-3">
-          <ChessKnight className="h-8 w-8 text-blue-600" />
+          <ChessKnightIcon className="h-8 w-8 text-blue-600" size={32} />
           <h1 className="text-3xl font-bold tracking-tight">Horses</h1>
           <p className="text-muted-foreground mt-1">
             {selectedOrg?.name || 'Organization'}
