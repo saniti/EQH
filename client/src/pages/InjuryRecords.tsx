@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { formatDateShort } from "@/lib/dateFormat";
-import { AlertTriangle, Edit2, Trash2, Plus, X } from "lucide-react";
+import { AlertTriangle, Edit2, Trash2, Plus, X, BriefcaseMedical } from "lucide-react";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -157,7 +157,8 @@ export default function InjuryRecords() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
-        <div className="page-header">
+        <div className="page-header flex items-center gap-3">
+          <BriefcaseMedical className="h-8 w-8 text-blue-600" />
           <h1 className="text-3xl font-bold tracking-tight">Injuries</h1>
           <p className="text-muted-foreground mt-1">
             {selectedOrg?.name || 'Organization'}

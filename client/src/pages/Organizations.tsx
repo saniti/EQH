@@ -1,5 +1,5 @@
 import { trpc } from "@/lib/trpc";
-import { Building2, Mail, MapPin, Phone, Plus, Edit2, Save, X } from "lucide-react";
+import { Building2, Mail, MapPin, Phone, Plus, Edit2, Save, X, Warehouse } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -73,7 +73,8 @@ export default function Organizations() {
   return (
     <div className="p-6 space-y-6 bg-background">
       <div className="flex items-center justify-between">
-        <div className="page-header">
+        <div className="page-header flex items-center gap-3">
+          <Warehouse className="h-8 w-8 text-blue-600" />
           <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
           <p className="text-muted-foreground mt-1">
             Manage Profiles

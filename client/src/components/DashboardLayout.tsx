@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_LOGO_SVG, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown } from "lucide-react";
-import { StableIcon } from "./icons/StableIcon";
+import { Activity, AlertTriangle, BarChart3, Building2, Calendar, FileText, Heart, Home, LogOut, Map, PanelLeft, Settings, User, Users, Wifi, ChevronDown, ChessKnight, BriefcaseMedical, Waypoints, Warehouse } from "lucide-react";
+
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,12 +35,12 @@ import { Button } from "./ui/button";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
-  { icon: Heart, label: "Horses", path: "/horses" },
-  { icon: Activity, label: "Sessions", path: "/sessions" },
+  { icon: ChessKnight, label: "Horses", path: "/horses" },
+  { icon: Waypoints, label: "Sessions", path: "/sessions" },
   { icon: Map, label: "Tracks", path: "/tracks" },
-  { icon: AlertTriangle, label: "Injury Records", path: "/injuries" },
+  { icon: BriefcaseMedical, label: "Injury Records", path: "/injuries" },
   { icon: FileText, label: "Reports", path: "/reports" },
-  { icon: StableIcon, label: "Organizations", path: "/organizations" },
+  { icon: Warehouse, label: "Organizations", path: "/organizations" },
   { icon: Wifi, label: "Devices", path: "/devices" },
 ];
 
