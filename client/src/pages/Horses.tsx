@@ -128,6 +128,8 @@ export default function Horses() {
     },
   });
 
+  const uploadPictureMutation = trpc.horses.uploadPicture.useMutation();
+
   // Get favorite IDs from horses data
   const favoriteHorses = horses?.filter(h => (h as any).isFavorite) || [];
   const nonFavoriteHorses = horses?.filter(h => !(h as any).isFavorite) || [];
