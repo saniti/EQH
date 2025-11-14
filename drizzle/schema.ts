@@ -195,7 +195,7 @@ export const sessions = mysqlTable("sessions", {
     temperature?: number;
     gaitAnalysis?: any;
   }>(),
-  injuryRisk: mysqlEnum("injuryRisk", ["low", "medium", "high", "critical"]),
+  injuryRisk: mysqlEnum("injuryRisk", ["Extreme", "High", "Medium", "Low", "Na"]).default("Na"),
   recoveryTarget: datetime("recoveryTarget"),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
@@ -295,6 +295,20 @@ export const upcomingCare = mysqlTable("upcomingCare", {
 
 export type UpcomingCare = typeof upcomingCare.$inferSelect;
 export type InsertUpcomingCare = typeof upcomingCare.$inferInsert;
+
+// ============= RISK LEVELS =============
+export const riskLevels = mysqlTable("riskLevels", {
+  id: int("id").primaryKey().autoincrement(),
+  name: mysqlEnum("name", ["Extreme", "High", "Medium", "Low", "Na"])
+    .notNull()
+    .unique(),
+  color: varchar("color", { length: 50 }).notNull(),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export type RiskLevel = typeof riskLevels.$inferSelect;
+export type InsertRiskLevel = typeof riskLevels.$inferInsert;
 
 // ============= API SETTINGS (Admin only) =============
 export const apiSettings = mysqlTable("apiSettings", {

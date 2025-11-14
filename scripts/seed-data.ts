@@ -355,7 +355,7 @@ async function seed() {
       const daysAgo = Math.floor(Math.random() * 90);
       const sessionDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
 
-      const injuryRisks = ["low", "low", "low", "medium", "medium", "high", "critical"];
+      const injuryRisks = ["Low", "Low", "Low", "Medium", "Medium", "High", "Extreme", "Na"];
       const injuryRisk = injuryRisks[i % injuryRisks.length] as any;
 
       // Generate sectional-based performance data (200m intervals)
@@ -536,7 +536,7 @@ async function seed() {
     // 10. Create injury records
     console.log("Creating injury records...");
     const highRiskSessions = sessionIds.filter((_, i) => 
-      ["high", "critical"].includes(["low", "low", "low", "medium", "medium", "high", "critical"][i % 7])
+      ["High", "Extreme"].includes(["Low", "Low", "Low", "Medium", "Medium", "High", "Extreme"][i % 7])
     );
 
     for (let i = 0; i < Math.min(highRiskSessions.length, 20); i++) {
@@ -646,7 +646,33 @@ async function seed() {
       },
     });
 
-    // 15. Set API settings
+    // 15. Seed risk levels
+    console.log("Seeding risk levels...");
+    const riskLevelColors = {
+      "Extreme": "#dc2626",
+      "High": "#f97316",
+      "Medium": "#eab308",
+      "Low": "#22c55e",
+      "Na": "#9ca3af"
+    };
+
+    const riskLevelDescriptions = {
+      "Extreme": "Critical risk requiring immediate action",
+      "High": "High risk requiring urgent attention",
+      "Medium": "Moderate risk requiring monitoring",
+      "Low": "Low risk, routine monitoring recommended",
+      "Na": "No data available"
+    };
+
+    for (const [name, color] of Object.entries(riskLevelColors)) {
+      await db.insert(schema.riskLevels).values({
+        name: name as any,
+        color,
+        description: riskLevelDescriptions[name as keyof typeof riskLevelDescriptions],
+      }).onDuplicateKeyUpdate({ set: { color } });
+    }
+
+    // 16. Set API settings
     console.log("Setting API configuration...");
     await db.insert(schema.apiSettings).values({
       batchSize: 100,
@@ -668,6 +694,7 @@ async function seed() {
     console.log(`- Invitations: 5`);
     console.log(`- Organization Requests: 2`);
     console.log(`- Track Requests: 1`);
+    console.log(`- Risk Levels: 5`);
 
   } catch (error) {
     console.error("Error seeding database:", error);
